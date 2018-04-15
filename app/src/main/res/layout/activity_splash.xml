@@ -6,19 +6,23 @@
         android:layout_height="match_parent"
         tools:context=".SplashActivity">
 
-    <TextView
-            android:layout_gravity="end"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="30dp"
-            android:layout_width="70dp"
-            android:layout_height="30dp"
-            android:background="@drawble/shape_jump"
-            android:textSize="16sp"/>
-
     <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"/>
+
+    <TextView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="30dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            android:background="@drawable/shape_jump"
+            android:onClick="toMain"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:text="@string/jump"/>
 
 </FrameLayout>
