@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,9 +20,10 @@ import java.util.Random;
  */
 public class SplashActivity extends AppCompatActivity {
 
-    private TextView       mTVCountDown;
-    private ImageView      mImageView;
-    private CountDownTimer mTimer;
+    protected FrameLayout    mRoot;
+    private   TextView       mTVCountDown;
+    private   ImageView      mImageView;
+    private   CountDownTimer mTimer;
 
 
     @Override
@@ -30,6 +32,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_splash);
         initView();
+
     }
 
 
@@ -39,6 +42,7 @@ public class SplashActivity extends AppCompatActivity {
         mTVCountDown = findViewById(R.id.TV_countDown);
         tryToLoadSplashImg();
         toMainDelayed(3000);
+        mRoot = findViewById(R.id.root);
     }
 
 
@@ -50,7 +54,7 @@ public class SplashActivity extends AppCompatActivity {
         String[] urls = ConstantsImageUrl.TRANSITION_URLS;
         int imageUrlIndex = new Random().nextInt(urls.length);
         Glide.with(this)
-                .load(urls[imageUrlIndex])
+                .load(urls[1])
                 .placeholder(R.drawable.img_transition_default)
                 .into(mImageView);
     }
@@ -117,7 +121,7 @@ public class SplashActivity extends AppCompatActivity {
         @Override
         public void onFinish() {
 
-            toMain(null);
+            // toMain(null);
         }
     }
 }
