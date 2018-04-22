@@ -1,21 +1,25 @@
 package com.example.wuxio.gankexamples;
 
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-import com.example.wuxio.gankexamples.utils.GlideUtils;
+import com.bumptech.glide.Glide;
+import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
+
+import java.util.Random;
 
 /**
  * @author wuxio
  */
 public class SplashActivity extends AppCompatActivity {
 
-    protected ImageView mImageView;
-
-    private static Handler splashHandler = new Handler();
+    private TextView       mTVCountDown;
+    private ImageView      mImageView;
+    private CountDownTimer mTimer;
 
 
     @Override
@@ -27,53 +31,72 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    public void toMain(View view) {
-
-        splashHandler.removeCallbacksAndMessages(null);
-        MainActivity.start(this);
-        finishWithAnim();
-    }
-
-
     private void initView() {
 
-        mImageView = findViewById(R.id.imageView);
-        mImageView.setImageResource(R.drawable.img_transition_default);
-        int timeout = 3;
-        tryToLoadSplashImg(timeout);
-        toMainDelayed(timeout * 1000);
+        mImageView = findViewById(R.id.IV_SplashBack);
+        mTVCountDown = findViewById(R.id.TV_countDown);
+        tryToLoadSplashImg();
+        toMainDelayed(3000);
     }
 
 
-    private void tryToLoadSplashImg(int timeout) {
+    private void tryToLoadSplashImg() {
 
-        mImageView.post(
-                () -> GlideUtils.loadSplashImg(
-                        timeout,
-                        mImageView)
-        );
+        String[] urls = ConstantsImageUrl.TRANSITION_URLS;
+        int imageUrlIndex = new Random().nextInt(urls.length);
+        Glide.with(this)
+                .load(urls[imageUrlIndex])
+                .placeholder(R.drawable.img_transition_default)
+                .into(mImageView);
     }
 
 
-    private void toMainDelayed(int delayed) {
+    public void toMain(View view) {
 
-        splashHandler.postDelayed(
-                () -> toMain(null),
-                delayed
-        );
-    }
-
-
-    private void finishWithAnim() {
-
+        MainActivity.start(this);
         overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
         finish();
     }
 
 
+    private void toMainDelayed(int delayed) {
+
+        mTimer = new SplashCountDown(delayed, 1000);
+        mTimer.start();
+    }
+
+
     @Override
     public void onBackPressed() {
-        splashHandler.removeCallbacksAndMessages(null);
+
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
         super.onBackPressed();
+    }
+
+    //============================ nbl ============================
+
+    class SplashCountDown extends CountDownTimer {
+
+        public SplashCountDown(long millisInFuture, long countDownInterval) {
+
+            super(millisInFuture, countDownInterval);
+        }
+
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+
+            String countText = getResources().getString(R.string.jump, millisUntilFinished / 1000);
+            mTVCountDown.setText(countText);
+        }
+
+
+        @Override
+        public void onFinish() {
+
+            toMain(null);
+        }
     }
 }

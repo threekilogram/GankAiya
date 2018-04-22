@@ -7,12 +7,13 @@
         tools:context=".SplashActivity">
 
     <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/IV_SplashBack"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"/>
 
     <TextView
+            android:id="@+id/TV_countDown"
             android:layout_width="70dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
@@ -21,7 +22,7 @@
             android:gravity="center"
             android:background="@drawable/shape_jump"
             android:onClick="toMain"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:textColor="@android:color/white"
             android:text="@string/jump"/>
 
