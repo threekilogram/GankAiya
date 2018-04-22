@@ -13,6 +13,8 @@ import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
 import java.util.Random;
 
 /**
+ * show splash ,than goto mainActivity
+ *
  * @author wuxio
  */
 public class SplashActivity extends AppCompatActivity {
@@ -40,6 +42,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * load background image
+     */
     private void tryToLoadSplashImg() {
 
         String[] urls = ConstantsImageUrl.TRANSITION_URLS;
@@ -51,14 +56,27 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * click event
+     *
+     * @param view view
+     */
     public void toMain(View view) {
 
+        if (mTimer != null) {
+            mTimer.cancel();
+        }
         MainActivity.start(this);
         overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
         finish();
     }
 
 
+    /**
+     * skip to main Activity with a delayed time
+     *
+     * @param delayed time delayed
+     */
     private void toMainDelayed(int delayed) {
 
         mTimer = new SplashCountDown(delayed, 1000);
@@ -66,6 +84,9 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * release background event
+     */
     @Override
     public void onBackPressed() {
 
@@ -77,7 +98,7 @@ public class SplashActivity extends AppCompatActivity {
 
     //============================ nbl ============================
 
-    class SplashCountDown extends CountDownTimer {
+    private class SplashCountDown extends CountDownTimer {
 
         public SplashCountDown(long millisInFuture, long countDownInterval) {
 

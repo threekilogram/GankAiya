@@ -35,52 +35,6 @@ public class ThreadPools {
 
     public static Handler callBackHandler = new Handler(Looper.getMainLooper());
 
-    public static class AppThreadFactory implements ThreadFactory {
-
-        private int level = Thread.NORM_PRIORITY;
-
-
-        public AppThreadFactory(int level) {
-
-            this.level = level;
-        }
-
-
-        @Override
-        public Thread newThread(@NonNull Runnable r) {
-
-            return new AppThread(r);
-        }
-
-
-        public Thread newThread(@NonNull Runnable r, int level) {
-
-            return new AppThread(r, level);
-        }
-    }
-
-    public static class AppThread extends Thread {
-
-        private final String namePrefix = "AppThread-";
-        private static int count;
-
-
-        public AppThread(Runnable target) {
-
-            super(target);
-            setPriority(Thread.NORM_PRIORITY - 2);
-            setName(String.format(Locale.CHINA, "%s%d", namePrefix, count++));
-        }
-
-
-        public AppThread(Runnable target, int level) {
-
-            super(target);
-            setPriority(level);
-            setName(String.format(Locale.CHINA, "%s%d", namePrefix, count++));
-        }
-    }
-
 
     public static void run(Runnable runnable) {
 
@@ -93,4 +47,44 @@ public class ThreadPools {
         callBackHandler.post(runnable);
     }
 
+    //============================ nbl ============================
+
+    /**
+     * thread factory
+     */
+    public static class AppThreadFactory implements ThreadFactory {
+
+        private int level;
+
+
+        public AppThreadFactory(int level) {
+
+            this.level = level;
+        }
+
+
+        @Override
+        public Thread newThread(@NonNull Runnable r) {
+
+            return new AppThread(r, level);
+        }
+    }
+
+    /**
+     * thread with name
+     */
+    public static class AppThread extends Thread {
+
+
+        private final String namePrefix = "AppThread-";
+        private static int count;
+
+
+        public AppThread(Runnable target, int level) {
+
+            super(target);
+            setPriority(level);
+            setName(String.format(Locale.CHINA, "%s%d", namePrefix, count++));
+        }
+    }
 }
