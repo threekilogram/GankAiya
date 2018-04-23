@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
  */
 public class SystemUI {
 
+
     /**
      * 设置状态栏颜色
      *
@@ -27,7 +28,7 @@ public class SystemUI {
     public static void setStatusColor(Activity activity, @ColorInt int color) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setLollipopStatusColorFullScreen(activity, color);
+            setLollipopStatusColor(activity, color);
             return;
         }
 
@@ -40,20 +41,73 @@ public class SystemUI {
     /**
      * 设置状态栏颜色,并且设置根布局{@link View#setFitsSystemWindows(boolean)}为true
      *
-     * @param activity 需要设置状态栏颜色的activity
-     * @param color    状态栏颜色
-     * @param root     布局的根布局,将会设置{@link View#setFitsSystemWindows(boolean)}为true
+     * @param activity    需要设置状态栏颜色的activity
+     * @param color       状态栏颜色
+     * @param offsetViews 需要竖直偏移的view,因为设置颜色之后,activity的布局会顶到状态栏里面,
+     *                    使用该方法可以将指定的view竖直偏移状态栏的高度
      */
-    public static void setStatusColor(Activity activity, @ColorInt int color, View root) {
+    public static void setStatusColor(Activity activity, @ColorInt int color, View... offsetViews) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+
             setLollipopStatusColor(activity, color);
-            return;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+
+            setKitkatStatusColor(activity, color);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            setKitkatStatusColor(activity, color, root);
-        }
+        verticalOffsetViews(activity, offsetViews);
+    }
+
+
+    /**
+     * 使用{@link Window#addFlags(int)}{@link WindowManager.LayoutParams#FLAG_TRANSLUCENT_STATUS},
+     * 配合添加一个设置为指定颜色的view到状态栏区域来间接设置状态栏颜色
+     *
+     * @param activity 需要设置状态栏颜色的activity
+     * @param color    状态栏颜色
+     */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    public static void setKitkatStatusColor(Activity activity, @ColorInt int color) {
+
+        Window window = activity.getWindow();
+        //延伸到状态栏
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        //添加一个view
+        ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
+        View statusBarView = new View(window.getContext());
+        int statusBarHeight = getStatusBarHeight(window.getContext());
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams
+                .MATCH_PARENT, statusBarHeight);
+        params.gravity = Gravity.TOP;
+        statusBarView.setLayoutParams(params);
+        statusBarView.setBackgroundColor(color);
+        decorViewGroup.addView(statusBarView);
+    }
+
+
+    /**
+     * 使用{@link Window#setStatusBarColor(int)}API设置状态栏颜色
+     *
+     * @param activity 需要设置状态栏颜色的activity
+     * @param color    状态栏颜色
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void setLollipopStatusColor(Activity activity, @ColorInt int color) {
+
+        Window window = activity.getWindow();
+        //设置状态栏颜色必须清除WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS标记
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        //设置状态栏颜色必须设置WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS标记
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        //绘制透明状态栏
+        window.setStatusBarColor(color);
+
+        //activity背景延伸到状态栏,状态栏不隐藏,布局稳定
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
 
@@ -80,98 +134,47 @@ public class SystemUI {
 
 
     /**
-     * 使用{@link Window#addFlags(int)}{@link WindowManager.LayoutParams#FLAG_TRANSLUCENT_STATUS},
-     * 配合添加一个设置为指定颜色的view到状态栏区域来间接设置状态栏颜色
+     * 竖直方向偏移状态栏距离
      *
-     * @param activity 需要设置状态栏颜色的activity
-     * @param color    状态栏颜色
+     * @param views 需要偏移的views
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void setKitkatStatusColor(Activity activity, @ColorInt int color) {
+    public static void verticalOffsetViews(Context context, View... views) {
 
-        setKitkatStatusColor(activity, color, null);
-    }
-
-
-    /**
-     * 使用{@link Window#addFlags(int)}{@link WindowManager.LayoutParams#FLAG_TRANSLUCENT_STATUS},
-     * 配合添加一个设置为指定颜色的view到状态栏区域来间接设置状态栏颜色
-     *
-     * @param activity 需要设置状态栏颜色的activity
-     * @param color    状态栏颜色
-     * @param root     布局的根布局,将会设置{@link View#setFitsSystemWindows(boolean)}为true
-     */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    public static void setKitkatStatusColor(Activity activity, @ColorInt int color, View root) {
-
-        Window window = activity.getWindow();
-        //延伸到状态栏
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        //添加一个view
-        ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
-        View statusBarView = new View(window.getContext());
-        int statusBarHeight = getStatusBarHeight(window.getContext());
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams
-                .MATCH_PARENT, statusBarHeight);
-        params.gravity = Gravity.TOP;
-        statusBarView.setLayoutParams(params);
-        statusBarView.setBackgroundColor(color);
-        decorViewGroup.addView(statusBarView);
-
-        if (root != null) {
-            ViewGroup.LayoutParams rootLayoutParams = root.getLayoutParams();
-            if (rootLayoutParams instanceof ViewGroup.MarginLayoutParams) {
-                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)
-                        rootLayoutParams;
-                layoutParams.topMargin += statusBarHeight;
-            } else {
-                root.setPadding(
-                        root.getPaddingLeft(),
-                        root.getPaddingTop() + statusBarHeight,
-                        root.getPaddingRight(),
-                        root.getPaddingBottom()
-                );
+        if (views != null) {
+            int height = getStatusBarHeight(context);
+            int length = views.length;
+            for (int i = 0; i < length; i++) {
+                View view = views[i];
+                verticalOffsetView(view, height);
             }
-            root.requestLayout();
         }
     }
 
 
     /**
-     * 使用{@link Window#setStatusBarColor(int)}API设置状态栏颜色
+     * 竖直方向偏移状态栏距离
      *
-     * @param activity 需要设置状态栏颜色的activity
-     * @param color    状态栏颜色
+     * @param view            需要偏移的view
+     * @param statusBarHeight 状态栏高度
      */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void setLollipopStatusColorFullScreen(Activity activity, @ColorInt int color) {
+    public static void verticalOffsetView(View view, int statusBarHeight) {
 
-        setLollipopStatusColor(activity, color);
-
-        //activity背景延伸到状态栏,状态栏不隐藏,布局稳定
-        activity.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-    }
-
-
-    /**
-     * 使用{@link Window#setStatusBarColor(int)}API设置状态栏颜色
-     *
-     * @param activity 需要设置状态栏颜色的activity
-     * @param color    状态栏颜色
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void setLollipopStatusColor(Activity activity, @ColorInt int color) {
-
-        Window window = activity.getWindow();
-        //设置状态栏颜色必须清除WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS标记
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //设置状态栏颜色必须设置WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS标记
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        //绘制透明状态栏
-        window.setStatusBarColor(color);
+        if (view != null) {
+            ViewGroup.LayoutParams rootLayoutParams = view.getLayoutParams();
+            if (rootLayoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)
+                        rootLayoutParams;
+                layoutParams.topMargin += statusBarHeight;
+            } else {
+                view.setPadding(
+                        view.getPaddingLeft(),
+                        view.getPaddingTop() + statusBarHeight,
+                        view.getPaddingRight(),
+                        view.getPaddingBottom()
+                );
+            }
+            view.requestLayout();
+        }
     }
 
 

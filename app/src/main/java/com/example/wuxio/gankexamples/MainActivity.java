@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.wuxio.gankexamples.utils.SystemUI;
 
@@ -15,7 +16,10 @@ import com.example.wuxio.gankexamples.utils.SystemUI;
  */
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
+
     protected DrawerLayout mDrawer;
+    protected LinearLayout mContent;
     private   boolean      setFlag;
 
 
@@ -34,13 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
 
-        SystemUI.setStatusColor(this, Color.RED, mDrawer);
+        SystemUI.setStatusColor(this, Color.TRANSPARENT, mContent);
     }
 
 
     private void initView() {
 
         mDrawer = findViewById(R.id.drawer);
+        mContent = findViewById(R.id.content);
     }
 
 
