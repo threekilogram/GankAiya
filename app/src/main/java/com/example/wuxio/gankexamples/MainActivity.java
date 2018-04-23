@@ -2,6 +2,7 @@ package com.example.wuxio.gankexamples;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -32,7 +33,8 @@ public class MainActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_main);
 
         initView();
-        SystemUI.immersiveSticky(this);
+
+        SystemUI.setStatusColor(this, Color.RED, mDrawer);
     }
 
 

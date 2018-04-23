@@ -32,7 +32,6 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_splash);
         initView();
-
     }
 
 
@@ -121,7 +120,7 @@ public class SplashActivity extends AppCompatActivity {
         @Override
         public void onFinish() {
 
-             toMain(null);
+            toMain(null);
         }
     }
 }

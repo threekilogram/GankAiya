@@ -27,7 +27,7 @@ public class SystemUI {
     public static void setStatusColor(Activity activity, @ColorInt int color) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setLollipopStatusColor(activity, color);
+            setLollipopStatusColorFullScreen(activity, color);
             return;
         }
 
@@ -47,7 +47,7 @@ public class SystemUI {
     public static void setStatusColor(Activity activity, @ColorInt int color, View root) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setLollipopStatusColor(activity, color, root);
+            setLollipopStatusColor(activity, color);
             return;
         }
 
@@ -89,20 +89,7 @@ public class SystemUI {
     @TargetApi(Build.VERSION_CODES.KITKAT)
     public static void setKitkatStatusColor(Activity activity, @ColorInt int color) {
 
-        Window window = activity.getWindow();
-        //延伸到状态栏
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        //添加一个view
-        ViewGroup decorViewGroup = (ViewGroup) window.getDecorView();
-        View statusBarView = new View(window.getContext());
-        int statusBarHeight = getStatusBarHeight(window.getContext());
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams
-                .MATCH_PARENT, statusBarHeight);
-        params.gravity = Gravity.TOP;
-        statusBarView.setLayoutParams(params);
-        statusBarView.setBackgroundColor(color);
-        decorViewGroup.addView(statusBarView);
+        setKitkatStatusColor(activity, color, null);
     }
 
 
@@ -131,7 +118,41 @@ public class SystemUI {
         statusBarView.setLayoutParams(params);
         statusBarView.setBackgroundColor(color);
         decorViewGroup.addView(statusBarView);
-        root.setFitsSystemWindows(true);
+
+        if (root != null) {
+            ViewGroup.LayoutParams rootLayoutParams = root.getLayoutParams();
+            if (rootLayoutParams instanceof ViewGroup.MarginLayoutParams) {
+                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)
+                        rootLayoutParams;
+                layoutParams.topMargin += statusBarHeight;
+            } else {
+                root.setPadding(
+                        root.getPaddingLeft(),
+                        root.getPaddingTop() + statusBarHeight,
+                        root.getPaddingRight(),
+                        root.getPaddingBottom()
+                );
+            }
+            root.requestLayout();
+        }
+    }
+
+
+    /**
+     * 使用{@link Window#setStatusBarColor(int)}API设置状态栏颜色
+     *
+     * @param activity 需要设置状态栏颜色的activity
+     * @param color    状态栏颜色
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void setLollipopStatusColorFullScreen(Activity activity, @ColorInt int color) {
+
+        setLollipopStatusColor(activity, color);
+
+        //activity背景延伸到状态栏,状态栏不隐藏,布局稳定
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
 
@@ -149,37 +170,8 @@ public class SystemUI {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         //设置状态栏颜色必须设置WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS标记
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        //activity背景延伸到状态栏,状态栏不隐藏,布局稳定
-        window.getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         //绘制透明状态栏
         window.setStatusBarColor(color);
-    }
-
-
-    /**
-     * 使用{@link Window#setStatusBarColor(int)}API设置状态栏颜色
-     *
-     * @param activity 需要设置状态栏颜色的activity
-     * @param color    状态栏颜色
-     * @param root     布局的根布局,将会设置{@link View#setFitsSystemWindows(boolean)}为true
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public static void setLollipopStatusColor(Activity activity, @ColorInt int color, View root) {
-
-        Window window = activity.getWindow();
-        //设置状态栏颜色必须清除WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS标记
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        //设置状态栏颜色必须设置WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS标记
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        //activity背景延伸到状态栏,状态栏不隐藏,布局稳定
-        window.getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        //绘制透明状态栏
-        window.setStatusBarColor(color);
-        root.setFitsSystemWindows(true);
     }
 
 
@@ -269,8 +261,8 @@ public class SystemUI {
     public static void immersive(Activity activity) {
 
         activity.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
@@ -286,11 +278,10 @@ public class SystemUI {
     public static void immersiveSticky(Activity activity) {
 
         activity.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
