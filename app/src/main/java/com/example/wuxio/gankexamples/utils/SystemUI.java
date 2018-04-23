@@ -293,4 +293,41 @@ public class SystemUI {
                         | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                         | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
+
+
+    /**
+     * 同时隐藏导航条状态栏,点击后出现,activity布局重置
+     *
+     * @param activity activity
+     */
+    public static void hideSystemUI(Activity activity) {
+
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
+
+    /**
+     * 同时隐藏导航条状态栏,点击后出现,activity布局不重置
+     *
+     * @param activity activity
+     */
+    public static void hideSystemUiStable(Activity activity) {
+
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        );
+    }
+
+
+    public static void normal(Activity activity) {
+
+        activity.getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_VISIBLE
+        );
+    }
 }

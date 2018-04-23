@@ -3,7 +3,9 @@ package com.example.wuxio.gankexamples;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.example.wuxio.gankexamples.utils.SystemUI;
 
@@ -12,7 +14,8 @@ import com.example.wuxio.gankexamples.utils.SystemUI;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private boolean setFlag;
+    protected DrawerLayout mDrawer;
+    private   boolean      setFlag;
 
 
     public static void start(Context context) {
@@ -26,8 +29,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        super.setContentView(R.layout.activity_main);
 
+        initView();
         SystemUI.immersiveSticky(this);
+    }
+
+
+    private void initView() {
+
+        mDrawer = findViewById(R.id.drawer);
+    }
+
+
+    public void changeSystemUI(View view) {
+
     }
 }
