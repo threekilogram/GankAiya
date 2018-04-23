@@ -16,7 +16,7 @@ import android.widget.FrameLayout;
 /**
  * @author wuxio 2018-04-22:17:51
  */
-public class StatusBar {
+public class SystemUI {
 
     /**
      * 设置状态栏颜色
@@ -24,7 +24,7 @@ public class StatusBar {
      * @param activity 需要设置状态栏颜色的activity
      * @param color    状态栏颜色
      */
-    public static void set(Activity activity, @ColorInt int color) {
+    public static void setStatusColor(Activity activity, @ColorInt int color) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setLollipopStatusColor(activity, color);
@@ -44,7 +44,7 @@ public class StatusBar {
      * @param color    状态栏颜色
      * @param root     布局的根布局,将会设置{@link View#setFitsSystemWindows(boolean)}为true
      */
-    public static void set(Activity activity, @ColorInt int color, View root) {
+    public static void setStatusColor(Activity activity, @ColorInt int color, View root) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setLollipopStatusColor(activity, color, root);
@@ -188,7 +188,7 @@ public class StatusBar {
      *
      * @param activity activity
      */
-    public static void translucent(Activity activity) {
+    public static void translucentStatus(Activity activity) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 
@@ -202,7 +202,7 @@ public class StatusBar {
      *
      * @param activity activity
      */
-    public static void fullScreen(Activity activity) {
+    public static void hideStatus(Activity activity) {
 
         activity.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
@@ -213,7 +213,7 @@ public class StatusBar {
      *
      * @param activity activity
      */
-    public static void fullScreenStable(Activity activity) {
+    public static void hideStatusStable(Activity activity) {
 
         activity.getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_FULLSCREEN |
@@ -230,7 +230,7 @@ public class StatusBar {
     public static void layoutFullScreen(Activity activity) {
 
         activity.getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN
         );
     }
 
