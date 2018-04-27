@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples;
+package com.example.wuxio.gankexamples.splash;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -9,7 +9,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
+import com.example.wuxio.gankexamples.main.MainActivity;
 
 import java.util.Random;
 

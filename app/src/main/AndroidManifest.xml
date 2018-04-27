@@ -16,7 +16,7 @@
             android:theme="@style/AppTheme">
 
         <activity
-                android:name=".SplashActivity"
+                android:name=".splash.SplashActivity"
                 android:theme="@style/FullScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -27,11 +27,10 @@
 
 
         <activity
-                android:name=".MainActivity"
+                android:name=".main.MainActivity"
                 android:launchMode="singleTop"
                 android:screenOrientation="portrait"
-               />
-
+                />
 
     </application>
 
