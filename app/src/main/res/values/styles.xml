@@ -12,4 +12,12 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <!-- view style -->
+
+    <style name="navigationLinearItem">
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:background="?android:attr/selectableItemBackground"
+    </style>
+
 </resources>

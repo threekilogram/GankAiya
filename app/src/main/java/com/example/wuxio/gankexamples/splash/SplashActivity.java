@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.RootActivity;
 import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
 import com.example.wuxio.gankexamples.main.MainActivity;
 
@@ -85,9 +86,9 @@ public class SplashActivity extends AppCompatActivity {
     /**
      * 跳转到{@link MainActivity}
      */
-    public void toMain(View view) {
+    public void toRootActivity(View view) {
 
-        MainActivity.start(this);
+        RootActivity.start(this);
         finish();
         overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
         mHandler.removeCallbacksAndMessages(null);
@@ -110,7 +111,7 @@ public class SplashActivity extends AppCompatActivity {
      */
     private void countToEnd() {
 
-        toMain(null);
+        toRootActivity(null);
     }
 
 

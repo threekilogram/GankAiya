@@ -25,12 +25,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+                android:name=".RootActivity"
+                android:launchMode="singleTask"/>
 
         <activity
                 android:name=".main.MainActivity"
                 android:launchMode="singleTop"
-                android:screenOrientation="portrait"
-                />
+                android:screenOrientation="portrait"/>
 
     </application>
 

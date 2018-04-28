@@ -29,5 +29,4 @@
             app:headerLayout="@layout/activity_main_navigation_view"
             />
 
-
 </android.support.v4.widget.DrawerLayout>
