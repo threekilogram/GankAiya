@@ -1,7 +1,8 @@
 package com.example.wuxio.gankexamples.splash;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -13,6 +14,7 @@ import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
 import com.example.wuxio.gankexamples.main.MainActivity;
 
+import java.lang.ref.WeakReference;
 import java.util.Random;
 
 /**
@@ -22,10 +24,11 @@ import java.util.Random;
  */
 public class SplashActivity extends AppCompatActivity {
 
-    protected FrameLayout    mRoot;
-    private   TextView       mTVCountDown;
-    private   ImageView      mImageView;
-    private   CountDownTimer mTimer;
+    protected ImageView   mLogoImage;
+    protected TextView    mCountText;
+    protected FrameLayout mRoot;
+
+    private CountHandler mHandler;
 
 
     @Override
@@ -34,95 +37,150 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_splash);
         initView();
+        mHandler = new CountHandler(this);
+
+        postAction();
     }
 
 
     private void initView() {
 
-        mImageView = findViewById(R.id.IV_SplashBack);
-        mTVCountDown = findViewById(R.id.TV_countDown);
-        tryToLoadSplashImg();
-        toMainDelayed(3000);
         mRoot = findViewById(R.id.root);
+        mLogoImage = findViewById(R.id.logoImage);
+        mCountText = findViewById(R.id.countText);
+
     }
 
 
     /**
-     * load background image
+     * view 创建好之后执行方法里操作
      */
-    private void tryToLoadSplashImg() {
+    private void postAction() {
+
+        mRoot.post(new Runnable() {
+            @Override
+            public void run() {
+
+                loadLogoImage();
+                mHandler.startCountDown(3);
+            }
+        });
+    }
+
+
+    /**
+     * load background image from net
+     */
+    private void loadLogoImage() {
 
         String[] urls = ConstantsImageUrl.TRANSITION_URLS;
         int imageUrlIndex = new Random().nextInt(urls.length);
         Glide.with(this)
                 .load(urls[1])
                 .placeholder(R.drawable.img_transition_default)
-                .into(mImageView);
+                .into(mLogoImage);
     }
 
 
     /**
-     * click event
-     *
-     * @param view view
+     * 跳转到{@link MainActivity}
      */
     public void toMain(View view) {
 
-        if (mTimer != null) {
-            mTimer.cancel();
-        }
         MainActivity.start(this);
-        overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
         finish();
+        overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
+        mHandler.removeCallbacksAndMessages(null);
     }
 
 
     /**
-     * skip to main Activity with a delayed time
+     * 倒计时
      *
-     * @param delayed time delayed
+     * @param counted 剩余时间
      */
-    private void toMainDelayed(int delayed) {
+    private void countDown(int counted) {
 
-        mTimer = new SplashCountDown(delayed, 1000);
-        mTimer.start();
+        mCountText.setText(getString(R.string.jump, counted));
     }
 
 
     /**
-     * release background event
+     * 倒计时结束
      */
-    @Override
-    public void onBackPressed() {
+    private void countToEnd() {
 
-        if (mTimer != null) {
-            mTimer.cancel();
-        }
-        super.onBackPressed();
+        toMain(null);
     }
 
-    //============================ nbl ============================
 
-    private class SplashCountDown extends CountDownTimer {
+    @Override
+    protected void onDestroy() {
 
-        public SplashCountDown(long millisInFuture, long countDownInterval) {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
 
-            super(millisInFuture, countDownInterval);
+    //============================ 内部类 ============================
+
+    private static class CountHandler extends Handler {
+
+        WeakReference< SplashActivity > mReference;
+
+        private static final int MSG_COUNT_DOWN = 12;
+
+        private int countToDown;
+
+
+        public CountHandler(SplashActivity activity) {
+
+            mReference = new WeakReference<>(activity);
         }
 
 
         @Override
-        public void onTick(long millisUntilFinished) {
+        public void handleMessage(Message msg) {
 
-            String countText = getResources().getString(R.string.jump, millisUntilFinished / 1000);
-            mTVCountDown.setText(countText);
+            SplashActivity activity = mReference.get();
+            if (activity == null) {
+                removeCallbacksAndMessages(null);
+                return;
+            }
+
+            switch (msg.what) {
+
+                case MSG_COUNT_DOWN:
+                    handleMsgCountDown(activity);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
 
-        @Override
-        public void onFinish() {
+        private void handleMsgCountDown(SplashActivity activity) {
 
-            toMain(null);
+            activity.countDown(countToDown);
+            if (--countToDown > 0) {
+                loop();
+                return;
+            }
+            activity.countDown(0);
+            activity.countToEnd();
+        }
+
+
+        public void startCountDown(int second) {
+
+            countToDown = second;
+            sendEmptyMessage(MSG_COUNT_DOWN);
+        }
+
+
+        private void loop() {
+
+            sendEmptyMessageDelayed(MSG_COUNT_DOWN, 1000);
         }
     }
 }

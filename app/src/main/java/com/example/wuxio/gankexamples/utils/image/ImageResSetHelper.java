@@ -26,7 +26,7 @@ public class ImageResSetHelper {
             @Override
             public void run() {
 
-                mBitmap = BitmapScaleUtil.decodeMaxSampledBitmap(
+                mBitmap = BitmapReader.decodeMaxSampledBitmap(
                         view.getContext().getResources(),
                         resID,
                         view.getWidth(),

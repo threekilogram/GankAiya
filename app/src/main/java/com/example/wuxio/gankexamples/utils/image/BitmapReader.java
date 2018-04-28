@@ -11,7 +11,7 @@ import java.io.InputStream;
  * @author wuxio
  * @date 2017-05-30
  */
-public class BitmapScaleUtil {
+public class BitmapReader {
 
     /**
      * 解析图片，生成Bitmap对象.从资源文件中解析

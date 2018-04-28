@@ -2,16 +2,21 @@ package com.example.wuxio.gankexamples.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.example.constraintlayout.ConstraintLayout;
 import com.example.system_ui.SystemUI;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.utils.image.BitmapReader;
+import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
 /**
  * @author wuxio
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         initView();
         setSystemUI();
+        postAction();
     }
 
 
@@ -48,8 +54,19 @@ public class MainActivity extends AppCompatActivity {
         mDrawer = findViewById(R.id.drawer);
         mContent = findViewById(R.id.content);
         mNavigationView = findViewById(R.id.navigationView);
-        setHeader(mNavigationView);
 
+    }
+
+
+    private void postAction() {
+
+        mDrawer.post(new Runnable() {
+            @Override
+            public void run() {
+
+                initNavigationView(mNavigationView);
+            }
+        });
     }
 
 
@@ -58,21 +75,25 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param navigationView 导航view
      */
-    private void setHeader(NavigationView navigationView) {
+    private void initNavigationView(NavigationView navigationView) {
 
-        navigationView.inflateHeaderView(R.layout.main_navi_header);
+        View headerView = navigationView.getHeaderView(0);
+        ImageView avatarImageView = headerView.findViewById(R.id.userAvatar);
 
-        /* set navigation Layout */
+        Bitmap bitmap = BitmapReader.decodeSampledBitmap(
+                getResources(),
+                R.drawable.avatar,
+                avatarImageView.getWidth(),
+                avatarImageView.getHeight());
 
-        ConstraintLayout constraintLayout = navigationView
-                .getHeaderView(0)
-                .findViewById(R.id.constraintLayout);
-        constraintLayout.setAdapter(
-                new NavigationViewAdapter(MainActivity.this, constraintLayout)
-        );
+        Drawable drawable = RoundBitmapFactory.circleBitmap(this, bitmap);
+        avatarImageView.setImageDrawable(drawable);
     }
 
 
+    /**
+     * 沉浸式
+     */
     private void setSystemUI() {
 
         SystemUI.setStatusColor(this, Color.TRANSPARENT);
