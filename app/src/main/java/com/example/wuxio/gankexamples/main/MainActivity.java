@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -25,6 +26,7 @@ import android.widget.ImageView;
 import com.example.banner.BannerView;
 import com.example.banner.adapter.BasePagerAdapter;
 import com.example.system_ui.SystemUI;
+import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
@@ -38,13 +40,15 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    protected DrawerLayout      mDrawer;
-    protected NavigationView    mNavigationView;
-    protected BannerView        mBanner;
-    protected AppBarLayout      mAppBar;
-    protected CoordinatorLayout mCoordinator;
-    protected ViewPager         mViewPager;
-    protected TabLayout         mTabLayout;
+    protected DrawerLayout            mDrawer;
+    protected NavigationView          mNavigationView;
+    protected BannerView              mBanner;
+    protected AppBarLayout            mAppBar;
+    protected CoordinatorLayout       mCoordinator;
+    protected ViewPager               mViewPager;
+    protected TabLayout               mTabLayout;
+    protected ContainerLayout         mBannerContainer;
+    protected CollapsingToolbarLayout mCollapsingToolbar;
 
 
     public static void start(Context context) {
@@ -76,11 +80,18 @@ public class MainActivity extends AppCompatActivity {
         mCoordinator = findViewById(R.id.coordinator);
         mViewPager = findViewById(R.id.viewPager);
         mTabLayout = findViewById(R.id.tabLayout);
+        mBannerContainer = findViewById(R.id.bannerContainer);
+        mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
 
+        /* 防止tabLayout 进入statusBar */
+        int height = SystemUI.getStatusBarHeight(MainActivity.this);
+        mCollapsingToolbar.setMinimumHeight(height);
+
+        /* 设置view state */
         mBanner.setAdapter(new BannerAdapter());
         mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mBannerContainer.setOnlyRequestLayoutChild(true);
         mTabLayout.setupWithViewPager(mViewPager);
-        mAppBar.addOnOffsetChangedListener(new AppBarOnOffsetChangedListener());
     }
 
 
@@ -235,13 +246,38 @@ public class MainActivity extends AppCompatActivity {
 
     private class AppBarOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedListener {
 
+        private int statusBarHeight;
+        AppBarLayout.LayoutParams params;
+        private boolean addMargin;
+
+        private int judge;
+
+
+        public AppBarOnOffsetChangedListener() {
+
+            statusBarHeight = SystemUI.getStatusBarHeight(MainActivity.this);
+            params = (AppBarLayout.LayoutParams) mTabLayout.getLayoutParams();
+            judge = statusBarHeight + mTabLayout.getHeight() - mAppBar.getHeight();
+        }
+
+
         @Override
         public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
 
-            Log.i(TAG,
-                    "onOffsetChanged:" + appBarLayout.getHeight() + " " +
-                            verticalOffset + " " +
-                            SystemUI.getStatusBarHeight(MainActivity.this));
+            if (verticalOffset <= judge) {
+                if (!addMargin) {
+                    params.topMargin += statusBarHeight;
+                    addMargin = true;
+                    mTabLayout.requestLayout();
+
+                }
+            } else {
+                if (addMargin) {
+                    params.topMargin -= statusBarHeight;
+                    addMargin = false;
+                    mTabLayout.requestLayout();
+                }
+            }
         }
     }
 

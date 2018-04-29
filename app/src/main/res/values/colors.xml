@@ -4,6 +4,14 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="colorTheme">#ffce3d3a</color>
+    <color name="blue">#2F98E9</color>
+
+    <!-- main tab Layout -->
+    <color name="colorTabTextUnSelected">#D3D3D2</color>
+    <color name="colorTabTextSelected">#FDFDFD</color>
+    <color name="colorTabIndicator">#FDFDFD</color>
+
     <!--正文文字颜色-->
     <color name="colorContent">#ff333333</color>
 
