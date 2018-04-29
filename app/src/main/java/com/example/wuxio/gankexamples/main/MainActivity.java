@@ -30,6 +30,7 @@ import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
@@ -108,6 +109,23 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * 沉浸式状态栏
+     */
+    private void setSystemUI() {
+
+        SystemUI.setStatusColor(this, Color.TRANSPARENT);
+    }
+
+
+    private void closeDrawer() {
+
+        mDrawer.closeDrawer(Gravity.START);
+    }
+
+    //============================ 设置导航栏界面 ============================
+
+
+    /**
      * 设置navigation布局
      *
      * @param navigationView 导航view
@@ -134,21 +152,6 @@ public class MainActivity extends AppCompatActivity {
         headerView.findViewById(R.id.toDonate).setOnClickListener(clickListener);
         headerView.findViewById(R.id.toLoginGithub).setOnClickListener(clickListener);
         headerView.findViewById(R.id.exitApp).setOnClickListener(clickListener);
-    }
-
-
-    /**
-     * 沉浸式状态栏
-     */
-    private void setSystemUI() {
-
-        SystemUI.setStatusColor(this, Color.TRANSPARENT);
-    }
-
-
-    private void closeDrawer() {
-
-        mDrawer.closeDrawer(Gravity.START);
     }
 
     //============================ 导航栏功能 ============================
@@ -242,42 +245,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //============================ appBar listener ============================
-
-    private class AppBarOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedListener {
-
-        private int statusBarHeight;
-        AppBarLayout.LayoutParams params;
-        private boolean addMargin;
-
-        private int judge;
+    //============================ 返回按键 ============================
 
 
-        public AppBarOnOffsetChangedListener() {
+    @Override
+    public void onBackPressed() {
 
-            statusBarHeight = SystemUI.getStatusBarHeight(MainActivity.this);
-            params = (AppBarLayout.LayoutParams) mTabLayout.getLayoutParams();
-            judge = statusBarHeight + mTabLayout.getHeight() - mAppBar.getHeight();
-        }
-
-
-        @Override
-        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-
-            if (verticalOffset <= judge) {
-                if (!addMargin) {
-                    params.topMargin += statusBarHeight;
-                    addMargin = true;
-                    mTabLayout.requestLayout();
-
-                }
-            } else {
-                if (addMargin) {
-                    params.topMargin -= statusBarHeight;
-                    addMargin = false;
-                    mTabLayout.requestLayout();
-                }
-            }
+        if (BackPressUtil.showInfo(this)) {
+            RootActivity.start(this);
+            super.onBackPressed();
         }
     }
 
