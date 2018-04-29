@@ -163,7 +163,7 @@ public class SplashActivity extends AppCompatActivity {
         private void handleMsgCountDown(SplashActivity activity) {
 
             activity.countDown(countToDown);
-            if (--countToDown > 0) {
+            if (--countToDown >= 0) {
                 loop();
                 return;
             }

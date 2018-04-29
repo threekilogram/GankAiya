@@ -6,4 +6,8 @@
 
     <!--正文文字颜色-->
     <color name="colorContent">#ff333333</color>
+
+    <color name="orange">#ffa500</color><!--橙色 -->
+    <color name="tomato">#ff6347</color><!--西红柿色 -->
+    <color name="azure">#f0ffff</color><!--天蓝色 -->
 </resources>

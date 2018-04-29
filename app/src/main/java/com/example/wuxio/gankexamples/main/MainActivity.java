@@ -6,18 +6,28 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
+import com.example.banner.BannerView;
+import com.example.banner.adapter.BasePagerAdapter;
 import com.example.system_ui.SystemUI;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
+import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
@@ -28,9 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
-    protected DrawerLayout   mDrawer;
-    protected LinearLayout   mContent;
-    protected NavigationView mNavigationView;
+    protected DrawerLayout      mDrawer;
+    protected NavigationView    mNavigationView;
+    protected BannerView        mBanner;
+    protected AppBarLayout      mAppBar;
+    protected CoordinatorLayout mCoordinator;
+    protected ViewPager         mViewPager;
+    protected TabLayout         mTabLayout;
 
 
     public static void start(Context context) {
@@ -49,15 +63,24 @@ public class MainActivity extends AppCompatActivity {
         initView();
         setSystemUI();
         postAction();
+
     }
 
 
     private void initView() {
 
         mDrawer = findViewById(R.id.drawer);
-        mContent = findViewById(R.id.content);
         mNavigationView = findViewById(R.id.navigationView);
+        mBanner = findViewById(R.id.banner);
+        mAppBar = findViewById(R.id.appBar);
+        mCoordinator = findViewById(R.id.coordinator);
+        mViewPager = findViewById(R.id.viewPager);
+        mTabLayout = findViewById(R.id.tabLayout);
 
+        mBanner.setAdapter(new BannerAdapter());
+        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mTabLayout.setupWithViewPager(mViewPager);
+        mAppBar.addOnOffsetChangedListener(new AppBarOnOffsetChangedListener());
     }
 
 
@@ -117,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.closeDrawer(Gravity.START);
     }
 
+    //============================ 导航栏功能 ============================
+
 
     /**
      * to about page
@@ -168,8 +193,11 @@ public class MainActivity extends AppCompatActivity {
         closeDrawer();
     }
 
-    //============================ 内部类 ============================
+    //============================ 导航栏点击事件 ============================
 
+    /**
+     * 导航栏item点击事件
+     */
     private class NavigationItemClickListener implements View.OnClickListener {
 
         @Override
@@ -200,6 +228,104 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     break;
             }
+        }
+    }
+
+    //============================ appBar listener ============================
+
+    private class AppBarOnOffsetChangedListener implements AppBarLayout.OnOffsetChangedListener {
+
+        @Override
+        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+
+            Log.i(TAG,
+                    "onOffsetChanged:" + appBarLayout.getHeight() + " " +
+                            verticalOffset + " " +
+                            SystemUI.getStatusBarHeight(MainActivity.this));
+        }
+    }
+
+    //============================ banner adapter ============================
+
+    /**
+     * banner adapter
+     */
+    private class BannerAdapter extends BasePagerAdapter< Object, ImageView > {
+
+        private int[] colors = {
+                Color.BLUE,
+                Color.RED,
+                getColor(R.color.orange),
+                getColor(R.color.tomato),
+                getColor(R.color.azure)
+        };
+
+
+        @Override
+        public int getCount() {
+
+            return 5;
+        }
+
+
+        @Override
+        public Object getData(int i) {
+
+            return i;
+        }
+
+
+        @Override
+        public ImageView getView(int i) {
+
+            ImageView imageView = new ImageView(MainActivity.this);
+            imageView.setScaleType(ImageView.ScaleType.CENTER);
+            return imageView;
+        }
+
+
+        @Override
+        public void bindData(int i, Object o, ImageView imageView) {
+
+            imageView.setBackgroundColor(colors[i]);
+        }
+
+
+        private int getColor(int id) {
+
+            return getResources().getColor(id);
+        }
+    }
+
+    //============================ pager adapter ============================
+
+    private class MainPagerAdapter extends FragmentPagerAdapter {
+
+        public MainPagerAdapter(FragmentManager fm) {
+
+            super(fm);
+        }
+
+
+        @Override
+        public Fragment getItem(int position) {
+
+            return ShowFragment.newInstance();
+        }
+
+
+        @Override
+        public int getCount() {
+
+            return 5;
+        }
+
+
+        @Nullable
+        @Override
+        public CharSequence getPageTitle(int position) {
+
+            return "pagerTitle";
         }
     }
 
