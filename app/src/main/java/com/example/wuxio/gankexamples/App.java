@@ -2,6 +2,8 @@ package com.example.wuxio.gankexamples;
 
 import android.app.Application;
 
+import com.example.wuxio.gankexamples.async.Scheduler;
+
 /**
  * @author wuxio 2018-04-15:9:53
  */
@@ -15,5 +17,7 @@ public class App extends Application {
 
         super.onCreate();
         INSTANCE = this;
+
+        Scheduler.init();
     }
 }

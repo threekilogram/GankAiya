@@ -29,6 +29,7 @@ import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
+import com.example.wuxio.gankexamples.async.Scheduler;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
@@ -89,9 +90,28 @@ public class MainActivity extends AppCompatActivity {
         mCollapsingToolbar.setMinimumHeight(height);
 
         /* 设置view state */
-        mBanner.setAdapter(new BannerAdapter());
-        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         mBannerContainer.setOnlyRequestLayoutChild(true);
+        mBanner.setAdapter(new BannerAdapter());
+        mBanner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
@@ -103,8 +123,28 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
 
                 initNavigationView(mNavigationView);
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                }, 1500);
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                }, 2500);
             }
         });
+    }
+
+
+    private void print(String s) {
+
+        Log.i(TAG, "print:" + s);
     }
 
 
@@ -152,6 +192,44 @@ public class MainActivity extends AppCompatActivity {
         headerView.findViewById(R.id.toDonate).setOnClickListener(clickListener);
         headerView.findViewById(R.id.toLoginGithub).setOnClickListener(clickListener);
         headerView.findViewById(R.id.exitApp).setOnClickListener(clickListener);
+    }
+
+    //============================ 导航栏点击事件 ============================
+
+    /**
+     * 导航栏item点击事件
+     */
+    private class NavigationItemClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+
+            switch (v.getId()) {
+
+                case R.id.toAbout:
+                    toAbout();
+                    break;
+
+                case R.id.toQuestFeedback:
+                    toQuestionFeedback();
+                    break;
+
+                case R.id.toDonate:
+                    toDonate();
+                    break;
+
+                case R.id.toLoginGithub:
+                    toLoginGitHub();
+                    break;
+
+                case R.id.exitApp:
+                    exitApp();
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 
     //============================ 导航栏功能 ============================
@@ -205,44 +283,6 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "exitApp:" + "");
         RootActivity.start(this);
         closeDrawer();
-    }
-
-    //============================ 导航栏点击事件 ============================
-
-    /**
-     * 导航栏item点击事件
-     */
-    private class NavigationItemClickListener implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-
-            switch (v.getId()) {
-
-                case R.id.toAbout:
-                    toAbout();
-                    break;
-
-                case R.id.toQuestFeedback:
-                    toQuestionFeedback();
-                    break;
-
-                case R.id.toDonate:
-                    toDonate();
-                    break;
-
-                case R.id.toLoginGithub:
-                    toLoginGitHub();
-                    break;
-
-                case R.id.exitApp:
-                    exitApp();
-                    break;
-
-                default:
-                    break;
-            }
-        }
     }
 
     //============================ 返回按键 ============================
