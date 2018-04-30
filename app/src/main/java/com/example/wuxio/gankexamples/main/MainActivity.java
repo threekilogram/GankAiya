@@ -92,25 +92,6 @@ public class MainActivity extends AppCompatActivity {
         /* 设置view state */
         mBannerContainer.setOnlyRequestLayoutChild(true);
         mBanner.setAdapter(new BannerAdapter());
-        mBanner.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
         mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
     }
@@ -128,15 +109,89 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
 
+                        print(" task rightNow finish ");
                     }
-                }, 1500);
+                });
 
                 Scheduler.todo(new Runnable() {
                     @Override
                     public void run() {
 
+                        print(" task first delayed finish ");
                     }
-                }, 2500);
+                }, 5000);
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback now do in back finish ");
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback now call finish ");
+                    }
+                });
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback delayed do in back finish ");
+                    }
+                }, 6000, new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback delayed call finish ");
+                    }
+                });
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task rightNow finish ");
+                    }
+                });
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task first delayed finish ");
+                    }
+                }, 5000);
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback now do in back finish ");
+                    }
+                }, new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback now call finish ");
+                    }
+                });
+
+                Scheduler.todo(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback delayed do in back finish ");
+                    }
+                }, 6000, new Runnable() {
+                    @Override
+                    public void run() {
+
+                        print(" task callback delayed call finish ");
+                    }
+                });
             }
         });
     }
@@ -144,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void print(String s) {
 
-        Log.i(TAG, "print:" + s);
+        Log.i(TAG, s + " on: " + Thread.currentThread().getName() + " at: " + System.currentTimeMillis());
     }
 
 
