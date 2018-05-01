@@ -29,6 +29,7 @@ import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
+import com.example.wuxio.gankexamples.async.Messengers;
 import com.example.wuxio.gankexamples.async.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
@@ -108,6 +109,11 @@ public class MainActivity extends AppCompatActivity implements OnMessageReceiveL
 
                 initNavigationView(mNavigationView);
 
+                Messengers.send(12, MainActivity.this);
+                Messengers.send(12, "hello main activity", MainActivity.this);
+
+                Messengers.send(11, MainActivity.this);
+                Messengers.send(11, "hello main activity", MainActivity.this);
             }
         });
     }
