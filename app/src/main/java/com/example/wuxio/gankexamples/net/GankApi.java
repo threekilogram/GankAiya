@@ -2,7 +2,7 @@ package com.example.wuxio.gankexamples.net;
 
 import com.example.wuxio.gankexamples.model.CategoryResult;
 
-import io.reactivex.Observable;
+import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 
@@ -22,9 +22,12 @@ public interface GankApi {
      * @param category 数据类型
      * @param count    请求个数
      * @param page     第几页
-     * @return Observable<    CategoryResult    >
+     * @return Observable<        CategoryResult        >
      */
     @GET("data/{category}/{count}/{page}")
-    Observable< CategoryResult > getCategoryData(@Path("category") String category, @Path("count") int
-            count, @Path("page") int page);
+    Call< CategoryResult > getCategoryData(
+            @Path("category") String category,
+            @Path("count") int count,
+            @Path("page") int page
+    );
 }

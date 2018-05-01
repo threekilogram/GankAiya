@@ -29,7 +29,7 @@ import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
-import com.example.wuxio.gankexamples.async.Scheduler;
+import com.example.wuxio.gankexamples.async.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
@@ -38,7 +38,7 @@ import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 /**
  * @author wuxio
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements OnMessageReceiveListener {
 
     private static final String TAG = "MainActivity";
 
@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 创建好 activity 之后执行一些操作
+     */
     private void postAction() {
 
         mDrawer.post(new Runnable() {
@@ -105,101 +108,8 @@ public class MainActivity extends AppCompatActivity {
 
                 initNavigationView(mNavigationView);
 
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task rightNow finish ");
-                    }
-                });
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task first delayed finish ");
-                    }
-                }, 5000);
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback now do in back finish ");
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback now call finish ");
-                    }
-                });
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback delayed do in back finish ");
-                    }
-                }, 6000, new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback delayed call finish ");
-                    }
-                });
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task rightNow finish ");
-                    }
-                });
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task first delayed finish ");
-                    }
-                }, 5000);
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback now do in back finish ");
-                    }
-                }, new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback now call finish ");
-                    }
-                });
-
-                Scheduler.todo(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback delayed do in back finish ");
-                    }
-                }, 6000, new Runnable() {
-                    @Override
-                    public void run() {
-
-                        print(" task callback delayed call finish ");
-                    }
-                });
             }
         });
-    }
-
-
-    private void print(String s) {
-
-        Log.i(TAG, s + " on: " + Thread.currentThread().getName() + " at: " + System.currentTimeMillis());
     }
 
 
@@ -221,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * 设置navigation布局
+     * 设置navigation布局,因为需要获得view宽高,使用post runnable 读取
      *
      * @param navigationView 导航view
      */
@@ -240,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
         Drawable drawable = RoundBitmapFactory.circleBitmap(this, bitmap);
         avatarImageView.setImageDrawable(drawable);
+
+        /* 给导航栏条目设置点击事件 */
 
         NavigationItemClickListener clickListener = new NavigationItemClickListener();
         headerView.findViewById(R.id.toAbout).setOnClickListener(clickListener);
@@ -352,6 +264,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //============================ message ============================
+
+
+    @Override
+    public void onReceive(int what) {
+
+        Log.i(TAG, "onReceive: " + what + " : " + Thread.currentThread().getName());
+    }
+
+
+    @Override
+    public void onReceive(int what, Object extra) {
+
+        Log.i(TAG,
+                "onReceive: " + what + " : " +
+                        extra.toString() + " : " +
+                        Thread.currentThread().getName());
+    }
+
     //============================ banner adapter ============================
 
     /**
@@ -435,5 +366,4 @@ public class MainActivity extends AppCompatActivity {
             return "pagerTitle";
         }
     }
-
 }
