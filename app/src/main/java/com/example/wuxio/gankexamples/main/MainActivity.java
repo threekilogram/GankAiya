@@ -29,8 +29,6 @@ import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
-import com.example.wuxio.gankexamples.async.Messengers;
-import com.example.wuxio.gankexamples.async.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
@@ -39,7 +37,7 @@ import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 /**
  * @author wuxio
  */
-public class MainActivity extends AppCompatActivity implements OnMessageReceiveListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -52,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements OnMessageReceiveL
     protected TabLayout               mTabLayout;
     protected ContainerLayout         mBannerContainer;
     protected CollapsingToolbarLayout mCollapsingToolbar;
+
+    private MainManager mMainManager;
 
 
     public static void start(Context context) {
@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements OnMessageReceiveL
 
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_main);
+
+        mMainManager = new MainManager(this);
 
         initView();
         setSystemUI();
@@ -109,24 +111,9 @@ public class MainActivity extends AppCompatActivity implements OnMessageReceiveL
 
                 initNavigationView(mNavigationView);
 
-                Messengers.send(11, 3000, "Hello", MainActivity.this);
-                Messengers.send(12, 3000, "Hello", MainActivity.this);
+                mMainManager.onActivityCreate();
             }
         });
-    }
-
-
-    @Override
-    public void onReceive(int what, Object extra) {
-
-        Log.i(TAG, "onReceive:" + what + " " + Thread.currentThread().getName() + " " + extra);
-    }
-
-
-    @Override
-    public void onReceive(int what) {
-
-        Log.i(TAG, "onReceive:" + what + " " + Thread.currentThread().getName());
     }
 
 
