@@ -7,6 +7,8 @@ import android.util.SparseArray;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -47,13 +49,40 @@ public class Scheduler {
     }
 
 
+    private static void initField() {
+
+        sMainHandler = new MainHandler(Looper.getMainLooper());
+        sInteger = new AtomicInteger(12);
+    }
+
+
     /**
      * 初始化
      */
     public static void init() {
 
-        sMainHandler = new MainHandler(Looper.getMainLooper());
-        sInteger = new AtomicInteger(12);
+        initField();
+        AppExecutor.init();
+    }
+
+
+    /**
+     * 初始化
+     */
+    public static void init(ThreadPoolExecutor poolExecutor) {
+
+        initField();
+        AppExecutor.init(poolExecutor);
+    }
+
+
+    /**
+     * 初始化
+     */
+    public static void init(ThreadFactory threadFactory) {
+
+        initField();
+        AppExecutor.init(threadFactory);
     }
 
 

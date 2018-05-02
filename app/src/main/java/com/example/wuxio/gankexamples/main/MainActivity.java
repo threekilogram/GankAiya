@@ -109,13 +109,24 @@ public class MainActivity extends AppCompatActivity implements OnMessageReceiveL
 
                 initNavigationView(mNavigationView);
 
-                Messengers.send(12, MainActivity.this);
-                Messengers.send(12, "hello main activity", MainActivity.this);
-
-                Messengers.send(11, MainActivity.this);
-                Messengers.send(11, "hello main activity", MainActivity.this);
+                Messengers.send(11, 3000, "Hello", MainActivity.this);
+                Messengers.send(12, 3000, "Hello", MainActivity.this);
             }
         });
+    }
+
+
+    @Override
+    public void onReceive(int what, Object extra) {
+
+        Log.i(TAG, "onReceive:" + what + " " + Thread.currentThread().getName() + " " + extra);
+    }
+
+
+    @Override
+    public void onReceive(int what) {
+
+        Log.i(TAG, "onReceive:" + what + " " + Thread.currentThread().getName());
     }
 
 
@@ -268,25 +279,6 @@ public class MainActivity extends AppCompatActivity implements OnMessageReceiveL
             RootActivity.start(this);
             super.onBackPressed();
         }
-    }
-
-    //============================ message ============================
-
-
-    @Override
-    public void onReceive(int what) {
-
-        Log.i(TAG, "onReceive: " + what + " : " + Thread.currentThread().getName());
-    }
-
-
-    @Override
-    public void onReceive(int what, Object extra) {
-
-        Log.i(TAG,
-                "onReceive: " + what + " : " +
-                        extra.toString() + " : " +
-                        Thread.currentThread().getName());
     }
 
     //============================ banner adapter ============================

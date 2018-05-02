@@ -12,19 +12,49 @@ import java.util.concurrent.TimeUnit;
  */
 public class AppExecutor {
 
-    private static ThreadPoolExecutor sPoolExecutor = new ThreadPoolExecutor(
-            3,
-            6,
-            60,
-            TimeUnit.SECONDS,
-            new LinkedBlockingDeque<>(),
-            new AppThreadFactory()
-    );
+    private static ThreadPoolExecutor sPoolExecutor;
+
+
+    public static void init() {
+
+        sPoolExecutor = new ThreadPoolExecutor(
+                3,
+                6,
+                60,
+                TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(),
+                new AppThreadFactory()
+        );
+    }
+
+
+    public static void init(ThreadPoolExecutor poolExecutor) {
+
+        sPoolExecutor = poolExecutor;
+    }
+
+
+    public static void init(ThreadFactory threadFactory) {
+
+        sPoolExecutor = new ThreadPoolExecutor(
+                3,
+                6,
+                60,
+                TimeUnit.SECONDS,
+                new LinkedBlockingDeque<>(),
+                threadFactory
+        );
+    }
 
 
     public static void execute(Runnable runnable) {
 
-        sPoolExecutor.execute(runnable);
+        try {
+            sPoolExecutor.execute(runnable);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(" you should  call init() first");
+        }
     }
 
     //============================ 配置类 ============================

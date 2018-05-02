@@ -6,7 +6,7 @@ package com.example.wuxio.gankexamples.async;
 public interface OnMessageReceiveListener {
 
     /**
-     * receive a message
+     * receive a message,尽量不执行复杂操作
      *
      * @param what  signal
      * @param extra extra info
@@ -17,7 +17,7 @@ public interface OnMessageReceiveListener {
 
 
     /**
-     * receive a message
+     * receive a message,尽量不执行复杂操作
      *
      * @param what signal
      */
