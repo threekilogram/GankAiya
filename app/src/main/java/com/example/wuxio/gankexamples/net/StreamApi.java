@@ -21,7 +21,5 @@ public interface StreamApi {
      */
     @Streaming
     @GET
-    Call< ResponseBody > getStream(
-            @Url String path
-    );
+    Call< ResponseBody > getStream(@Url String path);
 }

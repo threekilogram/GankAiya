@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
     protected ContainerLayout         mBannerContainer;
     protected CollapsingToolbarLayout mCollapsingToolbar;
 
-    private MainManager mMainManager;
-
 
     public static void start(Context context) {
 
@@ -67,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_main);
 
-        mMainManager = new MainManager(this);
+        MainManager.getInstance().register(this);
 
         initView();
         setSystemUI();
@@ -111,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
                 initNavigationView(mNavigationView);
 
-                mMainManager.onActivityCreate();
+                MainManager.getInstance().onActivityCreate();
             }
         });
     }

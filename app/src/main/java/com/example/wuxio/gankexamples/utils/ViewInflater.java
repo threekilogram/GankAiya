@@ -9,9 +9,10 @@ import android.view.ViewGroup;
 /**
  * @author wuxio 2018-04-27:13:40
  */
-public class ViewSupplier {
+public class ViewInflater {
 
-    public static < T extends View > T get(Context context, ViewGroup root, @LayoutRes int layoutRes) {
+    @SuppressWarnings("unchecked")
+    public static < T extends View > T inflate(Context context, ViewGroup root, @LayoutRes int layoutRes) {
 
         return (T) LayoutInflater.from(context).inflate(layoutRes, root, false);
     }

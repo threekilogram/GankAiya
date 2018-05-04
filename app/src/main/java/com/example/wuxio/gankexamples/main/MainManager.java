@@ -1,7 +1,5 @@
 package com.example.wuxio.gankexamples.main;
 
-import com.example.wuxio.gankexamples.beauty.BeautyManager;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -12,16 +10,29 @@ public class MainManager {
     WeakReference< MainActivity > mRef;
 
 
-    public MainManager(MainActivity mainActivity) {
+    private MainManager() {
 
-        mRef = new WeakReference<>(mainActivity);
+    }
+
+
+    public void register(MainActivity activity) {
+
+        mRef = new WeakReference<>(activity);
+    }
+
+
+    public static MainManager getInstance() {
+
+        return SingletonHolder.INSTANCE;
     }
 
 
     public void onActivityCreate() {
 
-        BeautyManager instance = BeautyManager.getInstance();
-        instance.getBeauty(5, 1);
     }
 
+
+    private static class SingletonHolder {
+        private static final MainManager INSTANCE = new MainManager();
+    }
 }

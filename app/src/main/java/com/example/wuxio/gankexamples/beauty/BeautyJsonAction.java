@@ -1,13 +1,11 @@
 package com.example.wuxio.gankexamples.beauty;
 
-import com.example.wuxio.gankexamples.beauty.model.BeautyEntity;
-import com.example.wuxio.gankexamples.beauty.model.Convert;
-import com.example.wuxio.gankexamples.model.CategoryResult;
 import com.example.wuxio.gankexamples.net.NetWork;
 
 import java.io.IOException;
-import java.util.List;
+import java.io.Reader;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -32,23 +30,12 @@ public class BeautyJsonAction implements Runnable {
     @Override
     public void run() {
 
-        Call< CategoryResult > categoryData = NetWork.gankApi().getCategoryData("福利", count, page);
+        Call< ResponseBody > categoryData = NetWork.gankApi().getCategoryData("福利", count, page);
 
         try {
-            Response< CategoryResult > gankResponse = categoryData.execute();
+            Response< ResponseBody > gankResponse = categoryData.execute();
             if (gankResponse.isSuccessful()) {
-                CategoryResult body = gankResponse.body();
-
-                if (body != null && !body.error) {
-                    List< CategoryResult.ResultsBean > results = body.results;
-
-                    List< BeautyEntity > entities = Convert.map(results);
-                    BeautyManager.getInstance().notifyNew(entities);
-
-                } else {
-
-                    // TODO: 2018-05-01 body null or body is error
-                }
+                Reader charStream = gankResponse.body().charStream();
 
             } else {
 

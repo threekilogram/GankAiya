@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * @author wuxio 2018-05-02:16:27
  */
-public class Format {
+public class DateFormat {
 
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
