@@ -1,3 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GankExamples</string>
+    <string name="app_name">aiyaMeizhi</string>
+    <string name="jump">跳过 %ds</string>
+    <string name="aboutUs">关于我们</string>
+    <string name="questionFeedback">问题反馈</string>
+    <string name="donateDeveloper">捐赠开发者</string>
+    <string name="loginGithub">登录GitHub账号</string>
+    <string name="exitApp">退出应用</string>
+
 </resources>
