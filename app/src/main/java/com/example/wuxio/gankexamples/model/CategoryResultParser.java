@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class CategoryResultParser {
 
-    public static void parse(Reader reader) {
+    public static CategoryResult parse(Reader reader) {
 
         CategoryResult entity = new CategoryResult();
         JsonReader jsonReader = new JsonReader(reader);
@@ -49,6 +49,8 @@ public class CategoryResultParser {
                 e.printStackTrace();
             }
         }
+
+        return entity;
     }
 
 

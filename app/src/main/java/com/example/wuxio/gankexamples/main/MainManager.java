@@ -1,5 +1,8 @@
 package com.example.wuxio.gankexamples.main;
 
+import com.example.objectbus.bus.ObjectBus;
+import com.example.wuxio.gankexamples.beauty.BeautyJsonRunnable;
+
 import java.lang.ref.WeakReference;
 
 /**
@@ -29,6 +32,8 @@ public class MainManager {
 
     public void onActivityCreate() {
 
+        ObjectBus bus = new ObjectBus();
+        bus.toUnder(new BeautyJsonRunnable(5, 1)).run();
     }
 
 

@@ -14,4 +14,14 @@ public class ImageUrl {
     public String url;
     public String path;
 
+
+    @Override
+    public String toString() {
+
+        return "ImageUrl{" +
+                "id=" + id +
+                ", url='" + url + '\'' +
+                ", path='" + path + '\'' +
+                '}';
+    }
 }
