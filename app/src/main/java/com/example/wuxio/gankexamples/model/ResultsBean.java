@@ -13,19 +13,19 @@ import io.objectbox.relation.ToMany;
 public class ResultsBean {
 
     @Id(assignable = true)
-    public long               id;
+    public long                id;
     @Index
-    public String             _id;
-    public long               createdAt;
-    public String             desc;
-    public long               publishedAt;
-    public String             source;
+    public String              _id;
+    public long                createdAt;
+    public String              desc;
+    public long                publishedAt;
+    public String              source;
     @Index
-    public String             type;
-    public String             url;
-    public boolean            used;
-    public String             who;
-    public ToMany< ImageUrl > images;
+    public String              type;
+    public String              url;
+    public boolean             used;
+    public String              who;
+    public ToMany< ImageBean > images;
 
 
     @Override

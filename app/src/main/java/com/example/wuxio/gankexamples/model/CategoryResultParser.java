@@ -130,7 +130,7 @@ public class CategoryResultParser {
 
                 } else if (name.equals("images")) {
 
-                    List< ImageUrl > list = parseImages(jsonReader);
+                    List< ImageBean > list = parseImages(jsonReader);
                     bean.images.addAll(list);
 
                 } else {
@@ -150,9 +150,9 @@ public class CategoryResultParser {
     }
 
 
-    private static List< ImageUrl > parseImages(JsonReader jsonReader) {
+    private static List< ImageBean > parseImages(JsonReader jsonReader) {
 
-        List< ImageUrl > list = new ArrayList<>();
+        List< ImageBean > list = new ArrayList<>();
 
         try {
             jsonReader.beginArray();
@@ -160,7 +160,7 @@ public class CategoryResultParser {
             while (jsonReader.hasNext()) {
 
                 String string = jsonReader.nextString();
-                ImageUrl url = new ImageUrl();
+                ImageBean url = new ImageBean();
                 url.url = string;
                 list.add(url);
             }

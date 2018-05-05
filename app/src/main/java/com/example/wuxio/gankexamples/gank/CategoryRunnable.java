@@ -1,11 +1,12 @@
-package com.example.wuxio.gankexamples.beauty;
+package com.example.wuxio.gankexamples.gank;
 
 import com.example.objectbus.bus.ObjectBus;
+import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.dao.category.CategoryDao;
-import com.example.wuxio.gankexamples.dao.category.CategoryDaoFactory;
+import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
 import com.example.wuxio.gankexamples.model.CategoryResult;
 import com.example.wuxio.gankexamples.model.CategoryResultParser;
-import com.example.wuxio.gankexamples.model.ResultBeanSetIdUtil;
+import com.example.wuxio.gankexamples.model.DaoIdUtil;
 import com.example.wuxio.gankexamples.model.ResultsBean;
 import com.example.wuxio.gankexamples.net.NetWork;
 
@@ -20,10 +21,11 @@ import retrofit2.Response;
 /**
  * @author wuxio
  */
-public class CategoryBeautyRunnable implements Runnable {
+public class CategoryRunnable implements Runnable {
 
-    private static final String TAG = "CategoryBeautyRunnable";
+    private static final String TAG = "CategoryRunnable";
 
+    private String    type;
     private int       count;
     private int       page;
     private ObjectBus mBus;
@@ -31,8 +33,9 @@ public class CategoryBeautyRunnable implements Runnable {
     public static final String RESULTS_BEANS_BUS_KEY = "CategoryBeautyRunnable_ResultsBean_List";
 
 
-    public CategoryBeautyRunnable(int count, int page, ObjectBus bus) {
+    public CategoryRunnable(String type, int count, int page, ObjectBus bus) {
 
+        this.type = type;
         this.count = count;
         this.page = page;
         this.mBus = bus;
@@ -44,7 +47,7 @@ public class CategoryBeautyRunnable implements Runnable {
 
         /* 从网络读取数据,之后保存结果 */
 
-        Call< ResponseBody > categoryData = NetWork.gankApi().getCategoryData("福利", count, page);
+        Call< ResponseBody > categoryData = NetWork.gankApi().getCategoryData(type, count, page);
 
         try {
             Response< ResponseBody > gankResponse = categoryData.execute();
@@ -66,9 +69,9 @@ public class CategoryBeautyRunnable implements Runnable {
                 } else {
 
                     List< ResultsBean > results = result.results;
-                    ResultBeanSetIdUtil.setID(results);
+                    DaoIdUtil.setResultsBeanID(results);
 
-                    CategoryDao categoryDao = CategoryDaoFactory.getCategoryDao();
+                    CategoryDao categoryDao = DaoFactory.getCategoryDao(CategoryConstant.BEAUTY);
                     categoryDao.insert(results);
                 }
 

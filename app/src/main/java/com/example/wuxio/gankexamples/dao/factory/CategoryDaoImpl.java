@@ -1,6 +1,7 @@
-package com.example.wuxio.gankexamples.dao.category;
+package com.example.wuxio.gankexamples.dao.factory;
 
 import com.example.wuxio.gankexamples.App;
+import com.example.wuxio.gankexamples.dao.category.CategoryDao;
 import com.example.wuxio.gankexamples.model.ResultsBean;
 import com.example.wuxio.gankexamples.model.ResultsBean_;
 
