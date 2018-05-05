@@ -19,8 +19,6 @@ public class BeautyQueryRunnable implements Runnable {
     private int       page;
     private ObjectBus mBus;
 
-    public static final String BUS_KEY_URLS = "image_url_list";
-
 
     public BeautyQueryRunnable(int count, int page, ObjectBus bus) {
 
@@ -48,6 +46,9 @@ public class BeautyQueryRunnable implements Runnable {
             urls.add(bean.url);
         }
 
-        mBus.takeAs(urls, BUS_KEY_URLS);
+        /* load image from file or internet */
+
+        ImageLoadRunnable runnable = new ImageLoadRunnable(urls);
+        runnable.run();
     }
 }

@@ -61,7 +61,7 @@
     {
       "id": "4:2191053166529673684",
       "lastPropertyId": "2:2129986557123418492",
-      "name": "ImageBean",
+      "name": "ImageBeanV2",
       "properties": [
         {
           "id": "1:2787074166292728548",
@@ -81,9 +81,6 @@
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
-  "newUidPool": [
-    4821280521169842894
-  ],
   "retiredEntityUids": [
     757796507134105218,
     2497229083352266774

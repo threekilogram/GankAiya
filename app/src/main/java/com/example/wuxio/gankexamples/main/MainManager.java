@@ -4,10 +4,8 @@ import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.gank.CategoryRunnable;
 import com.example.wuxio.gankexamples.gank.beauty.BeautyQueryRunnable;
-import com.example.wuxio.gankexamples.gank.beauty.ImageLoadRunnable;
 
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 /**
  * @author wuxio 2018-05-02:15:24
@@ -42,7 +40,6 @@ public class MainManager {
         ObjectBus bus = new ObjectBus();
         bus.toUnder(new CategoryRunnable(CategoryConstant.BEAUTY, 5, 1, bus))
                 .go(new BeautyQueryRunnable(5, 1, bus))
-                .go(new ImageLoadRunnable((List< String >) bus.off(BeautyQueryRunnable.BUS_KEY_URLS)))
                 .run();
     }
 
