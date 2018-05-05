@@ -1,9 +1,8 @@
-package com.example.wuxio.gankexamples.dao.image;
+package com.example.wuxio.gankexamples.gank.beauty;
 
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
-import com.example.wuxio.gankexamples.model.ImageBean;
 import com.example.wuxio.gankexamples.model.ResultsBean;
 
 import java.util.ArrayList;
@@ -12,16 +11,18 @@ import java.util.List;
 /**
  * @author wuxio 2018-05-05:11:10
  */
-public class ImageBeanQueryRunnable implements Runnable {
+public class BeautyQueryRunnable implements Runnable {
+
+    private static final String TAG = "BeautyQueryRunnable";
 
     private int       count;
     private int       page;
     private ObjectBus mBus;
 
-    public static final String BUS_KEY_BEANS = "imageBeans_list";
+    public static final String BUS_KEY_URLS = "image_url_list";
 
 
-    public ImageBeanQueryRunnable(int count, int page, ObjectBus bus) {
+    public BeautyQueryRunnable(int count, int page, ObjectBus bus) {
 
         this.count = count;
         this.page = page;
@@ -47,24 +48,6 @@ public class ImageBeanQueryRunnable implements Runnable {
             urls.add(bean.url);
         }
 
-        /* 从图片数据库根据url list读取图片entity */
-
-        ImageBeanDao imageDao = DaoFactory.getImageDao();
-        List< ImageBean > imageBeans = imageDao.query(urls);
-
-        /* 找出没有该url对应的entity */
-
-        for (int i = 0; i < size; i++) {
-            ImageBean imageBean = imageBeans.get(i);
-            if (imageBean != null) {
-                urls.remove(imageBean.url);
-            }
-        }
-
-        /* 为url 没有对应entity的数据项插入entity */
-
-        int noEntitySize = urls.size();
-
-        mBus.takeAs(imageBeans, BUS_KEY_BEANS);
+        mBus.takeAs(urls, BUS_KEY_URLS);
     }
 }

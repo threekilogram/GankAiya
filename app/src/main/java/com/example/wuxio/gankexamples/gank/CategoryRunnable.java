@@ -53,11 +53,15 @@ public class CategoryRunnable implements Runnable {
             Response< ResponseBody > gankResponse = categoryData.execute();
             if (gankResponse.isSuccessful()) {
 
+                /* 从服务器读取数据流 */
+
                 Reader charStream = gankResponse.body().charStream();
 
                 if (charStream == null) {
                     return;
                 }
+
+                /* 解析数据流为数据类 */
 
                 CategoryResult result = CategoryResultParser.parse(charStream);
 
@@ -67,6 +71,8 @@ public class CategoryRunnable implements Runnable {
 
                     return;
                 } else {
+
+                    /* 将分类数据存储到数据库 */
 
                     List< ResultsBean > results = result.results;
                     DaoIdUtil.setResultsBeanID(results);

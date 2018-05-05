@@ -3,6 +3,7 @@ package com.example.wuxio.gankexamples.model;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
+import io.objectbox.annotation.Uid;
 import io.objectbox.relation.ToMany;
 
 /**
@@ -10,6 +11,7 @@ import io.objectbox.relation.ToMany;
  */
 
 @Entity
+@Uid(4603379178480245620L)
 public class ResultsBean {
 
     @Id(assignable = true)

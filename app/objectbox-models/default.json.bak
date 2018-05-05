@@ -4,32 +4,13 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "2:2497229083352266774",
-      "lastPropertyId": "3:5622526236868921819",
-      "name": "ImageUrl",
-      "properties": [
-        {
-          "id": "1:4976591342589474948",
-          "name": "url"
-        },
-        {
-          "id": "2:1014348649755664026",
-          "name": "id"
-        },
-        {
-          "id": "3:5622526236868921819",
-          "name": "path"
-        }
-      ],
-      "relations": []
-    },
-    {
       "id": "3:4603379178480245620",
       "lastPropertyId": "11:6450731403687658889",
       "name": "ResultsBean",
       "properties": [
         {
           "id": "1:7123895860355814540",
+          "indexId": "1:1865763592651405410",
           "name": "_id"
         },
         {
@@ -50,6 +31,7 @@
         },
         {
           "id": "6:3770472837979417071",
+          "indexId": "2:3318794497750908740",
           "name": "type"
         },
         {
@@ -75,23 +57,46 @@
           "name": "images"
         }
       ]
+    },
+    {
+      "id": "4:2191053166529673684",
+      "lastPropertyId": "2:2129986557123418492",
+      "name": "ImageBean",
+      "properties": [
+        {
+          "id": "1:2787074166292728548",
+          "name": "id"
+        },
+        {
+          "id": "2:2129986557123418492",
+          "name": "url"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "3:4603379178480245620",
-  "lastIndexId": "0:0",
+  "lastEntityId": "4:2191053166529673684",
+  "lastIndexId": "2:3318794497750908740",
   "lastRelationId": "1:230127297521059142",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
+  "newUidPool": [
+    4821280521169842894
+  ],
   "retiredEntityUids": [
-    757796507134105218
+    757796507134105218,
+    2497229083352266774
   ],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
     4156572695886843924,
     4071589820533563101,
     8993592510007380970,
-    6302552855022201228
+    6302552855022201228,
+    4976591342589474948,
+    1014348649755664026,
+    5622526236868921819
   ],
   "retiredRelationUids": [],
   "version": 1
