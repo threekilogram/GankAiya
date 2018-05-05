@@ -42,6 +42,20 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
         private static final NetworkChangedReceiver INSTANCE = new NetworkChangedReceiver();
     }
 
+    //============================ state ============================
+
+    public static final int NETWORK_STATE_NON  = 0;
+    public static final int NETWORK_STATE_WIFI = 1;
+    public static final int NETWORK_STATE_DATA = 2;
+    public static final int NETWORK_STATE_ALL  = 3;
+    public static int currentState;
+
+
+    public static int getNetWorkState() {
+
+        return currentState;
+    }
+
     //============================ register/un ============================
 
 
@@ -66,6 +80,12 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
 
         /*网络状态发生变化*/
 
+        testNetState(context);
+    }
+
+
+    public static void testNetState(Context context) {
+
         /*检测API是不是小于21，因为到了API 21之后getNetworkInfo(int networkType)方法被弃用*/
 
         if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -83,18 +103,22 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
             if (wifiNetworkInfo.isConnected() && dataNetworkInfo.isConnected()) {
 
                 /* WIFI已连接,移动数据已连接 */
+                currentState = NETWORK_STATE_ALL;
 
             } else if (wifiNetworkInfo.isConnected() && !dataNetworkInfo.isConnected()) {
 
                 /* WIFI已连接,移动数据已断开 */
+                currentState = NETWORK_STATE_WIFI;
 
             } else if (!wifiNetworkInfo.isConnected() && dataNetworkInfo.isConnected()) {
 
                 /* WIFI已断开,移动数据已连接 */
+                currentState = NETWORK_STATE_DATA;
 
             } else {
 
                 /* WIFI已断开,移动数据已断开 */
+                currentState = NETWORK_STATE_NON;
             }
 
         } else {
@@ -134,15 +158,19 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
             switch (result) {
                 case 0:
                     /* WIFI已断开,移动数据已断开 */
+                    currentState = NETWORK_STATE_NON;
                     break;
                 case 2:
                     /* WIFI已断开,移动数据已连接 */
+                    currentState = NETWORK_STATE_DATA;
                     break;
                 case 4:
                     /* WIFI已连接,移动数据已断开 */
+                    currentState = NETWORK_STATE_WIFI;
                     break;
                 case 5:
                     /* WIFI已连接,移动数据已连接 */
+                    currentState = NETWORK_STATE_ALL;
                     break;
                 default:
                     break;
