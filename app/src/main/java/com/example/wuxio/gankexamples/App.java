@@ -2,8 +2,8 @@ package com.example.wuxio.gankexamples;
 
 import android.app.Application;
 
-import com.example.objectbus.message.Messengers;
-import com.example.objectbus.schedule.Scheduler;
+import com.example.objectbus.BusConfig;
+import com.example.wuxio.gankexamples.model.MyObjectBox;
 
 import io.objectbox.BoxStore;
 
@@ -23,9 +23,9 @@ public class App extends Application {
         super.onCreate();
         INSTANCE = this;
 
-        Messengers.init();
-        Scheduler.init();
+        BusConfig.init();
 
+        mBoxStore = MyObjectBox.builder().androidContext(this).build();
     }
 
 

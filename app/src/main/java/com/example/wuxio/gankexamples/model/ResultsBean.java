@@ -2,6 +2,7 @@ package com.example.wuxio.gankexamples.model;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
+import io.objectbox.annotation.Index;
 import io.objectbox.relation.ToMany;
 
 /**
@@ -11,13 +12,15 @@ import io.objectbox.relation.ToMany;
 @Entity
 public class ResultsBean {
 
-    @Id
+    @Id(assignable = true)
     public long               id;
+    @Index
     public String             _id;
-    public String             createdAt;
+    public long               createdAt;
     public String             desc;
-    public String             publishedAt;
+    public long               publishedAt;
     public String             source;
+    @Index
     public String             type;
     public String             url;
     public boolean            used;

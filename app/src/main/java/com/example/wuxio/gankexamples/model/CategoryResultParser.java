@@ -3,6 +3,8 @@ package com.example.wuxio.gankexamples.model;
 import android.util.JsonReader;
 import android.util.JsonToken;
 
+import com.example.wuxio.gankexamples.utils.date.DateFormat;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -94,7 +96,8 @@ public class CategoryResultParser {
 
                 } else if (name.equals("createdAt")) {
 
-                    bean.createdAt = (jsonReader.nextString());
+                    String createdAt = jsonReader.nextString();
+                    bean.createdAt = DateFormat.format(createdAt);
 
                 } else if (name.equals("desc")) {
 
@@ -102,7 +105,8 @@ public class CategoryResultParser {
 
                 } else if (name.equals("publishedAt")) {
 
-                    bean.publishedAt = (jsonReader.nextString());
+                    String publishedAt = jsonReader.nextString();
+                    bean.publishedAt = DateFormat.format(publishedAt);
 
                 } else if (name.equals("source")) {
 

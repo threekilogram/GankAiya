@@ -10,7 +10,7 @@ import java.util.Locale;
  */
 public class DateFormat {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(
+    public static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss.SSSXXX",
             Locale.CHINA
     );
@@ -19,7 +19,7 @@ public class DateFormat {
     public static long format(String date) {
 
         try {
-            Date parse = DATE_FORMAT.parse(date);
+            Date parse = FULL_DATE_FORMAT.parse(date);
             return parse.getTime();
         } catch (ParseException e) {
             e.printStackTrace();
