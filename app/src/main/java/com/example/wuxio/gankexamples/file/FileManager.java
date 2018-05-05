@@ -47,4 +47,9 @@ public class FileManager {
         }
     }
 
+
+    public File getAppFile() {
+
+        return appFile;
+    }
 }
