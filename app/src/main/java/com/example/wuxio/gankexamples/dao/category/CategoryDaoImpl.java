@@ -1,7 +1,8 @@
-package com.example.wuxio.gankexamples.dao;
+package com.example.wuxio.gankexamples.dao.category;
 
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.ResultsBean;
+import com.example.wuxio.gankexamples.model.ResultsBean_;
 
 import java.util.List;
 
@@ -47,6 +48,24 @@ class CategoryDaoImpl implements CategoryDao {
     public List< ResultsBean > getAll() {
 
         return mResultsBeanBox.getAll();
+    }
+
+
+    @Override
+    public List< ResultsBean > query(String type, int count, int page) {
+
+        int offset = count * (page - 1);
+        if (offset < 0) {
+            offset = 0;
+        }
+
+        List< ResultsBean > beans = mResultsBeanBox.query()
+                .equal(ResultsBean_.type, type)
+                .orderDesc(ResultsBean_.id)
+                .build()
+                .find(offset, count);
+
+        return beans;
     }
 
 }

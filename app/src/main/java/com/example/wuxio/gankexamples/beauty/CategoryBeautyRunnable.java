@@ -1,8 +1,8 @@
 package com.example.wuxio.gankexamples.beauty;
 
 import com.example.objectbus.bus.ObjectBus;
-import com.example.wuxio.gankexamples.dao.CategoryDao;
-import com.example.wuxio.gankexamples.dao.CategoryDaoFactory;
+import com.example.wuxio.gankexamples.dao.category.CategoryDao;
+import com.example.wuxio.gankexamples.dao.category.CategoryDaoFactory;
 import com.example.wuxio.gankexamples.model.CategoryResult;
 import com.example.wuxio.gankexamples.model.CategoryResultParser;
 import com.example.wuxio.gankexamples.model.ResultBeanSetIdUtil;

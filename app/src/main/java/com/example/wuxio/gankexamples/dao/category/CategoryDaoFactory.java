@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.dao;
+package com.example.wuxio.gankexamples.dao.category;
 
 /**
  * @author wuxio 2018-05-05:8:11

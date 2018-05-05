@@ -1,10 +1,8 @@
 package com.example.wuxio.gankexamples.main;
 
-import android.util.Log;
-
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.beauty.CategoryBeautyRunnable;
-import com.example.wuxio.gankexamples.dao.CategoryDaoFactory;
+import com.example.wuxio.gankexamples.dao.category.CategoryDaoFactory;
 import com.example.wuxio.gankexamples.model.ResultsBean;
 
 import java.lang.ref.WeakReference;
@@ -45,8 +43,13 @@ public class MainManager {
                     @Override
                     public void run() {
 
-                        List< ResultsBean > all = CategoryDaoFactory.getCategoryDao().getAll();
-                        Log.i(TAG, "run:" + all);
+                        List< ResultsBean > query = CategoryDaoFactory
+                                .getCategoryDao()
+                                .query("福利", 5, 1);
+
+                        String url = query.get(0).url;
+
+
                     }
                 })
                 .run();

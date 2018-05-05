@@ -32,10 +32,11 @@ public class ResultsBean {
     public String toString() {
 
         return "ResultsBean{" +
-                "_id='" + _id + '\'' +
-                ", createdAt='" + createdAt + '\'' +
+                "id=" + id +
+                ", _id='" + _id + '\'' +
+                ", createdAt=" + createdAt +
                 ", desc='" + desc + '\'' +
-                ", publishedAt='" + publishedAt + '\'' +
+                ", publishedAt=" + publishedAt +
                 ", source='" + source + '\'' +
                 ", type='" + type + '\'' +
                 ", url='" + url + '\'' +
