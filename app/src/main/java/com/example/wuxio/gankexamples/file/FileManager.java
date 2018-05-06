@@ -11,45 +11,38 @@ import java.io.File;
  */
 public class FileManager {
 
-    //============================ singleTon ============================
+    //============================ file ============================
 
+    private static File appFile;
+    private static File appPicFile;
 
-    private FileManager() {
-
-        initAppFile();
+    static {
+        getAppFile();
     }
 
+    public static File getAppFile() {
 
-    public static FileManager getInstance() {
+        if (appFile == null) {
+            App app = App.INSTANCE;
 
-        return SingletonHolder.INSTANCE;
-    }
-
-
-    private static class SingletonHolder {
-        private static final FileManager INSTANCE = new FileManager();
-    }
-
-    //============================ app file init ============================
-
-    private File appFile;
-
-
-    private void initAppFile() {
-
-        App app = App.INSTANCE;
-
-        String storageState = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(storageState)) {
-            appFile = app.getExternalFilesDir(null);
-        } else {
-            appFile = app.getFilesDir();
+            String storageState = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(storageState)) {
+                appFile = app.getExternalFilesDir(null);
+            } else {
+                appFile = app.getFilesDir();
+            }
         }
-    }
-
-
-    public File getAppFile() {
 
         return appFile;
+    }
+
+
+    public static File getAppPicFile() {
+
+        if (appPicFile == null) {
+
+            appPicFile = new File(appFile, "pic");
+        }
+        return appPicFile;
     }
 }
