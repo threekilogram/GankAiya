@@ -11,8 +11,11 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
+import android.util.Log;
 
 /**
+ * [Android监听网络连接状态变化 \- 简书](https://www.jianshu.com/p/fb83d0f4f731)
+ *
  * @author wangyuhang@evergrande.cn
  * @date 2017/7/12 0012
  *
@@ -59,17 +62,17 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
     //============================ register/un ============================
 
 
-    public void register(Context context) {
+    public static void register(Context context) {
 
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        context.registerReceiver(this, filter);
+        context.registerReceiver(getInstance(), filter);
     }
 
 
-    public void unRegister(Context context) {
+    public static void unRegister(Context context) {
 
-        context.unregisterReceiver(this);
+        context.unregisterReceiver(getInstance());
     }
 
     //============================ receive ============================
@@ -81,6 +84,9 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
         /*网络状态发生变化*/
 
         testNetState(context);
+
+        int state = getNetWorkState();
+        Log.i(TAG, "onReceive:" + state);
     }
 
 

@@ -7,8 +7,11 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.wuxio.gankexamples.main.MainActivity;
+import com.example.wuxio.gankexamples.utils.netState.NetworkChangedReceiver;
 
 /**
+ * 作为根activity,使用singleTask模式,用来清除任务栈
+ *
  * @author wuxio
  */
 public class RootActivity extends AppCompatActivity {
@@ -42,6 +45,8 @@ public class RootActivity extends AppCompatActivity {
             public void run() {
 
                 MainActivity.start(RootActivity.this);
+
+                NetworkChangedReceiver.register(RootActivity.this);
             }
         });
     }
@@ -52,6 +57,14 @@ public class RootActivity extends AppCompatActivity {
 
         super.onNewIntent(intent);
         finish();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        NetworkChangedReceiver.unRegister(this);
+        super.onDestroy();
     }
 
     //============================ 内部类 ============================

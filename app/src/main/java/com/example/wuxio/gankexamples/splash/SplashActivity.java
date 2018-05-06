@@ -44,6 +44,14 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
+
     private void initView() {
 
         mRoot = findViewById(R.id.root);
@@ -112,14 +120,6 @@ public class SplashActivity extends AppCompatActivity {
     private void countToEnd() {
 
         toRootActivity(null);
-    }
-
-
-    @Override
-    protected void onDestroy() {
-
-        mHandler.removeCallbacksAndMessages(null);
-        super.onDestroy();
     }
 
     //============================ 内部类 ============================
