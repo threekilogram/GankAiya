@@ -404,7 +404,8 @@ public class MainActivity extends AppCompatActivity {
 
                 int position = (Integer) v.getTag(R.id.main_banner_item_tag);
                 PictureActivity.start(MainActivity.this, position, mUrls, mBitmapFileMap);
-                mBanner.stopLoop();
+
+                // TODO: 2018-05-07 转场动画 ,更新数据
             }
         }
     }

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.example.objectbus.BusConfig;
 import com.example.wuxio.gankexamples.model.MyObjectBox;
+import com.squareup.leakcanary.LeakCanary;
 
 import io.objectbox.BoxStore;
 
@@ -26,6 +27,13 @@ public class App extends Application {
         BusConfig.init();
 
         mBoxStore = MyObjectBox.builder().androidContext(this).build();
+
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        LeakCanary.install(this);
     }
 
 
