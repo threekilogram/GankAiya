@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.gank;
 
-import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.dao.category.CategoryDao;
 import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
@@ -27,20 +26,23 @@ public class CategoryRunnable implements Runnable {
 
     private static final String TAG = "CategoryRunnable";
 
-    private String    type;
-    private int       count;
-    private int       page;
-    private ObjectBus mBus;
-
-    public static final String RESULTS_BEANS_BUS_KEY = "CategoryBeautyRunnable_ResultsBean_List";
+    private String              mType;
+    private int                 mCount;
+    private int                 mPage;
+    private List< ResultsBean > mResultsBeans;
 
 
-    public CategoryRunnable(String type, int count, int page, ObjectBus bus) {
+    public CategoryRunnable(String type, int count, int page) {
 
-        this.type = type;
-        this.count = count;
-        this.page = page;
-        this.mBus = bus;
+        this.mType = type;
+        this.mCount = count;
+        this.mPage = page;
+    }
+
+
+    public List< ResultsBean > getResultsBeans() {
+
+        return mResultsBeans;
     }
 
 
@@ -49,7 +51,7 @@ public class CategoryRunnable implements Runnable {
 
         /* 从网络读取数据,之后保存结果 */
 
-        Call< ResponseBody > categoryData = NetWork.gankApi().getCategoryData(type, count, page);
+        Call< ResponseBody > categoryData = NetWork.gankApi().getCategoryData(mType, mCount, mPage);
 
         try {
             Response< ResponseBody > gankResponse = categoryData.execute();
@@ -78,6 +80,7 @@ public class CategoryRunnable implements Runnable {
 
                     List< ResultsBean > results = result.results;
                     DaoIdUtil.setResultsBeanID(results);
+                    mResultsBeans = results;
 
                     CategoryDao categoryDao = DaoFactory.getCategoryDao(CategoryConstant.BEAUTY);
                     categoryDao.insert(results);

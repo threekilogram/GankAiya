@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.gank.beauty;
 
-import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
 import com.example.wuxio.gankexamples.model.ResultsBean;
@@ -15,16 +14,15 @@ public class BeautyQueryRunnable implements Runnable {
 
     private static final String TAG = "BeautyQueryRunnable";
 
-    private int       count;
-    private int       page;
-    private ObjectBus mBus;
+    private int            count;
+    private int            page;
+    private List< String > mUrls;
 
 
-    public BeautyQueryRunnable(int count, int page, ObjectBus bus) {
+    public BeautyQueryRunnable(int count, int page) {
 
         this.count = count;
         this.page = page;
-        mBus = bus;
     }
 
 
@@ -40,15 +38,16 @@ public class BeautyQueryRunnable implements Runnable {
         /* 找出ImageURl */
 
         final int size = resultsBeans.size();
-        List< String > urls = new ArrayList<>(size);
+        mUrls = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             ResultsBean bean = resultsBeans.get(i);
-            urls.add(bean.url);
+            mUrls.add(bean.url);
         }
+    }
 
-        /* load image from file or internet */
 
-        ImageLoadRunnable runnable = new ImageLoadRunnable(urls);
-        runnable.run();
+    public List< String > getUrls() {
+
+        return mUrls;
     }
 }

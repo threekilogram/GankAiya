@@ -13,7 +13,7 @@ public class NetWork {
     private static final String BASE_URL = "http://gank.io/api/";
 
 
-    private static Retrofit getRetrofit() {
+    public static Retrofit getRetrofit() {
 
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()

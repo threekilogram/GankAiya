@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -30,9 +31,14 @@ import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author wuxio
@@ -50,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected TabLayout               mTabLayout;
     protected ContainerLayout         mBannerContainer;
     protected CollapsingToolbarLayout mCollapsingToolbar;
+    private   BannerAdapter           mBannerAdapter;
 
 
     public static void start(Context context) {
@@ -83,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         mCoordinator = findViewById(R.id.coordinator);
         mViewPager = findViewById(R.id.viewPager);
         mTabLayout = findViewById(R.id.tabLayout);
-        mBannerContainer = findViewById(R.id.bannerContainer);
         mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
 
         /* 防止tabLayout 进入statusBar */
@@ -91,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
         mCollapsingToolbar.setMinimumHeight(height);
 
         /* 设置view state */
-        mBannerContainer.setOnlyRequestLayoutChild(true);
-        mBanner.setAdapter(new BannerAdapter());
+        mBannerAdapter = new BannerAdapter();
+        mBanner.setAdapter(mBannerAdapter);
         mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
     }
@@ -268,31 +274,70 @@ public class MainActivity extends AppCompatActivity {
 
     //============================ banner adapter ============================
 
+
+    public void setBannerImageData(List< String > urls, ArrayMap< String, File > bitmapFiles) {
+
+        mBannerAdapter.setBitmapFiles(urls, bitmapFiles);
+        mBannerAdapter.notifyDataSetChanged();
+    }
+
+
     /**
      * banner adapter
      */
-    private class BannerAdapter extends BasePagerAdapter< Object, ImageView > {
+    private class BannerAdapter extends BasePagerAdapter< Bitmap, ImageView > {
 
-        private int[] colors = {
-                Color.BLUE,
-                Color.RED,
-                getColor(R.color.orange),
-                getColor(R.color.tomato),
-                getColor(R.color.azure)
-        };
+        private List< Bitmap >           mBitmaps;
+        private ArrayMap< String, File > mBitmapFileMap;
+        private List< String >           mUrls;
+        private BannerItemClickListener  mBannerItemClickListener;
+
+        final int DEFAULT_COUNT = 5;
+
+
+        public void setBitmapFiles(List< String > urls, ArrayMap< String, File > bitmapFileMap) {
+
+            mUrls = urls;
+            mBitmapFileMap = bitmapFileMap;
+
+            int size = urls.size();
+
+            if (mBitmaps == null) {
+                mBitmaps = new ArrayList<>(size);
+            } else {
+                mBitmaps.clear();
+            }
+
+            for (int i = 0; i < size; i++) {
+                String key = urls.get(i);
+                File file = bitmapFileMap.get(key);
+                Bitmap bitmap = BitmapReader.decodeSampledBitmap(
+                        file,
+                        mViewPager.getWidth(),
+                        mViewPager.getHeight()
+                );
+                mBitmaps.add(bitmap);
+            }
+        }
 
 
         @Override
         public int getCount() {
 
-            return 5;
+            return DEFAULT_COUNT;
         }
 
 
         @Override
-        public Object getData(int i) {
+        public Bitmap getData(int i) {
 
-            return i;
+            if (mBitmaps != null) {
+                Bitmap bitmap = mBitmaps.get(i);
+                if (bitmap != null) {
+                    return bitmap;
+                }
+            }
+            return null;
         }
 
 
@@ -300,22 +345,36 @@ public class MainActivity extends AppCompatActivity {
         public ImageView getView(int i) {
 
             ImageView imageView = new ImageView(MainActivity.this);
-            imageView.setScaleType(ImageView.ScaleType.CENTER);
+            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             return imageView;
         }
 
 
         @Override
-        public void bindData(int i, Object o, ImageView imageView) {
+        public void bindData(int i, Bitmap o, ImageView imageView) {
 
-            imageView.setBackgroundColor(colors[i]);
+            if (o != null) {
+                imageView.setImageBitmap(o);
+                if (mBannerItemClickListener == null) {
+                    mBannerItemClickListener = new BannerItemClickListener();
+                }
+                imageView.setTag(R.id.main_banner_item_tag, i);
+                imageView.setOnClickListener(mBannerItemClickListener);
+            }
         }
 
 
-        private int getColor(int id) {
+        private class BannerItemClickListener implements View.OnClickListener {
 
-            return getResources().getColor(id);
+            @Override
+            public void onClick(View v) {
+
+                int position = (Integer) v.getTag(R.id.main_banner_item_tag);
+                PictureActivity.start(MainActivity.this, position, mUrls, mBitmapFileMap);
+                mBanner.stopLoop();
+            }
         }
+
     }
 
     //============================ pager adapter ============================
