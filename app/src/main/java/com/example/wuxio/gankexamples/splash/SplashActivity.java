@@ -1,5 +1,6 @@
 package com.example.wuxio.gankexamples.splash;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -9,14 +10,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.RootActivity;
-import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
 import com.example.wuxio.gankexamples.main.MainActivity;
 
 import java.lang.ref.WeakReference;
-import java.util.Random;
 
 /**
  * show splash ,than goto mainActivity
@@ -29,7 +28,8 @@ public class SplashActivity extends AppCompatActivity {
     protected TextView    mCountText;
     protected FrameLayout mRoot;
 
-    private CountHandler mHandler;
+    protected Bitmap       mBitmap;
+    private   CountHandler mHandler;
 
 
     @Override
@@ -77,17 +77,27 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
+    public ImageView getLogoImage() {
+
+        return mLogoImage;
+    }
+
+
+    public void setSplash(Bitmap bitmap) {
+
+        mBitmap = bitmap;
+        mHandler.setSplash();
+    }
+
+
     /**
      * load background image from net
      */
     private void loadLogoImage() {
 
-        String[] urls = ConstantsImageUrl.TRANSITION_URLS;
-        int imageUrlIndex = new Random().nextInt(urls.length);
-        Glide.with(this)
-                .load(urls[1])
-                .placeholder(R.drawable.img_transition_default)
-                .into(mLogoImage);
+        ObjectBus bus = new ObjectBus();
+        LoadSplashPicRunnable runnable = new LoadSplashPicRunnable(this);
+        bus.toUnder(runnable).run();
     }
 
 
@@ -122,13 +132,14 @@ public class SplashActivity extends AppCompatActivity {
         toRootActivity(null);
     }
 
-    //============================ 内部类 ============================
+    //============================ static Handler ============================
 
     private static class CountHandler extends Handler {
 
         WeakReference< SplashActivity > mReference;
 
         private static final int MSG_COUNT_DOWN = 12;
+        private static final int MSG_SET_SPLASH = 13;
 
         private int countToDown;
 
@@ -153,6 +164,9 @@ public class SplashActivity extends AppCompatActivity {
                 case MSG_COUNT_DOWN:
                     handleMsgCountDown(activity);
                     break;
+
+                case MSG_SET_SPLASH:
+                    activity.getLogoImage().setImageBitmap(activity.mBitmap);
 
                 default:
                     break;
@@ -183,5 +197,12 @@ public class SplashActivity extends AppCompatActivity {
 
             sendEmptyMessageDelayed(MSG_COUNT_DOWN, 1000);
         }
+
+
+        public void setSplash() {
+
+            sendEmptyMessage(MSG_SET_SPLASH);
+        }
     }
+
 }

@@ -40,14 +40,11 @@ public class RootActivity extends AppCompatActivity {
 
     private void postAction() {
 
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
+        mHandler.post(() -> {
 
-                MainActivity.start(RootActivity.this);
+            MainActivity.start(RootActivity.this);
 
-                NetworkChangedReceiver.register(RootActivity.this);
-            }
+            NetworkChangedReceiver.register(RootActivity.this);
         });
     }
 
@@ -56,15 +53,8 @@ public class RootActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
 
         super.onNewIntent(intent);
-        finish();
-    }
-
-
-    @Override
-    protected void onDestroy() {
-
         NetworkChangedReceiver.unRegister(this);
-        super.onDestroy();
+        finish();
     }
 
     //============================ 内部类 ============================
