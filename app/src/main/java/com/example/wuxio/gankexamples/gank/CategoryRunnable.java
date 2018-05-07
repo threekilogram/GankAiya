@@ -18,7 +18,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 /**
- * 获取分类数据,并保存到数据库
+ * 从网络获取分类数据,并保存到数据库
  *
  * @author wuxio
  */

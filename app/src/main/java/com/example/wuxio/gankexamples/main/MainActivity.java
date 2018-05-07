@@ -37,7 +37,6 @@ import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private   BannerAdapter           mBannerAdapter;
 
 
+    /**
+     * 静态启动方法
+     */
     public static void start(Context context) {
 
         Intent starter = new Intent(context, MainActivity.class);
@@ -77,10 +79,12 @@ public class MainActivity extends AppCompatActivity {
         initView();
         setSystemUI();
         postAction();
-
     }
 
 
+    /**
+     * 初始化view
+     */
     private void initView() {
 
         mDrawer = findViewById(R.id.drawer);
@@ -96,16 +100,18 @@ public class MainActivity extends AppCompatActivity {
         int height = SystemUI.getStatusBarHeight(MainActivity.this);
         mCollapsingToolbar.setMinimumHeight(height);
 
-        /* 设置view state */
+        /* banner */
         mBannerAdapter = new BannerAdapter();
         mBanner.setAdapter(mBannerAdapter);
+
+        /* view Pager */
         mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
 
     /**
-     * 创建好 activity 之后执行一些操作
+     * 创建好 activity 之后执行一些初始化activity的操作
      */
     private void postAction() {
 
@@ -113,8 +119,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 
+                /* 设置导航菜单 */
                 initNavigationView(mNavigationView);
 
+                /* 为activity执行后台初始化操作 */
                 MainManager.getInstance().onActivityCreate();
             }
         });
@@ -122,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
-     * 沉浸式状态栏
+     * 设置状态栏
      */
     private void setSystemUI() {
 
@@ -130,6 +138,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
+     */
     private void closeDrawer() {
 
         mDrawer.closeDrawer(Gravity.START);
@@ -169,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         headerView.findViewById(R.id.exitApp).setOnClickListener(clickListener);
     }
 
-    //============================ 导航栏点击事件 ============================
+    //============================ 导航栏功能 ============================
 
     /**
      * 导航栏item点击事件
@@ -204,65 +215,66 @@ public class MainActivity extends AppCompatActivity {
                 default:
                     break;
             }
+            closeDrawer();
         }
-    }
-
-    //============================ 导航栏功能 ============================
 
 
-    /**
-     * to about page
-     */
-    private void toAbout() {
+        /**
+         * to about page
+         */
+        private void toAbout() {
 
-        Log.i(TAG, "toAbout:" + "");
-        closeDrawer();
-    }
+            Log.i(TAG, "toAbout:" + "");
 
-
-    /**
-     * to QuestionFeedback page
-     */
-    private void toQuestionFeedback() {
-
-        Log.i(TAG, "toQuestionFeedback:" + "");
-        closeDrawer();
-    }
+        }
 
 
-    /**
-     * to Donate page
-     */
-    private void toDonate() {
+        /**
+         * to QuestionFeedback page
+         */
+        private void toQuestionFeedback() {
 
-        Log.i(TAG, "toDonate:" + "");
-        closeDrawer();
-    }
+            Log.i(TAG, "toQuestionFeedback:" + "");
 
-
-    /**
-     * to LoginGitHub page
-     */
-    private void toLoginGitHub() {
-
-        Log.i(TAG, "toLoginGitHub:" + "");
-        closeDrawer();
-    }
+        }
 
 
-    /**
-     * to exitApp
-     */
-    private void exitApp() {
+        /**
+         * to Donate page
+         */
+        private void toDonate() {
 
-        Log.i(TAG, "exitApp:" + "");
-        RootActivity.start(this);
-        closeDrawer();
+            Log.i(TAG, "toDonate:" + "");
+
+        }
+
+
+        /**
+         * to LoginGitHub page
+         */
+        private void toLoginGitHub() {
+
+            Log.i(TAG, "toLoginGitHub:" + "");
+
+        }
+
+
+        /**
+         * to exitApp
+         */
+        private void exitApp() {
+
+            Log.i(TAG, "exitApp:" + "");
+            RootActivity.start(MainActivity.this);
+        }
     }
 
     //============================ 返回按键 ============================
 
 
+    /**
+     * 添加点击两次退出activity
+     */
     @Override
     public void onBackPressed() {
 
@@ -275,10 +287,24 @@ public class MainActivity extends AppCompatActivity {
     //============================ banner adapter ============================
 
 
-    public void setBannerImageData(List< String > urls, ArrayMap< String, File > bitmapFiles) {
+    /**
+     * 用于与{@link MainManager}交互,准备好banner的图片之后,通知activity设置给banner
+     *
+     * @param urls        图片地址
+     * @param bitmapFiles 图片文件
+     */
+    public void setBannerImageData(
+            List< String > urls,
+            ArrayMap< String, File > bitmapFiles,
+            List< Bitmap > bitmaps) {
 
-        mBannerAdapter.setBitmapFiles(urls, bitmapFiles);
-        mBannerAdapter.notifyDataSetChanged();
+        mBannerAdapter.setBitmapFiles(urls, bitmapFiles, bitmaps);
+    }
+
+
+    public BannerView getBanner() {
+
+        return mBanner;
     }
 
 
@@ -287,37 +313,41 @@ public class MainActivity extends AppCompatActivity {
      */
     private class BannerAdapter extends BasePagerAdapter< Bitmap, ImageView > {
 
+
+        /**
+         * 正在显示的图片
+         */
         private List< Bitmap >           mBitmaps;
+        /**
+         * 图片文件
+         */
         private ArrayMap< String, File > mBitmapFileMap;
+        /**
+         * 图片对应url
+         */
         private List< String >           mUrls;
+        /**
+         * 每个item点击事件
+         */
         private BannerItemClickListener  mBannerItemClickListener;
+        /**
+         * 默认大小
+         */
+        private static final int DEFAULT_COUNT = 5;
 
-        final int DEFAULT_COUNT = 5;
 
-
-        public void setBitmapFiles(List< String > urls, ArrayMap< String, File > bitmapFileMap) {
+        /**
+         * 更新数据
+         */
+        public void setBitmapFiles(
+                List< String > urls,
+                ArrayMap< String, File > bitmapFileMap,
+                List< Bitmap > bitmaps) {
 
             mUrls = urls;
             mBitmapFileMap = bitmapFileMap;
+            mBitmaps = bitmaps;
 
-            int size = urls.size();
-
-            if (mBitmaps == null) {
-                mBitmaps = new ArrayList<>(size);
-            } else {
-                mBitmaps.clear();
-            }
-
-            for (int i = 0; i < size; i++) {
-                String key = urls.get(i);
-                File file = bitmapFileMap.get(key);
-                Bitmap bitmap = BitmapReader.decodeSampledBitmap(
-                        file,
-                        mViewPager.getWidth(),
-                        mViewPager.getHeight()
-                );
-                mBitmaps.add(bitmap);
-            }
         }
 
 
@@ -364,6 +394,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        /**
+         * banner item 点击事件,跳转到{@link PictureActivity}
+         */
         private class BannerItemClickListener implements View.OnClickListener {
 
             @Override
@@ -374,7 +407,6 @@ public class MainActivity extends AppCompatActivity {
                 mBanner.stopLoop();
             }
         }
-
     }
 
     //============================ pager adapter ============================

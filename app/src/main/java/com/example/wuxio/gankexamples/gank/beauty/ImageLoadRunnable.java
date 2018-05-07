@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
+ * 从网络下载本地没有的图片
+ *
  * @author wuxio 2018-05-05:11:16
  */
 public class ImageLoadRunnable implements Runnable {

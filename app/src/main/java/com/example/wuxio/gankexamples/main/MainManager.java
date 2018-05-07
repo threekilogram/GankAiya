@@ -1,11 +1,14 @@
 package com.example.wuxio.gankexamples.main;
 
+import android.graphics.Bitmap;
 import android.util.ArrayMap;
 
+import com.example.banner.BannerView;
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.ActivityManager;
 import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.gank.CategoryRunnable;
+import com.example.wuxio.gankexamples.gank.beauty.ImageFileLoadRunnable;
 import com.example.wuxio.gankexamples.gank.beauty.ImageLoadRunnable;
 import com.example.wuxio.gankexamples.model.ResultsBean;
 
@@ -39,14 +42,25 @@ public class MainManager extends ActivityManager< MainActivity > {
         return SingletonHolder.INSTANCE;
     }
 
+    //============================ core ============================
+
 
     @Override
     @SuppressWarnings("unchecked")
     public void onActivityCreate() {
 
+        BannerView banner = mReference.get().getBanner();
+        int width = banner.getWidth();
+        int height = banner.getHeight();
+        banner = null;
+
+        /* 网络请求最新的5条 福利 数据,从本地加载对应图片,如果没有网络下载到本地,然后解析成bitmap,通知activity设置数据 */
+
         mBus.toUnder(new Runnable() {
             @Override
             public void run() {
+
+                /* 从后台准备数据 */
 
                 CategoryRunnable categoryRunnable = new CategoryRunnable(
                         CategoryConstant.BEAUTY,
@@ -67,25 +81,40 @@ public class MainManager extends ActivityManager< MainActivity > {
                 imageLoadRunnable.run();
                 ArrayMap< String, File > bitmapFiles = imageLoadRunnable.getBitmapFiles();
 
+                ImageFileLoadRunnable imageFileLoadRunnable = new ImageFileLoadRunnable(
+                        urls,
+                        bitmapFiles,
+                        width,
+                        height
+                );
+                imageFileLoadRunnable.run();
+                List< Bitmap > bitmaps = imageFileLoadRunnable.getBitmaps();
+
                 mBus.take(bitmapFiles, "bitmapFiles");
                 mBus.take(urls, "urls");
+                mBus.take(bitmaps, "bitmaps");
 
             }
         }).toMain(new Runnable() {
+
+            /* 准备好之后,切换到主线程更新banner */
+
+
             @Override
             public void run() {
 
                 MainActivity activity = mReference.get();
                 if (activity != null) {
+
+                    List< String > urls = (List< String >) mBus.getOff("urls");
                     ArrayMap< String, File > bitmapFiles =
                             (ArrayMap< String, File >) mBus.getOff("bitmapFiles");
-                    List< String > urls = (List< String >) mBus.getOff("urls");
-                    activity.setBannerImageData(urls, bitmapFiles);
-                }
+                    List< Bitmap > bitmaps = (List< Bitmap >) mBus.getOff("bitmaps");
 
+                    activity.setBannerImageData(urls, bitmapFiles, bitmaps);
+                }
+                mBus.clearRunnable();
             }
         }).run();
-
     }
-
 }
