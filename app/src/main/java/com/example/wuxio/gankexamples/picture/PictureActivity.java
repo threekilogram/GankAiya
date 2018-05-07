@@ -44,7 +44,7 @@ public class PictureActivity extends AppCompatActivity {
 
     private void initView() {
 
-        mImageView = (ImageView) findViewById(R.id.imageView);
+        mImageView = findViewById(R.id.imageView);
         mImageView.post(new Runnable() {
             @Override
             public void run() {
