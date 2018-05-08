@@ -19,7 +19,9 @@ public class BackPressUtil {
      */
     public static boolean showInfo(Activity activity) {
 
-        if ((System.currentTimeMillis() - exitTime) > 2000) {
+        final int delayTime = 2000;
+
+        if ((System.currentTimeMillis() - exitTime) > delayTime) {
             Toast.makeText(activity.getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
             exitTime = System.currentTimeMillis();
             return false;

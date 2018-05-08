@@ -90,45 +90,45 @@ public class CategoryResultParser {
             while (jsonReader.hasNext()) {
 
                 String name = jsonReader.nextName();
-                if (name.equals("_id")) {
+                if ("_id".equals(name)) {
 
                     bean._id = (jsonReader.nextString());
 
-                } else if (name.equals("createdAt")) {
+                } else if ("createdAt".equals(name)) {
 
                     String createdAt = jsonReader.nextString();
                     bean.createdAt = DateFormat.format(createdAt);
 
-                } else if (name.equals("desc")) {
+                } else if ("desc".equals(name)) {
 
                     bean.desc = (jsonReader.nextString());
 
-                } else if (name.equals("publishedAt")) {
+                } else if ("publishedAt".equals(name)) {
 
                     String publishedAt = jsonReader.nextString();
                     bean.publishedAt = DateFormat.format(publishedAt);
 
-                } else if (name.equals("source")) {
+                } else if ("source".equals(name)) {
 
                     bean.source = (jsonReader.nextString());
 
-                } else if (name.equals("type")) {
+                } else if ("type".equals(name)) {
 
                     bean.type = (jsonReader.nextString());
 
-                } else if (name.equals("url")) {
+                } else if ("url".equals(name)) {
 
                     bean.url = (jsonReader.nextString());
 
-                } else if (name.equals("used")) {
+                } else if ("used".equals(name)) {
 
                     bean.used = (jsonReader.nextBoolean());
 
-                } else if (name.equals("who") && jsonReader.peek() != JsonToken.NULL) {
+                } else if ("who".equals(name) && jsonReader.peek() != JsonToken.NULL) {
 
                     bean.who = (jsonReader.nextString());
 
-                } else if (name.equals("images")) {
+                } else if ("images".equals(name)) {
 
                     List< ImageBean > list = parseImages(jsonReader);
                     bean.images.addAll(list);

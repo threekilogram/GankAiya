@@ -1,5 +1,6 @@
 package com.example.wuxio.gankexamples.dao.factory;
 
+import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.dao.category.CategoryDao;
 import com.example.wuxio.gankexamples.dao.image.ImageBeanDao;
 
@@ -10,7 +11,7 @@ public class DaoFactory {
 
     public static CategoryDao getCategoryDao(String type) {
 
-        if (type == "福利") {
+        if (CategoryConstant.BEAUTY.equals(type)) {
             return CategoryDaoImpl.getInstance();
         }
 

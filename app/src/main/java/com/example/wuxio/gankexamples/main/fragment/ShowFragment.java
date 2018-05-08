@@ -64,8 +64,8 @@ public class ShowFragment extends Fragment {
             if (mInflater == null) {
                 mInflater = LayoutInflater.from(parent.getContext());
             }
-            View view = mInflater.inflate(R.layout.item_text_view, parent, false);
-            return new Holder(view);
+
+            return new Holder(mInflater.inflate(R.layout.item_text_view, parent, false));
         }
 
 

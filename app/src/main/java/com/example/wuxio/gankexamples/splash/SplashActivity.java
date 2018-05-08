@@ -66,13 +66,10 @@ public class SplashActivity extends AppCompatActivity {
      */
     private void postAction() {
 
-        mRoot.post(new Runnable() {
-            @Override
-            public void run() {
+        mRoot.post(() -> {
 
-                loadLogoImage();
-                mHandler.startCountDown(3);
-            }
+            loadLogoImage();
+            mHandler.startCountDown(3);
         });
     }
 
@@ -204,5 +201,4 @@ public class SplashActivity extends AppCompatActivity {
             sendEmptyMessage(MSG_SET_SPLASH);
         }
     }
-
 }

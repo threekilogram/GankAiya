@@ -115,16 +115,13 @@ public class MainActivity extends AppCompatActivity {
      */
     private void postAction() {
 
-        mDrawer.post(new Runnable() {
-            @Override
-            public void run() {
+        mDrawer.post(() -> {
 
-                /* 设置导航菜单 */
-                initNavigationView(mNavigationView);
+            /* 设置导航菜单 */
+            initNavigationView(mNavigationView);
 
-                /* 为activity执行后台初始化操作 */
-                MainManager.getInstance().onActivityCreate();
-            }
+            /* 为activity执行后台初始化操作 */
+            MainManager.getInstance().onActivityCreate();
         });
     }
 

@@ -5,7 +5,7 @@ import android.util.ArrayMap;
 import android.widget.ImageView;
 
 import com.example.objectbus.bus.ObjectBus;
-import com.example.wuxio.gankexamples.ActivityManager;
+import com.example.wuxio.gankexamples.BaseActivityManager;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 
 import java.io.File;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author wuxio 2018-05-07:14:44
  */
-public class PictureManager extends ActivityManager< PictureActivity > {
+public class PictureManager extends BaseActivityManager< PictureActivity > {
 
     private int                      mBannerPosition;
     private List< String >           mUrls;
@@ -48,30 +48,24 @@ public class PictureManager extends ActivityManager< PictureActivity > {
     @Override
     public void onActivityCreate() {
 
-        mBus.toUnder(new Runnable() {
-            @Override
-            public void run() {
+        mBus.toUnder(() -> {
 
-                PictureActivity activity = mReference.get();
-                if (activity != null) {
-                    ImageView imageView = activity.getImageView();
-                    Bitmap bitmap = BitmapReader.decodeSampledBitmap(
-                            mBitmapFileMap.get(mUrls.get(mBannerPosition)),
-                            imageView.getWidth(),
-                            imageView.getHeight()
-                    );
+            PictureActivity activity = mReference.get();
+            if (activity != null) {
+                ImageView imageView = activity.getImageView();
+                Bitmap bitmap = BitmapReader.decodeSampledBitmap(
+                        mBitmapFileMap.get(mUrls.get(mBannerPosition)),
+                        imageView.getWidth(),
+                        imageView.getHeight()
+                );
 
-                    mBus.take(bitmap, "key");
-                }
+                mBus.take(bitmap, "key");
             }
-        }).toMain(new Runnable() {
-            @Override
-            public void run() {
+        }).toMain(() -> {
 
-                PictureActivity activity = mReference.get();
-                if (activity != null) {
-                    activity.getImageView().setImageBitmap((Bitmap) mBus.getOff("key"));
-                }
+            PictureActivity activity = mReference.get();
+            if (activity != null) {
+                activity.getImageView().setImageBitmap((Bitmap) mBus.getOff("key"));
             }
         }).run();
     }

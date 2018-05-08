@@ -1,8 +1,4 @@
-package com.example.wuxio.gankexamples.utils.netState;
-
-/**
- * @author wuxio 2018-05-05:22:34
- */
+package com.example.wuxio.gankexamples.utils.state;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -90,6 +86,7 @@ public class NetworkChangedReceiver extends BroadcastReceiver {
     }
 
 
+    @SuppressWarnings("AliDeprecation")
     public static void testNetState(Context context) {
 
         /*检测API是不是小于21，因为到了API 21之后getNetworkInfo(int networkType)方法被弃用*/

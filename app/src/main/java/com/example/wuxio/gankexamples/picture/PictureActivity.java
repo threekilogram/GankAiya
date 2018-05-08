@@ -45,13 +45,7 @@ public class PictureActivity extends AppCompatActivity {
     private void initView() {
 
         mImageView = findViewById(R.id.imageView);
-        mImageView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                PictureManager.getInstance().onActivityCreate();
-            }
-        });
+        mImageView.post(() -> PictureManager.getInstance().onActivityCreate());
     }
 
 

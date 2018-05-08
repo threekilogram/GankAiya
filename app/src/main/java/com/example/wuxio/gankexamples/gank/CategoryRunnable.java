@@ -59,6 +59,7 @@ public class CategoryRunnable implements Runnable {
 
                 /* 从服务器读取数据流 */
 
+                assert gankResponse.body() != null;
                 Reader charStream = gankResponse.body().charStream();
 
                 if (charStream == null) {

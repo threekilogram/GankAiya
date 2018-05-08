@@ -7,7 +7,7 @@ import java.lang.ref.WeakReference;
 /**
  * @author wuxio 2018-05-07:15:09
  */
-public abstract class ActivityManager < T extends Activity > {
+public abstract class BaseActivityManager < T extends Activity > {
 
     protected WeakReference< T > mReference;
 
