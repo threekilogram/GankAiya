@@ -44,7 +44,7 @@ public class RootActivity extends AppCompatActivity {
 
             MainActivity.start(RootActivity.this);
 
-            NetworkChangedReceiver.register(RootActivity.this);
+            NetworkChangedReceiver.register(App.INSTANCE);
         });
     }
 
@@ -53,8 +53,23 @@ public class RootActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
 
         super.onNewIntent(intent);
-        NetworkChangedReceiver.unRegister(this);
         finish();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        super.onBackPressed();
+        finish();
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+        NetworkChangedReceiver.unRegister(App.INSTANCE);
     }
 
     //============================ 内部类 ============================

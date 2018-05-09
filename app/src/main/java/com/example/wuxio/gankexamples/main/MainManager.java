@@ -106,6 +106,7 @@ public class MainManager extends BaseActivityManager< MainActivity > {
                 activity.setBannerImageData(urls, bitmapFiles, bitmaps);
             }
             mBus.clearRunnable();
+
         }).run();
     }
 }

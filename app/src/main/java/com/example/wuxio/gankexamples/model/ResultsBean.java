@@ -16,7 +16,6 @@ public class ResultsBean {
 
     @Id(assignable = true)
     public long                id;
-    @Index
     public String              _id;
     public long                createdAt;
     public String              desc;
