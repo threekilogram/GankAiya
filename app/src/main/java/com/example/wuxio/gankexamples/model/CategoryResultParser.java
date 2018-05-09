@@ -97,7 +97,7 @@ public class CategoryResultParser {
                 } else if ("createdAt".equals(name)) {
 
                     String createdAt = jsonReader.nextString();
-                    bean.createdAt = DateFormat.format(createdAt);
+                    bean.createdAt = DateFormat.formatFull(createdAt);
 
                 } else if ("desc".equals(name)) {
 
@@ -106,7 +106,7 @@ public class CategoryResultParser {
                 } else if ("publishedAt".equals(name)) {
 
                     String publishedAt = jsonReader.nextString();
-                    bean.publishedAt = DateFormat.format(publishedAt);
+                    bean.publishedAt = DateFormat.formatFull(publishedAt);
 
                 } else if ("source".equals(name)) {
 

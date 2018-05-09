@@ -9,7 +9,7 @@ import retrofit2.http.Streaming;
 /**
  * @author wuxio 2018-04-29:23:01
  */
-public interface GankApi {
+public interface GankCategoryApi {
 
 
     /**
@@ -22,7 +22,7 @@ public interface GankApi {
      * @param category 数据类型
      * @param count    请求个数
      * @param page     第几页
-     * @return Observable<                CategoryResult                >
+     * @return 数据
      */
     @Streaming
     @GET("data/{category}/{count}/{page}")

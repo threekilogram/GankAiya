@@ -1,5 +1,7 @@
 package com.example.wuxio.gankexamples.model;
 
+import java.util.Date;
+
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 
@@ -12,4 +14,12 @@ public class HistoryBean {
     @Id(assignable = true)
     public long date;
 
+
+    @Override
+    public String toString() {
+
+        Date dateTime = new Date(date);
+
+        return dateTime.toString();
+    }
 }

@@ -15,8 +15,13 @@ public class DateFormat {
             Locale.CHINA
     );
 
+    public static final SimpleDateFormat YMD_DATE_FORMAT = new SimpleDateFormat(
+            "yyyy-MM-dd",
+            Locale.CHINA
+    );
 
-    public static long format(String date) {
+
+    public static long formatFull(String date) {
 
         try {
             Date parse = FULL_DATE_FORMAT.parse(date);
@@ -27,4 +32,17 @@ public class DateFormat {
 
         return System.currentTimeMillis();
     }
+
+    public static long formatYMD(String date) {
+
+        try {
+            Date parse = YMD_DATE_FORMAT.parse(date);
+            return parse.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return System.currentTimeMillis();
+    }
+
 }

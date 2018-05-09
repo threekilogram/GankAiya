@@ -51,7 +51,7 @@ public class CategoryRunnable implements Runnable {
 
         /* 从网络读取数据,之后保存结果 */
 
-        Call< ResponseBody > categoryData = NetWork.gankApi().getCategoryData(mType, mCount, mPage);
+        Call< ResponseBody > categoryData = NetWork.categoryApi().getCategoryData(mType, mCount, mPage);
 
         try {
             Response< ResponseBody > gankResponse = categoryData.execute();

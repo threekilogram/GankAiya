@@ -34,6 +34,9 @@ public class App extends Application {
             return;
         }
         LeakCanary.install(this);
+
+
+        AppManager.getInstance().loadHistoryData();
     }
 
 

@@ -8,8 +8,8 @@ import retrofit2.Retrofit;
 public class NetWork {
 
 
-    private static GankApi  gankApi;
-    private static Retrofit retrofit;
+    private static GankCategoryApi sGankCategoryApi;
+    private static Retrofit        retrofit;
     private static final String BASE_URL = "http://gank.io/api/";
 
 
@@ -25,13 +25,25 @@ public class NetWork {
     }
 
 
-    public static GankApi gankApi() {
+    /**
+     * @return 分类数据
+     */
+    public static GankCategoryApi categoryApi() {
 
-        if (gankApi == null) {
+        if (sGankCategoryApi == null) {
 
-            gankApi = getRetrofit().create(GankApi.class);
+            sGankCategoryApi = getRetrofit().create(GankCategoryApi.class);
         }
 
-        return gankApi;
+        return sGankCategoryApi;
+    }
+
+
+    /**
+     * @return 发过日期的Api
+     */
+    public static GankHistoryApi historyApi() {
+
+        return getRetrofit().create(GankHistoryApi.class);
     }
 }

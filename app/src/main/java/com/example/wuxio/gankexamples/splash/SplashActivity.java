@@ -70,6 +70,7 @@ public class SplashActivity extends AppCompatActivity {
 
             loadLogoImage();
             mHandler.startCountDown(3);
+
         });
     }
 
