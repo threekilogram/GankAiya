@@ -10,7 +10,6 @@
       "properties": [
         {
           "id": "1:7123895860355814540",
-          "indexId": "1:1865763592651405410",
           "name": "_id"
         },
         {
@@ -73,9 +72,44 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "5:3855480327290571500",
+      "lastPropertyId": "1:8647199902527302222",
+      "name": "HistoryBean",
+      "properties": [
+        {
+          "id": "1:8647199902527302222",
+          "name": "date"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "6:1752219575056127637",
+      "lastPropertyId": "2:8229648526749162643",
+      "name": "DayContentBean",
+      "properties": [
+        {
+          "id": "1:3387120474003287629",
+          "name": "date"
+        },
+        {
+          "id": "2:8229648526749162643",
+          "name": "contentAllType"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "7:647470447673383684",
+      "lastPropertyId": "0:0",
+      "name": "DayContentBeanParser",
+      "properties": [],
+      "relations": []
     }
   ],
-  "lastEntityId": "4:2191053166529673684",
+  "lastEntityId": "7:647470447673383684",
   "lastIndexId": "2:3318794497750908740",
   "lastRelationId": "1:230127297521059142",
   "lastSequenceId": "0:0",
@@ -85,7 +119,9 @@
     757796507134105218,
     2497229083352266774
   ],
-  "retiredIndexUids": [],
+  "retiredIndexUids": [
+    1865763592651405410
+  ],
   "retiredPropertyUids": [
     4156572695886843924,
     4071589820533563101,

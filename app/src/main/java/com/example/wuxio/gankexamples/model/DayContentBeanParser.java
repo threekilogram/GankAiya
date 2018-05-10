@@ -1,0 +1,79 @@
+package com.example.wuxio.gankexamples.model;
+
+import android.util.JsonReader;
+
+import com.example.wuxio.gankexamples.constant.CategoryConstant;
+
+import java.io.IOException;
+import java.io.Reader;
+
+/**
+ * @author wuxio 2018-05-10:8:12
+ */
+public class DayContentBeanParser {
+
+    public static DayContentBean parse(Reader reader) {
+
+        JsonReader jsonReader = new JsonReader(reader);
+
+        try {
+
+            DayContentBean dayContentBean = new DayContentBean();
+            final String firstName = "category";
+            final String secondName = "error";
+            final String thirdName = "results";
+            while (jsonReader.hasNext()) {
+
+                String nextName = jsonReader.nextName();
+
+                if (firstName.equals(nextName)) {
+
+                    parseContentType(jsonReader, dayContentBean);
+
+                } else if (secondName.equals(nextName)) {
+
+                    boolean nextBoolean = jsonReader.nextBoolean();
+
+                }
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static void parseContentType(
+            JsonReader jsonReader,
+            DayContentBean dayContentBean) throws IOException {
+
+        String nextName;
+        jsonReader.beginArray();
+        while (jsonReader.hasNext()) {
+
+            nextName = jsonReader.nextName();
+
+            if (CategoryConstant.Android.equals(nextName)) {
+                dayContentBean.setHasAndroid();
+            } else if (CategoryConstant.App.equals(nextName)) {
+                dayContentBean.setHasApp();
+            } else if (CategoryConstant.BEAUTY.equals(nextName)) {
+                dayContentBean.setHasBeauty();
+            } else if (CategoryConstant.EXTRA_RESOURCES.equals(nextName)) {
+                dayContentBean.setHasExtraResources();
+            } else if (CategoryConstant.FRONT.equals(nextName)) {
+                dayContentBean.setHasFront();
+            } else if (CategoryConstant.iOS.equals(nextName)) {
+                dayContentBean.setHasIos();
+            } else if (CategoryConstant.RECOMMEND.equals(nextName)) {
+                dayContentBean.setHasRecommend();
+            } else if (CategoryConstant.REST_VIDEO.equals(nextName)) {
+                dayContentBean.setHasRestVideo();
+            }
+        }
+        jsonReader.endArray();
+    }
+
+}

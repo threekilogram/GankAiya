@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_main);
 
-        MainManager.getInstance().register(this);
+        //MainManager.getInstance().register(this);
 
         initView();
         setSystemUI();
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             initNavigationView(mNavigationView);
 
             /* 为activity执行后台初始化操作 */
-            MainManager.getInstance().onActivityCreate();
+            //MainManager.getInstance().onActivityCreate();
         });
     }
 

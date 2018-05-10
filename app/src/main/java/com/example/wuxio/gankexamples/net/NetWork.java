@@ -46,4 +46,13 @@ public class NetWork {
 
         return getRetrofit().create(GankHistoryApi.class);
     }
+
+
+    /**
+     * @return 发过日期的Api
+     */
+    public static GankDayApi dayApi() {
+
+        return getRetrofit().create(GankDayApi.class);
+    }
 }

@@ -84,9 +84,25 @@
         }
       ],
       "relations": []
+    },
+    {
+      "id": "6:1752219575056127637",
+      "lastPropertyId": "2:8229648526749162643",
+      "name": "DayContentBean",
+      "properties": [
+        {
+          "id": "1:3387120474003287629",
+          "name": "date"
+        },
+        {
+          "id": "2:8229648526749162643",
+          "name": "contentAllType"
+        }
+      ],
+      "relations": []
     }
   ],
-  "lastEntityId": "5:3855480327290571500",
+  "lastEntityId": "7:647470447673383684",
   "lastIndexId": "2:3318794497750908740",
   "lastRelationId": "1:230127297521059142",
   "lastSequenceId": "0:0",
@@ -94,7 +110,8 @@
   "modelVersionParserMinimum": 4,
   "retiredEntityUids": [
     757796507134105218,
-    2497229083352266774
+    2497229083352266774,
+    647470447673383684
   ],
   "retiredIndexUids": [
     1865763592651405410

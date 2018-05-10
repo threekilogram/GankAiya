@@ -2,6 +2,7 @@ package com.example.wuxio.gankexamples.dao.factory;
 
 import com.example.wuxio.gankexamples.constant.CategoryConstant;
 import com.example.wuxio.gankexamples.dao.category.CategoryDao;
+import com.example.wuxio.gankexamples.dao.history.HistoryBeanDao;
 import com.example.wuxio.gankexamples.dao.image.ImageBeanDao;
 
 /**
@@ -22,5 +23,11 @@ public class DaoFactory {
     public static ImageBeanDao getImageDao() {
 
         return ImageBeanDaoImpl.getInstance();
+    }
+
+
+    public static HistoryBeanDao getHistoryDao() {
+
+        return HistoryBeanDaoImpl.getInstance();
     }
 }

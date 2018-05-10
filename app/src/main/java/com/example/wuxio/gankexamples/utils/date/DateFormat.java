@@ -33,6 +33,7 @@ public class DateFormat {
         return System.currentTimeMillis();
     }
 
+
     public static long formatYMD(String date) {
 
         try {
@@ -45,4 +46,13 @@ public class DateFormat {
         return System.currentTimeMillis();
     }
 
+
+    public static String formatDateToYMD(long date) {
+
+        Date dateDate = new Date(date);
+
+        synchronized (YMD_DATE_FORMAT) {
+            return YMD_DATE_FORMAT.format(dateDate);
+        }
+    }
 }

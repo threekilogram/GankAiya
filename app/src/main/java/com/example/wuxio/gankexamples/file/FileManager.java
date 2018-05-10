@@ -1,5 +1,7 @@
 package com.example.wuxio.gankexamples.file;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 
 import com.example.wuxio.gankexamples.App;
@@ -44,5 +46,27 @@ public class FileManager {
             appPicFile = new File(appFile, "pic");
         }
         return appPicFile;
+    }
+
+
+    public static long getCachedGankDay() {
+
+        SharedPreferences preferences = App.INSTANCE.getSharedPreferences(
+                "cached_gank_day",
+                Context.MODE_PRIVATE
+        );
+
+        return preferences.getLong("day", -1);
+    }
+
+
+    public static void putCachedGankDay(long day) {
+
+        SharedPreferences preferences = App.INSTANCE.getSharedPreferences(
+                "cached_gank_day",
+                Context.MODE_PRIVATE
+        );
+
+        preferences.edit().putLong("day", day).apply();
     }
 }
