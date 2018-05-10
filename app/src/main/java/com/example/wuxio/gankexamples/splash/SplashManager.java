@@ -43,5 +43,4 @@ public class SplashManager extends BaseActivityManager< SplashActivity > {
     public void loadLogoImage() {
 
     }
-
 }

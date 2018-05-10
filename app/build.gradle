@@ -42,7 +42,7 @@ dependencies {
     implementation 'com.github.threekilogram:ViewSkin:1.2'
 
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:1.4'
+    implementation 'com.github.threekilogram:ObjectBus:1.5.0'
 
     /* memory */
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'

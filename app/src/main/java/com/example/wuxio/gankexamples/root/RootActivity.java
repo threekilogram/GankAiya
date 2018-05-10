@@ -3,10 +3,11 @@ package com.example.wuxio.gankexamples.root;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.wuxio.gankexamples.app.App;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
+import com.example.wuxio.gankexamples.utils.netstate.NetworkChangedReceiver;
 
 /**
  * 作为根activity,使用singleTask模式,用来清除任务栈
@@ -25,24 +26,13 @@ public class RootActivity extends AppCompatActivity {
     }
 
 
-    private Handler mHandler;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        mHandler = new Handler();
-        postAction();
-    }
 
-
-    private void postAction() {
-
-        mHandler.post(() -> {
-
-            SplashActivity.start(RootActivity.this);
-        });
+        NetworkChangedReceiver.register(App.INSTANCE);
+        SplashActivity.start(RootActivity.this);
     }
 
 
@@ -55,8 +45,9 @@ public class RootActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onDestroy() {
+    public void finish() {
 
-        super.onDestroy();
+        NetworkChangedReceiver.unRegister(App.INSTANCE);
+        super.finish();
     }
 }
