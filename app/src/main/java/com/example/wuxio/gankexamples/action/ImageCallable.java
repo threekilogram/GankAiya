@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.gank.beauty;
+package com.example.wuxio.gankexamples.action;
 
 import android.support.annotation.Nullable;
 import android.util.Log;

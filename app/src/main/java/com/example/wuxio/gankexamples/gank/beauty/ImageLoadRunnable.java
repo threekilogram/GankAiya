@@ -4,6 +4,7 @@ import android.util.ArrayMap;
 import android.util.Pair;
 
 import com.example.objectbus.executor.AppExecutor;
+import com.example.wuxio.gankexamples.action.ImageCallable;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.file.FileNameUtils;
 

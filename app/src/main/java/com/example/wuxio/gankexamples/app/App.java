@@ -38,8 +38,6 @@ public class App extends Application {
         }
         LeakCanary.install(this);
 
-        /* load && cache history data */
-        AppManager.getInstance().loadHistoryData();
     }
 
 

@@ -21,7 +21,9 @@ public abstract class BaseActivityManager < T extends Activity > {
 
     public void unRegister() {
 
-        mReference.clear();
+        if (mReference != null) {
+            mReference.clear();
+        }
     }
 
 

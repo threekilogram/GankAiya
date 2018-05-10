@@ -23,7 +23,7 @@
             android:layout_marginTop="40dp"
             android:gravity="center"
             android:background="@drawable/shape_jump"
-            android:onClick="toRootActivity"
+            android:onClick="toMainActivity"
             android:textSize="12sp"
             android:textColor="#7999"
             android:text="@string/jump"/>

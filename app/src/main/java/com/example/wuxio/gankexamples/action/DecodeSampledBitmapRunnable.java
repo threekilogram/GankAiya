@@ -1,11 +1,9 @@
 package com.example.wuxio.gankexamples.action;
 
 import android.graphics.Bitmap;
-import android.util.Pair;
+import android.support.annotation.DrawableRes;
 
-import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.app.App;
-import com.example.wuxio.gankexamples.gank.beauty.ImageCallable;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 
 import java.io.File;
@@ -17,9 +15,10 @@ import java.io.File;
  */
 public class DecodeSampledBitmapRunnable implements Runnable {
 
-    private String mUrl;
+    private File   mFile;
     private int    mWidth;
     private int    mHeight;
+    private int    mFailedRes;
     private Bitmap mBitmap;
 
 
@@ -29,25 +28,21 @@ public class DecodeSampledBitmapRunnable implements Runnable {
     }
 
 
-    public DecodeSampledBitmapRunnable(String url, int width, int height) {
+    public DecodeSampledBitmapRunnable(File file, int width, int height, @DrawableRes int failedRes) {
 
+        mFile = file;
         mWidth = width;
         mHeight = height;
-        mUrl = url;
+        mFailedRes = failedRes;
     }
 
 
     @Override
     public void run() {
 
-        ImageCallable callable = new ImageCallable(mUrl);
-
         try {
-            Pair< String, File > result = callable.call();
 
-            File file = result.second;
-
-            mBitmap = BitmapReader.decodeSampledBitmap(file, mWidth, mHeight);
+            mBitmap = BitmapReader.decodeSampledBitmap(mFile, mWidth, mHeight);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,7 +51,7 @@ public class DecodeSampledBitmapRunnable implements Runnable {
 
             mBitmap = BitmapReader.decodeSampledBitmap(
                     App.INSTANCE.getResources(),
-                    R.drawable.without_net,
+                    mFailedRes,
                     mWidth,
                     mHeight
             );

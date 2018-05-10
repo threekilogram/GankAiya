@@ -4,31 +4,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.objectbus.message.Messengers;
+import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
-
-import java.lang.ref.WeakReference;
 
 /**
  * show splash ,than goto mainActivity
  *
  * @author wuxio
  */
-public class SplashActivity extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity implements OnMessageReceiveListener {
 
-    protected ImageView   mLogoImage;
-    protected TextView    mCountText;
-    protected FrameLayout mRoot;
-    protected Bitmap      mBitmap;
+    protected ImageView     mLogoImage;
+    protected TextView      mCountText;
+    protected FrameLayout   mRoot;
+    private   SplashManager mManager;
+
+    private static final int MSG_WHAT_COUNT = 3;
+    private              int mCountDown     = 3;
 
 
     public static void start(Context context) {
@@ -45,7 +46,8 @@ public class SplashActivity extends AppCompatActivity {
         super.setContentView(R.layout.activity_splash);
         initView();
 
-        SplashManager.getInstance().register(this);
+        mManager = new SplashManager();
+        mManager.register(this);
         postAction();
     }
 
@@ -65,19 +67,22 @@ public class SplashActivity extends AppCompatActivity {
 
         mRoot.post(() -> {
 
-            SplashManager.getInstance().loadLogoImage();
-            //mHandler.startCountDown(3);
+            mManager.loadLogoImage();
 
+            Messengers.send(MSG_WHAT_COUNT, SplashActivity.this);
         });
     }
 
 
     @Override
-    protected void onDestroy() {
+    public void onBackPressed() {
 
-        SplashManager.getInstance().unRegister();
-        super.onDestroy();
+        RootActivity.start(this);
+        finish();
+        super.onBackPressed();
     }
+
+    //============================ 加载Splash图片 ============================
 
 
     public ImageView getLogoImage() {
@@ -86,22 +91,31 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    public void setSplash(Bitmap bitmap) {
+    public void setSplashBitmap(Bitmap bitmap) {
 
-        mBitmap = bitmap;
-        //mHandler.setSplash();
+        mLogoImage.setImageBitmap(bitmap);
     }
 
+    //============================ 更新倒计时 ============================
 
-    /**
-     * 跳转到{@link MainActivity}
-     */
-    public void toRootActivity(View view) {
+    private static final String TAG = "SplashActivity";
 
-        RootActivity.start(this);
-        finish();
-        overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
-        //mHandler.removeCallbacksAndMessages(null);
+
+    @Override
+    public void onReceive(int what) {
+
+        if (MSG_WHAT_COUNT == what) {
+
+            if (mCountDown <= 0) {
+                countDown(mCountDown);
+                toMainActivity(null);
+                return;
+            }
+
+            countDown(mCountDown);
+            mCountDown--;
+            Messengers.send(MSG_WHAT_COUNT, 1000, this);
+        }
     }
 
 
@@ -115,86 +129,26 @@ public class SplashActivity extends AppCompatActivity {
         mCountText.setText(getString(R.string.jump, counted));
     }
 
+    //============================ 跳转到主界面 ============================
+
 
     /**
-     * 倒计时结束
+     * 跳转到{@link MainActivity}
      */
-    private void countToEnd() {
+    public void toMainActivity(View view) {
 
-        toRootActivity(null);
+        MainActivity.start(this);
+        finish();
+        overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
     }
 
-    //============================ static Handler ============================
 
-    private static class CountHandler extends Handler {
+    @Override
+    public void finish() {
 
-        WeakReference< SplashActivity > mReference;
-
-        private static final int MSG_COUNT_DOWN = 12;
-        private static final int MSG_SET_SPLASH = 13;
-
-        private int countToDown;
-
-
-        CountHandler(SplashActivity activity) {
-
-            mReference = new WeakReference<>(activity);
-        }
-
-
-        @Override
-        public void handleMessage(Message msg) {
-
-            SplashActivity activity = mReference.get();
-            if (activity == null) {
-                removeCallbacksAndMessages(null);
-                return;
-            }
-
-            switch (msg.what) {
-
-                case MSG_COUNT_DOWN:
-                    handleMsgCountDown(activity);
-                    break;
-
-                case MSG_SET_SPLASH:
-                    activity.getLogoImage().setImageBitmap(activity.mBitmap);
-
-                default:
-                    break;
-            }
-        }
-
-
-        private void handleMsgCountDown(SplashActivity activity) {
-
-            activity.countDown(countToDown);
-            if (--countToDown >= 0) {
-                loop();
-                return;
-            }
-            activity.countDown(0);
-            activity.countToEnd();
-        }
-
-
-        @SuppressWarnings("SameParameterValue")
-        void startCountDown(int second) {
-
-            countToDown = second;
-            sendEmptyMessage(MSG_COUNT_DOWN);
-        }
-
-
-        private void loop() {
-
-            sendEmptyMessageDelayed(MSG_COUNT_DOWN, 1000);
-        }
-
-
-        void setSplash() {
-
-            sendEmptyMessage(MSG_SET_SPLASH);
-        }
+        mManager.unRegister();
+        Messengers.remove(MSG_WHAT_COUNT, this);
+        super.finish();
     }
+
 }
