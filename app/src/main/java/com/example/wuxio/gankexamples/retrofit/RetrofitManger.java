@@ -1,4 +1,8 @@
-package com.example.wuxio.gankexamples.model.net;
+package com.example.wuxio.gankexamples.retrofit;
+
+import com.example.wuxio.gankexamples.model.net.GankCategoryApi;
+import com.example.wuxio.gankexamples.model.net.GankDayApi;
+import com.example.wuxio.gankexamples.model.net.GankHistoryApi;
 
 import retrofit2.Retrofit;
 

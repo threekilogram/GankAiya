@@ -1,13 +1,13 @@
 package com.example.wuxio.gankexamples.gank;
 
 import com.example.wuxio.gankexamples.constant.GankCategory;
+import com.example.wuxio.gankexamples.model.CategoryResult;
+import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.dao.category.CategoryDao;
 import com.example.wuxio.gankexamples.model.dao.factory.DaoFactory;
-import com.example.wuxio.gankexamples.model.CategoryResult;
 import com.example.wuxio.gankexamples.model.CategoryResultParser;
 import com.example.wuxio.gankexamples.model.DaoIdUtil;
-import com.example.wuxio.gankexamples.model.ResultsBean;
-import com.example.wuxio.gankexamples.model.net.RetrofitManger;
+import com.example.wuxio.gankexamples.retrofit.RetrofitManger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -26,10 +26,10 @@ public class CategoryRunnable implements Runnable {
 
     private static final String TAG = "CategoryRunnable";
 
-    private String              mType;
-    private int                 mCount;
-    private int                 mPage;
-    private List< ResultsBean > mResultsBeans;
+    private String                   mType;
+    private int                      mCount;
+    private int                      mPage;
+    private List< GankCategoryBean > mResultsBeans;
 
 
     public CategoryRunnable(String type, int count, int page) {
@@ -40,7 +40,7 @@ public class CategoryRunnable implements Runnable {
     }
 
 
-    public List< ResultsBean > getResultsBeans() {
+    public List< GankCategoryBean > getResultsBeans() {
 
         return mResultsBeans;
     }
@@ -79,7 +79,7 @@ public class CategoryRunnable implements Runnable {
 
                     /* 将分类数据存储到数据库 */
 
-                    List< ResultsBean > results = result.results;
+                    List< GankCategoryBean > results = result.results;
                     DaoIdUtil.setResultsBeanID(results);
                     mResultsBeans = results;
 

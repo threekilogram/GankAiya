@@ -8,8 +8,8 @@ import java.util.List;
  */
 public class CategoryResult {
 
-    public boolean             error;
-    public List< ResultsBean > results;
+    public boolean                  error;
+    public List< GankCategoryBean > results;
 
 
     @Override

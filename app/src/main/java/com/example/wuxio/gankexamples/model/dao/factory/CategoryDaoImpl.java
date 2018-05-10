@@ -1,9 +1,9 @@
 package com.example.wuxio.gankexamples.model.dao.factory;
 
 import com.example.wuxio.gankexamples.app.App;
+import com.example.wuxio.gankexamples.model.GankCategoryBean;
+import com.example.wuxio.gankexamples.model.GankCategoryBean_;
 import com.example.wuxio.gankexamples.model.dao.category.CategoryDao;
-import com.example.wuxio.gankexamples.model.ResultsBean;
-import com.example.wuxio.gankexamples.model.ResultsBean_;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ class CategoryDaoImpl implements CategoryDao {
 
     private CategoryDaoImpl() {
 
-        mResultsBeanBox = App.INSTANCE.getBoxStore().boxFor(ResultsBean.class);
+        mResultsBeanBox = App.INSTANCE.getBoxStore().boxFor(GankCategoryBean.class);
     }
 
 
@@ -35,38 +35,37 @@ class CategoryDaoImpl implements CategoryDao {
 
     //============================ dao ============================
 
-    private final Box< ResultsBean > mResultsBeanBox;
+    private final Box< GankCategoryBean > mResultsBeanBox;
 
 
     @Override
-    public void insert(List< ResultsBean > resultsBeans) {
+    public void insert(List< GankCategoryBean > resultsBeans) {
 
         mResultsBeanBox.put(resultsBeans);
     }
 
 
     @Override
-    public List< ResultsBean > getAll() {
+    public List< GankCategoryBean > getAll() {
 
         return mResultsBeanBox.getAll();
     }
 
 
     @Override
-    public List< ResultsBean > query(String type, int count, int page) {
+    public List< GankCategoryBean > query(String type, int count, int page) {
 
         int offset = count * (page - 1);
         if (offset < 0) {
             offset = 0;
         }
 
-        List< ResultsBean > beans = mResultsBeanBox.query()
-                .equal(ResultsBean_.type, type)
-                .orderDesc(ResultsBean_.id)
+        List< GankCategoryBean > beans = mResultsBeanBox.query()
+                .equal(GankCategoryBean_.type, type)
+                .orderDesc(GankCategoryBean_.id)
                 .build()
                 .find(offset, count);
 
         return beans;
     }
-
 }

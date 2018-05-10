@@ -3,7 +3,6 @@ package com.example.wuxio.gankexamples.model;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Index;
-import io.objectbox.annotation.Uid;
 import io.objectbox.relation.ToMany;
 
 /**
@@ -11,8 +10,7 @@ import io.objectbox.relation.ToMany;
  */
 
 @Entity
-@Uid(4603379178480245620L)
-public class ResultsBean {
+public class GankCategoryBean {
 
     @Id(assignable = true)
     public long                id;
@@ -32,7 +30,7 @@ public class ResultsBean {
     @Override
     public String toString() {
 
-        return "ResultsBean{" +
+        return "GankCategoryBean{" +
                 "id=" + id +
                 ", _id='" + _id + '\'' +
                 ", createdAt=" + createdAt +

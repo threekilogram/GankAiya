@@ -12,11 +12,11 @@ public class DaoIdUtil {
     /**
      * @param beans 为bean 设置ID
      */
-    public static void setResultsBeanID(List< ResultsBean > beans) {
+    public static void setResultsBeanID(List< GankCategoryBean > beans) {
 
         final int size = beans.size();
         for (int i = 0; i < size; i++) {
-            ResultsBean bean = beans.get(i);
+            GankCategoryBean bean = beans.get(i);
             bean.id = bean.publishedAt;
         }
     }

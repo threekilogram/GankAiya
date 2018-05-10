@@ -31,8 +31,10 @@ public class RootActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        NetworkChangedReceiver.register(App.INSTANCE);
         SplashActivity.start(RootActivity.this);
+
+        /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
+        NetworkChangedReceiver.register(App.INSTANCE);
     }
 
 
@@ -47,6 +49,7 @@ public class RootActivity extends AppCompatActivity {
     @Override
     public void finish() {
 
+        /* 应用退出之后,不再需要监视网络状态 */
         NetworkChangedReceiver.unRegister(App.INSTANCE);
         super.finish();
     }

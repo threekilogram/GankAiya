@@ -4,21 +4,25 @@ import com.example.wuxio.gankexamples.constant.GankCategory;
 
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
-import io.objectbox.annotation.Uid;
+import io.objectbox.relation.ToMany;
 
 /**
  * @author wuxio 2018-05-10:8:12
  */
 @Entity
-@Uid(1752219575056127637L)
-public class DayContentBean {
+public class GankDayContentBean {
 
     @Id(assignable = true)
     public long date;
 
+    //============================ 记录今天有哪些分类数据 ============================
+
     private int contentAllType;
 
 
+    /**
+     * used for dao
+     */
     public int getContentAllType() {
 
         return contentAllType;
@@ -143,4 +147,8 @@ public class DayContentBean {
 
         return (contentAllType >> 7 & 0b1) == 1;
     }
+
+    //============================ 指向所有分类数据 ============================
+
+    public ToMany< GankCategoryBean > categoryBeans;
 }

@@ -1,9 +1,9 @@
 package com.example.wuxio.gankexamples.model.dao.factory;
 
 import com.example.wuxio.gankexamples.app.App;
+import com.example.wuxio.gankexamples.model.GankHistoryBean;
+import com.example.wuxio.gankexamples.model.GankHistoryBean_;
 import com.example.wuxio.gankexamples.model.dao.history.HistoryBeanDao;
-import com.example.wuxio.gankexamples.model.HistoryBean;
-import com.example.wuxio.gankexamples.model.HistoryBean_;
 
 import java.util.List;
 
@@ -17,12 +17,12 @@ public class HistoryBeanDaoImpl implements HistoryBeanDao {
 
     //============================ singleTon ============================
 
-    private final Box< HistoryBean > mHistoryBeanBox;
+    private final Box< GankHistoryBean > mHistoryBeanBox;
 
 
     private HistoryBeanDaoImpl() {
 
-        mHistoryBeanBox = App.INSTANCE.getBoxStore().boxFor(HistoryBean.class);
+        mHistoryBeanBox = App.INSTANCE.getBoxStore().boxFor(GankHistoryBean.class);
     }
 
 
@@ -40,14 +40,14 @@ public class HistoryBeanDaoImpl implements HistoryBeanDao {
 
 
     @Override
-    public HistoryBean query(long date) {
+    public GankHistoryBean query(long date) {
 
         return mHistoryBeanBox.get(date);
     }
 
 
     @Override
-    public List< HistoryBean > query(long[] dates) {
+    public List< GankHistoryBean > query(long[] dates) {
 
         return mHistoryBeanBox.get(dates);
     }
@@ -56,8 +56,8 @@ public class HistoryBeanDaoImpl implements HistoryBeanDao {
     @Override
     public long findLatest() {
 
-        Query< HistoryBean > build = mHistoryBeanBox.query().orderDesc(HistoryBean_.date).build();
-        HistoryBean first = build.findFirst();
+        Query< GankHistoryBean > build = mHistoryBeanBox.query().orderDesc(GankHistoryBean_.date).build();
+        GankHistoryBean first = build.findFirst();
 
         if (first != null) {
 
@@ -65,11 +65,12 @@ public class HistoryBeanDaoImpl implements HistoryBeanDao {
         } else {
             return -1;
         }
+
     }
 
 
     @Override
-    public void insert(List< HistoryBean > historyBeans) {
+    public void insert(List< GankHistoryBean > historyBeans) {
 
         mHistoryBeanBox.put(historyBeans);
     }

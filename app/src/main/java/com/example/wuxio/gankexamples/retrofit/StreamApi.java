@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.model.net;
+package com.example.wuxio.gankexamples.retrofit;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;

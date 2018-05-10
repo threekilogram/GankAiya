@@ -6,8 +6,8 @@ import android.util.Pair;
 
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.file.FileNameUtils;
-import com.example.wuxio.gankexamples.model.net.RetrofitManger;
-import com.example.wuxio.gankexamples.model.net.StreamApi;
+import com.example.wuxio.gankexamples.retrofit.RetrofitManger;
+import com.example.wuxio.gankexamples.retrofit.StreamApi;
 import com.example.wuxio.gankexamples.utils.FileIOUtils;
 
 import java.io.File;

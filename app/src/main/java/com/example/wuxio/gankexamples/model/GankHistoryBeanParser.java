@@ -12,13 +12,13 @@ import java.util.List;
 /**
  * @author wuxio 2018-05-09:21:29
  */
-public class HistoryBeanParser {
+public class GankHistoryBeanParser {
 
-    public static List< HistoryBean > parse(Reader reader) {
+    public static List< GankHistoryBean > parse(Reader reader) {
 
         JsonReader jsonReader = new JsonReader(reader);
 
-        ArrayList< HistoryBean > historyBeans = new ArrayList<>();
+        ArrayList< GankHistoryBean > historyBeans = new ArrayList<>();
 
         try {
             jsonReader.beginObject();
@@ -40,7 +40,7 @@ public class HistoryBeanParser {
                         while (jsonReader.hasNext()) {
                             String dateString = jsonReader.nextString();
                             long ymd = DateFormat.formatYMD(dateString);
-                            HistoryBean bean = new HistoryBean();
+                            GankHistoryBean bean = new GankHistoryBean();
                             bean.date = ymd;
                             historyBeans.add(bean);
                         }
@@ -56,6 +56,12 @@ public class HistoryBeanParser {
 
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                jsonReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return null;

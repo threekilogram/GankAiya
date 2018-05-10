@@ -1,7 +1,7 @@
 package com.example.wuxio.gankexamples.gank.history;
 
-import com.example.wuxio.gankexamples.model.HistoryBean;
-import com.example.wuxio.gankexamples.model.net.RetrofitManger;
+import com.example.wuxio.gankexamples.model.GankHistoryBean;
+import com.example.wuxio.gankexamples.retrofit.RetrofitManger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -21,10 +21,10 @@ public class CacheHistoryRunnable implements Runnable {
 
     private static final String TAG = "CacheHistoryRunnable";
 
-    private List< HistoryBean > mHistoryBeans;
+    private List< GankHistoryBean > mHistoryBeans;
 
 
-    public CacheHistoryRunnable(List< HistoryBean > historyBeans) {
+    public CacheHistoryRunnable(List< GankHistoryBean > historyBeans) {
 
         mHistoryBeans = historyBeans;
     }
@@ -42,7 +42,7 @@ public class CacheHistoryRunnable implements Runnable {
 
         int size = mHistoryBeans.size();
         for (int i = 0; i < size; i++) {
-            HistoryBean historyBean = mHistoryBeans.get(i);
+            GankHistoryBean historyBean = mHistoryBeans.get(i);
             long date = historyBean.date;
             dateDate.setTime(date);
             calendar.setTime(dateDate);

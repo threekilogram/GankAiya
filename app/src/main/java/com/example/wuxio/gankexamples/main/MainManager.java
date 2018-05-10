@@ -10,7 +10,7 @@ import com.example.wuxio.gankexamples.constant.GankCategory;
 import com.example.wuxio.gankexamples.gank.CategoryRunnable;
 import com.example.wuxio.gankexamples.gank.beauty.ImageFileLoadRunnable;
 import com.example.wuxio.gankexamples.gank.beauty.ImageLoadRunnable;
-import com.example.wuxio.gankexamples.model.ResultsBean;
+import com.example.wuxio.gankexamples.model.GankCategoryBean;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -67,12 +67,12 @@ public class MainManager extends BaseActivityManager< MainActivity > {
                     1
             );
             categoryRunnable.run();
-            List< ResultsBean > resultsBeans = categoryRunnable.getResultsBeans();
+            List< GankCategoryBean > resultsBeans = categoryRunnable.getResultsBeans();
 
             int size = resultsBeans.size();
             List< String > urls = new ArrayList<>(size);
             for (int i = 0; i < size; i++) {
-                ResultsBean bean = resultsBeans.get(i);
+                GankCategoryBean bean = resultsBeans.get(i);
                 urls.add(bean.url);
             }
 

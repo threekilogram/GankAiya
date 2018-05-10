@@ -1,10 +1,8 @@
-package com.example.wuxio.gankexamples.app;
+package com.example.wuxio.gankexamples.gank.history;
 
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.file.PreferenceManager;
-import com.example.wuxio.gankexamples.gank.history.CacheHistoryRunnable;
-import com.example.wuxio.gankexamples.gank.history.GetHistoryJsonRunnable;
-import com.example.wuxio.gankexamples.model.HistoryBean;
+import com.example.wuxio.gankexamples.model.GankHistoryBean;
 import com.example.wuxio.gankexamples.model.dao.factory.DaoFactory;
 
 import java.util.List;
@@ -12,14 +10,14 @@ import java.util.List;
 /**
  * @author wuxio 2018-05-09:22:00
  */
-public class AppManager {
+public class GankHistoryManager {
 
-    private static final String TAG = "AppManager";
+    private static final String TAG = "GankHistoryManager";
 
     private ObjectBus mBus = new ObjectBus();
 
 
-    public void loadHistoryData() {
+    public void updateHistoryBox() {
 
         mBus.toUnder(new Runnable() {
             @Override
@@ -29,7 +27,7 @@ public class AppManager {
 
                 GetHistoryJsonRunnable getHistoryJsonRunnable = new GetHistoryJsonRunnable();
                 getHistoryJsonRunnable.run();
-                List< HistoryBean > beans = getHistoryJsonRunnable.getHistoryBeans();
+                List< GankHistoryBean > beans = getHistoryJsonRunnable.getHistoryBeans();
 
                 if (beans == null) {
 
@@ -51,7 +49,7 @@ public class AppManager {
                 } else {
 
                     /* 有数据 */
-                    HistoryBean latestFromGank = beans.get(0);
+                    GankHistoryBean latestFromGank = beans.get(0);
                     if (latestFromGank.date > latest) {
 
                         // TODO: 2018-05-10 找出大于的数据列表去加载
@@ -81,18 +79,18 @@ public class AppManager {
     //============================ singleTon ============================
 
 
-    private AppManager() {
+    private GankHistoryManager() {
 
     }
 
 
-    public static AppManager getInstance() {
+    public static GankHistoryManager getInstance() {
 
         return SingletonHolder.INSTANCE;
     }
 
 
     private static class SingletonHolder {
-        private static final AppManager INSTANCE = new AppManager();
+        private static final GankHistoryManager INSTANCE = new GankHistoryManager();
     }
 }

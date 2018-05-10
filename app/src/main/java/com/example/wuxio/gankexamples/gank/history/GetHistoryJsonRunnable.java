@@ -2,10 +2,10 @@ package com.example.wuxio.gankexamples.gank.history;
 
 import android.util.Log;
 
-import com.example.wuxio.gankexamples.model.HistoryBean;
-import com.example.wuxio.gankexamples.model.HistoryBeanParser;
+import com.example.wuxio.gankexamples.model.GankHistoryBean;
+import com.example.wuxio.gankexamples.model.GankHistoryBeanParser;
 import com.example.wuxio.gankexamples.model.net.GankHistoryApi;
-import com.example.wuxio.gankexamples.model.net.RetrofitManger;
+import com.example.wuxio.gankexamples.retrofit.RetrofitManger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -22,10 +22,10 @@ public class GetHistoryJsonRunnable implements Runnable {
 
     private static final String TAG = "GetHistoryJsonRunnable";
 
-    List< HistoryBean > mHistoryBeans;
+    List< GankHistoryBean > mHistoryBeans;
 
 
-    public List< HistoryBean > getHistoryBeans() {
+    public List< GankHistoryBean > getHistoryBeans() {
 
         return mHistoryBeans;
     }
@@ -43,7 +43,7 @@ public class GetHistoryJsonRunnable implements Runnable {
             if (execute.isSuccessful()) {
 
                 Reader reader = execute.body().charStream();
-                List< HistoryBean > historyBeans = HistoryBeanParser.parse(reader);
+                List< GankHistoryBean > historyBeans = GankHistoryBeanParser.parse(reader);
 
                 mHistoryBeans = historyBeans;
 

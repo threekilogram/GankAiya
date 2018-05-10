@@ -4,127 +4,123 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "3:4603379178480245620",
-      "lastPropertyId": "11:6450731403687658889",
-      "name": "ResultsBean",
+      "id": "1:5729135738607197870",
+      "lastPropertyId": "10:4277450910406887380",
+      "name": "GankCategoryBean",
       "properties": [
         {
-          "id": "1:7123895860355814540",
+          "id": "1:2135484147722287849",
+          "name": "id"
+        },
+        {
+          "id": "2:498826786541720585",
           "name": "_id"
         },
         {
-          "id": "2:6890568747536189148",
+          "id": "3:1791401509647234246",
           "name": "createdAt"
         },
         {
-          "id": "3:7906756611925976387",
+          "id": "4:691261564903449990",
           "name": "desc"
         },
         {
-          "id": "4:5883929503123750617",
+          "id": "5:1090750292426043269",
           "name": "publishedAt"
         },
         {
-          "id": "5:5104754452273472996",
+          "id": "6:8493460227639471279",
           "name": "source"
         },
         {
-          "id": "6:3770472837979417071",
-          "indexId": "2:3318794497750908740",
+          "id": "7:345429638535793840",
+          "indexId": "1:4779639350140995630",
           "name": "type"
         },
         {
-          "id": "7:323440933281211355",
+          "id": "8:6349875189125203291",
           "name": "url"
         },
         {
-          "id": "8:1144388716994393201",
+          "id": "9:4298712663786684206",
           "name": "used"
         },
         {
-          "id": "9:5701095451159723399",
+          "id": "10:4277450910406887380",
           "name": "who"
-        },
-        {
-          "id": "11:6450731403687658889",
-          "name": "id"
         }
       ],
       "relations": [
         {
-          "id": "1:230127297521059142",
+          "id": "1:8785119646577053768",
           "name": "images"
         }
       ]
     },
     {
-      "id": "4:2191053166529673684",
-      "lastPropertyId": "2:2129986557123418492",
+      "id": "2:8460219238601032585",
+      "lastPropertyId": "2:5521866781022081023",
+      "name": "GankDayContentBean",
+      "properties": [
+        {
+          "id": "1:251022211197287385",
+          "name": "date"
+        },
+        {
+          "id": "2:5521866781022081023",
+          "name": "contentAllType"
+        }
+      ],
+      "relations": [
+        {
+          "id": "2:3245235183014008079",
+          "name": "categoryBeans"
+        }
+      ]
+    },
+    {
+      "id": "3:9177964346614357841",
+      "lastPropertyId": "2:5778615766048391820",
+      "name": "GankHistoryBean",
+      "properties": [
+        {
+          "id": "1:2248059970483861953",
+          "name": "date"
+        },
+        {
+          "id": "2:5778615766048391820",
+          "indexId": "2:4049748744657878175",
+          "name": "dayContentId"
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:9053400604754289060",
+      "lastPropertyId": "2:3648445872379953491",
       "name": "ImageBean",
       "properties": [
         {
-          "id": "1:2787074166292728548",
+          "id": "1:2271781643847217326",
           "name": "id"
         },
         {
-          "id": "2:2129986557123418492",
+          "id": "2:3648445872379953491",
           "name": "url"
-        }
-      ],
-      "relations": []
-    },
-    {
-      "id": "5:3855480327290571500",
-      "lastPropertyId": "1:8647199902527302222",
-      "name": "HistoryBean",
-      "properties": [
-        {
-          "id": "1:8647199902527302222",
-          "name": "date"
-        }
-      ],
-      "relations": []
-    },
-    {
-      "id": "6:1752219575056127637",
-      "lastPropertyId": "2:8229648526749162643",
-      "name": "DayContentBean",
-      "properties": [
-        {
-          "id": "1:3387120474003287629",
-          "name": "date"
-        },
-        {
-          "id": "2:8229648526749162643",
-          "name": "contentAllType"
         }
       ],
       "relations": []
     }
   ],
-  "lastEntityId": "7:647470447673383684",
-  "lastIndexId": "2:3318794497750908740",
-  "lastRelationId": "1:230127297521059142",
+  "lastEntityId": "4:9053400604754289060",
+  "lastIndexId": "2:4049748744657878175",
+  "lastRelationId": "2:3245235183014008079",
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
-  "retiredEntityUids": [
-    757796507134105218,
-    2497229083352266774,
-    647470447673383684
-  ],
-  "retiredIndexUids": [
-    1865763592651405410
-  ],
-  "retiredPropertyUids": [
-    4156572695886843924,
-    4071589820533563101,
-    8993592510007380970,
-    6302552855022201228,
-    4976591342589474948,
-    1014348649755664026,
-    5622526236868921819
-  ],
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
   "retiredRelationUids": [],
   "version": 1
 }

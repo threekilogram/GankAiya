@@ -1,6 +1,6 @@
 package com.example.wuxio.gankexamples.model.dao.history;
 
-import com.example.wuxio.gankexamples.model.HistoryBean;
+import com.example.wuxio.gankexamples.model.GankHistoryBean;
 
 import java.util.List;
 
@@ -15,7 +15,7 @@ public interface HistoryBeanDao {
      * @param date date
      * @return imageBean
      */
-    HistoryBean query(long date);
+    GankHistoryBean query(long date);
 
     /**
      * query
@@ -23,7 +23,7 @@ public interface HistoryBeanDao {
      * @param dates date
      * @return beans
      */
-    List< HistoryBean > query(long[] dates);
+    List< GankHistoryBean > query(long[] dates);
 
     /**
      * 最新的
@@ -37,6 +37,6 @@ public interface HistoryBeanDao {
      *
      * @param historyBeans beans
      */
-    void insert(List< HistoryBean > historyBeans);
+    void insert(List< GankHistoryBean > historyBeans);
 
 }

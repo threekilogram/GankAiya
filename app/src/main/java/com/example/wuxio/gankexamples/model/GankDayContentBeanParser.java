@@ -10,15 +10,15 @@ import java.io.Reader;
 /**
  * @author wuxio 2018-05-10:8:12
  */
-public class DayContentBeanParser {
+public class GankDayContentBeanParser {
 
-    public static DayContentBean parse(Reader reader) {
+    public static GankDayContentBean parse(Reader reader) {
 
         JsonReader jsonReader = new JsonReader(reader);
 
         try {
 
-            DayContentBean dayContentBean = new DayContentBean();
+            GankDayContentBean dayContentBean = new GankDayContentBean();
             final String firstName = "category";
             final String secondName = "error";
             final String thirdName = "results";
@@ -40,6 +40,14 @@ public class DayContentBeanParser {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+
+            try {
+                jsonReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
         return null;
     }
@@ -47,7 +55,7 @@ public class DayContentBeanParser {
 
     public static void parseContentType(
             JsonReader jsonReader,
-            DayContentBean dayContentBean) throws IOException {
+            GankDayContentBean dayContentBean) throws IOException {
 
         String nextName;
         jsonReader.beginArray();

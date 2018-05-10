@@ -46,6 +46,9 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
         super.setContentView(R.layout.activity_splash);
         initView();
 
+        /* 检验本地缓存数据库 */
+
+        /* 委托manager加载splash图片 */
         mManager = new SplashManager();
         mManager.register(this);
         postAction();
@@ -67,8 +70,10 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
 
         mRoot.post(() -> {
 
+            /* 加载splash图片 */
             mManager.loadLogoImage();
 
+            /* 倒计时 */
             Messengers.send(MSG_WHAT_COUNT, SplashActivity.this);
         });
     }
@@ -97,8 +102,6 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
     }
 
     //============================ 更新倒计时 ============================
-
-    private static final String TAG = "SplashActivity";
 
 
     @Override
@@ -146,9 +149,10 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
     @Override
     public void finish() {
 
+        /* 释放资源 */
+
         mManager.unRegister();
         Messengers.remove(MSG_WHAT_COUNT, this);
         super.finish();
     }
-
 }
