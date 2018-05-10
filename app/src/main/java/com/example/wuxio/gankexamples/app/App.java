@@ -3,10 +3,7 @@ package com.example.wuxio.gankexamples.app;
 import android.app.Application;
 
 import com.example.objectbus.BusConfig;
-import com.example.wuxio.gankexamples.model.MyObjectBox;
 import com.squareup.leakcanary.LeakCanary;
-
-import io.objectbox.BoxStore;
 
 /**
  * @author wuxio 2018-04-15:9:53
@@ -14,8 +11,6 @@ import io.objectbox.BoxStore;
 public class App extends Application {
 
     public static App INSTANCE;
-
-    public BoxStore mBoxStore;
 
 
     @Override
@@ -27,8 +22,6 @@ public class App extends Application {
         /* ObjectBus */
         BusConfig.init();
 
-        /* ObjectBox */
-        mBoxStore = MyObjectBox.builder().androidContext(this).build();
 
         /* LeakCanary */
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -38,11 +31,5 @@ public class App extends Application {
         }
         LeakCanary.install(this);
 
-    }
-
-
-    public BoxStore getBoxStore() {
-
-        return mBoxStore;
     }
 }

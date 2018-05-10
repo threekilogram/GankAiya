@@ -29,9 +29,9 @@ import com.example.banner.adapter.BasePagerAdapter;
 import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
+import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_main);
 
-        //MainManager.getInstance().register(this);
+        MainManager.getInstance().register(this);
 
         initView();
         setSystemUI();
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             initNavigationView(mNavigationView);
 
             /* 为activity执行后台初始化操作 */
-            //MainManager.getInstance().onActivityCreate();
+            MainManager.getInstance().onActivityCreate();
         });
     }
 
@@ -279,6 +279,14 @@ public class MainActivity extends AppCompatActivity {
             RootActivity.start(this);
             super.onBackPressed();
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        MainManager.getInstance().unRegister();
+        super.onDestroy();
     }
 
     //============================ banner adapter ============================

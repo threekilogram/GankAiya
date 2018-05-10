@@ -35,7 +35,7 @@ public class GankCategoryBeanParser {
 
                 } else if ("desc".equals(name)) {
 
-                    bean.desc = (jsonReader.nextString());
+                    bean.desc = jsonReader.nextString();
 
                 } else if ("publishedAt".equals(name)) {
 
@@ -44,29 +44,27 @@ public class GankCategoryBeanParser {
 
                 } else if ("source".equals(name)) {
 
-                    bean.source = (jsonReader.nextString());
+                    bean.source = jsonReader.nextString();
 
                 } else if ("type".equals(name)) {
 
-                    bean.type = (jsonReader.nextString());
+                    bean.type = jsonReader.nextString();
 
                 } else if ("url".equals(name)) {
 
-                    bean.url = (jsonReader.nextString());
+                    bean.url = jsonReader.nextString();
 
                 } else if ("used".equals(name)) {
 
-                    bean.used = (jsonReader.nextBoolean());
+                    bean.used = jsonReader.nextBoolean();
 
                 } else if ("who".equals(name) && jsonReader.peek() != JsonToken.NULL) {
 
-                    bean.who = (jsonReader.nextString());
+                    bean.who = jsonReader.nextString();
 
                 } else if ("images".equals(name)) {
 
-                    List< ImageBean > list = parseImages(jsonReader);
-                    bean.images.addAll(list);
-
+                    bean.images = parseImages(jsonReader);
                 } else {
 
                     jsonReader.skipValue();
@@ -84,9 +82,9 @@ public class GankCategoryBeanParser {
     }
 
 
-    private static List< ImageBean > parseImages(JsonReader jsonReader) {
+    private static List< String > parseImages(JsonReader jsonReader) {
 
-        List< ImageBean > list = new ArrayList<>();
+        List< String > list = new ArrayList<>();
 
         try {
             jsonReader.beginArray();
@@ -94,9 +92,7 @@ public class GankCategoryBeanParser {
             while (jsonReader.hasNext()) {
 
                 String string = jsonReader.nextString();
-                ImageBean url = new ImageBean();
-                url.url = string;
-                list.add(url);
+                list.add(string);
             }
 
             jsonReader.endArray();
@@ -106,6 +102,4 @@ public class GankCategoryBeanParser {
 
         return list;
     }
-
 }
-

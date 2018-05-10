@@ -1,8 +1,6 @@
 package com.example.wuxio.gankexamples.retrofit;
 
 import com.example.wuxio.gankexamples.model.net.GankCategoryApi;
-import com.example.wuxio.gankexamples.model.net.GankDayApi;
-import com.example.wuxio.gankexamples.model.net.GankHistoryApi;
 
 import retrofit2.Retrofit;
 
@@ -40,23 +38,5 @@ public class RetrofitManger {
         }
 
         return sGankCategoryApi;
-    }
-
-
-    /**
-     * @return 发过日期的Api
-     */
-    public static GankHistoryApi historyApi() {
-
-        return getRetrofit().create(GankHistoryApi.class);
-    }
-
-
-    /**
-     * @return 发过日期的Api
-     */
-    public static GankDayApi dayApi() {
-
-        return getRetrofit().create(GankDayApi.class);
     }
 }

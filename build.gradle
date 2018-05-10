@@ -2,8 +2,6 @@
 
 buildscript {
 
-    ext.objectboxVersion = '1.5.0'
-
     repositories {
         google()
         jcenter()
@@ -11,8 +9,6 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.2'
 
-        /* object box */
-        classpath "io.objectbox:objectbox-gradle-plugin:$objectboxVersion"
 
     }
 }
