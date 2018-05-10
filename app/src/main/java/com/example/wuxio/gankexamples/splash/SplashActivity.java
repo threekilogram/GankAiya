@@ -75,6 +75,8 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
 
             /* 倒计时 */
             Messengers.send(MSG_WHAT_COUNT, SplashActivity.this);
+
+
         });
     }
 
