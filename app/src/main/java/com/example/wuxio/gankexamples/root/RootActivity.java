@@ -25,14 +25,14 @@ public class RootActivity extends AppCompatActivity {
     }
 
 
-    private RootHandler mHandler;
+    private Handler mHandler;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        mHandler = new RootHandler();
+        mHandler = new Handler();
         postAction();
     }
 
@@ -59,12 +59,4 @@ public class RootActivity extends AppCompatActivity {
 
         super.onDestroy();
     }
-
-    //============================ 内部类 ============================
-
-    private static class RootHandler extends Handler {
-
-
-    }
-
 }

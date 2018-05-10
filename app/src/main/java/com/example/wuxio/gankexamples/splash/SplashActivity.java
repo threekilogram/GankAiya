@@ -12,11 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
-import com.example.wuxio.gankexamples.splash.action.LoadSplashPicRunnable;
 
 import java.lang.ref.WeakReference;
 
@@ -27,11 +25,10 @@ import java.lang.ref.WeakReference;
  */
 public class SplashActivity extends AppCompatActivity {
 
-    protected ImageView    mLogoImage;
-    protected TextView     mCountText;
-    protected FrameLayout  mRoot;
-    protected Bitmap       mBitmap;
-    private   CountHandler mHandler;
+    protected ImageView   mLogoImage;
+    protected TextView    mCountText;
+    protected FrameLayout mRoot;
+    protected Bitmap      mBitmap;
 
 
     public static void start(Context context) {
@@ -47,8 +44,8 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         super.setContentView(R.layout.activity_splash);
         initView();
-        mHandler = new CountHandler(this);
 
+        SplashManager.getInstance().register(this);
         postAction();
     }
 
@@ -68,8 +65,8 @@ public class SplashActivity extends AppCompatActivity {
 
         mRoot.post(() -> {
 
-            loadLogoImage();
-            mHandler.startCountDown(3);
+            SplashManager.getInstance().loadLogoImage();
+            //mHandler.startCountDown(3);
 
         });
     }
@@ -78,7 +75,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
 
-        mHandler.removeCallbacksAndMessages(null);
+        SplashManager.getInstance().unRegister();
         super.onDestroy();
     }
 
@@ -92,18 +89,7 @@ public class SplashActivity extends AppCompatActivity {
     public void setSplash(Bitmap bitmap) {
 
         mBitmap = bitmap;
-        mHandler.setSplash();
-    }
-
-
-    /**
-     * load background image from net
-     */
-    private void loadLogoImage() {
-
-        ObjectBus bus = new ObjectBus();
-        LoadSplashPicRunnable runnable = new LoadSplashPicRunnable(this);
-        bus.toUnder(runnable).run();
+        //mHandler.setSplash();
     }
 
 
@@ -115,7 +101,7 @@ public class SplashActivity extends AppCompatActivity {
         RootActivity.start(this);
         finish();
         overridePendingTransition(R.anim.screen_fade_in, R.anim.screen_zoom_out);
-        mHandler.removeCallbacksAndMessages(null);
+        //mHandler.removeCallbacksAndMessages(null);
     }
 
 

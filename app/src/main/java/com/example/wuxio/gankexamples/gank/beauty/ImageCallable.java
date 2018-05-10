@@ -1,5 +1,6 @@
 package com.example.wuxio.gankexamples.gank.beauty;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.Pair;
 
@@ -19,6 +20,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 /**
+ * 该callable用于从 网络/本地图片目录 加载一个url对应的图片
+ *
  * @author wuxio 2018-05-06:20:33
  */
 public class ImageCallable implements Callable< Pair< String, File > > {
@@ -34,6 +37,7 @@ public class ImageCallable implements Callable< Pair< String, File > > {
     }
 
 
+    @Nullable
     @Override
     public Pair< String, File > call() {
 
@@ -67,7 +71,7 @@ public class ImageCallable implements Callable< Pair< String, File > > {
 
         try {
 
-            /* 创建图片流,保存到本地 */
+            /* 创建图片流 */
 
             StreamApi streamApi = RetrofitManger.getRetrofit().create(StreamApi.class);
             Call< ResponseBody > stream = streamApi.getStream(url);
@@ -79,6 +83,7 @@ public class ImageCallable implements Callable< Pair< String, File > > {
                 assert body != null;
                 InputStream inputStream = body.byteStream();
 
+                /* 保存到本地 */
                 boolean writeIsSuccess = FileIOUtils.writeFileFromIS(pic, inputStream);
 
                 if (writeIsSuccess) {
