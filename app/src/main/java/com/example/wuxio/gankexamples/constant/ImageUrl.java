@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 
 /**
- *
  * @author wuxio
  */
-public class ConstantsImageUrl {
+public class ImageUrl {
 
     /**
      * 电影栏头部的图片

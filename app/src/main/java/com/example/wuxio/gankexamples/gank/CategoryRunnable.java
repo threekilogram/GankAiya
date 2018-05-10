@@ -1,13 +1,13 @@
 package com.example.wuxio.gankexamples.gank;
 
-import com.example.wuxio.gankexamples.constant.CategoryConstant;
-import com.example.wuxio.gankexamples.dao.category.CategoryDao;
-import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
+import com.example.wuxio.gankexamples.constant.GankCategory;
+import com.example.wuxio.gankexamples.model.dao.category.CategoryDao;
+import com.example.wuxio.gankexamples.model.dao.factory.DaoFactory;
 import com.example.wuxio.gankexamples.model.CategoryResult;
 import com.example.wuxio.gankexamples.model.CategoryResultParser;
 import com.example.wuxio.gankexamples.model.DaoIdUtil;
 import com.example.wuxio.gankexamples.model.ResultsBean;
-import com.example.wuxio.gankexamples.net.NetWork;
+import com.example.wuxio.gankexamples.model.net.RetrofitManger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -51,7 +51,7 @@ public class CategoryRunnable implements Runnable {
 
         /* 从网络读取数据,之后保存结果 */
 
-        Call< ResponseBody > categoryData = NetWork.categoryApi().getCategoryData(mType, mCount, mPage);
+        Call< ResponseBody > categoryData = RetrofitManger.categoryApi().getCategoryData(mType, mCount, mPage);
 
         try {
             Response< ResponseBody > gankResponse = categoryData.execute();
@@ -83,7 +83,7 @@ public class CategoryRunnable implements Runnable {
                     DaoIdUtil.setResultsBeanID(results);
                     mResultsBeans = results;
 
-                    CategoryDao categoryDao = DaoFactory.getCategoryDao(CategoryConstant.BEAUTY);
+                    CategoryDao categoryDao = DaoFactory.getCategoryDao(GankCategory.BEAUTY);
                     categoryDao.insert(results);
                 }
 

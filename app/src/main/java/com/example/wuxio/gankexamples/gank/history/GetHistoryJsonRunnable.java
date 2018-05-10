@@ -1,9 +1,9 @@
-package com.example.wuxio.gankexamples.history;
+package com.example.wuxio.gankexamples.gank.history;
 
 import com.example.wuxio.gankexamples.model.HistoryBean;
 import com.example.wuxio.gankexamples.model.HistoryBeanParser;
-import com.example.wuxio.gankexamples.net.GankHistoryApi;
-import com.example.wuxio.gankexamples.net.NetWork;
+import com.example.wuxio.gankexamples.model.net.GankHistoryApi;
+import com.example.wuxio.gankexamples.model.net.RetrofitManger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -30,7 +30,7 @@ public class GetHistoryJsonRunnable implements Runnable {
     @Override
     public void run() {
 
-        GankHistoryApi historyApi = NetWork.historyApi();
+        GankHistoryApi historyApi = RetrofitManger.historyApi();
         Call< ResponseBody > historyData = historyApi.getHistoryData();
 
         try {

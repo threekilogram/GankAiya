@@ -4,8 +4,8 @@ import android.util.Pair;
 
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.file.FileNameUtils;
-import com.example.wuxio.gankexamples.net.NetWork;
-import com.example.wuxio.gankexamples.net.StreamApi;
+import com.example.wuxio.gankexamples.model.net.RetrofitManger;
+import com.example.wuxio.gankexamples.model.net.StreamApi;
 import com.example.wuxio.gankexamples.utils.FileIOUtils;
 
 import java.io.File;
@@ -35,7 +35,7 @@ public class ImageCallable implements Callable< Pair< String, File > > {
     @Override
     public Pair< String, File > call() throws Exception {
 
-        StreamApi streamApi = NetWork.getRetrofit().create(StreamApi.class);
+        StreamApi streamApi = RetrofitManger.getRetrofit().create(StreamApi.class);
         Call< ResponseBody > stream = streamApi.getStream(url);
         Response< ResponseBody > execute = stream.execute();
         if (execute.isSuccessful()) {

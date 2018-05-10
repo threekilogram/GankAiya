@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.dao.image;
+package com.example.wuxio.gankexamples.model.dao.image;
 
 import com.example.wuxio.gankexamples.model.ImageBean;
 

@@ -1,7 +1,7 @@
-package com.example.wuxio.gankexamples.history;
+package com.example.wuxio.gankexamples.gank.history;
 
 import com.example.wuxio.gankexamples.model.HistoryBean;
-import com.example.wuxio.gankexamples.net.NetWork;
+import com.example.wuxio.gankexamples.model.net.RetrofitManger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -52,7 +52,7 @@ public class CacheHistoryRunnable implements Runnable {
 
         }
 
-        Call< ResponseBody > historyData = NetWork.dayApi().getHistoryData(2015, 5, 18);
+        Call< ResponseBody > historyData = RetrofitManger.dayApi().getHistoryData(2015, 5, 18);
 
         try {
             Response< ResponseBody > execute = historyData.execute();

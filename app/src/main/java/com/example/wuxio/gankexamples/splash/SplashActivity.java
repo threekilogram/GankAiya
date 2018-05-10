@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.RootActivity;
+import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.main.MainActivity;
 
 import java.lang.ref.WeakReference;

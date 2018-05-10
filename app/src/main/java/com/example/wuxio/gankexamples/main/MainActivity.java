@@ -29,7 +29,7 @@ import com.example.banner.adapter.BasePagerAdapter;
 import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.RootActivity;
+import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;

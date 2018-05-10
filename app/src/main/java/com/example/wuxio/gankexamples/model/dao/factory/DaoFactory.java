@@ -1,9 +1,9 @@
-package com.example.wuxio.gankexamples.dao.factory;
+package com.example.wuxio.gankexamples.model.dao.factory;
 
-import com.example.wuxio.gankexamples.constant.CategoryConstant;
-import com.example.wuxio.gankexamples.dao.category.CategoryDao;
-import com.example.wuxio.gankexamples.dao.history.HistoryBeanDao;
-import com.example.wuxio.gankexamples.dao.image.ImageBeanDao;
+import com.example.wuxio.gankexamples.constant.GankCategory;
+import com.example.wuxio.gankexamples.model.dao.category.CategoryDao;
+import com.example.wuxio.gankexamples.model.dao.history.HistoryBeanDao;
+import com.example.wuxio.gankexamples.model.dao.image.ImageBeanDao;
 
 /**
  * @author wuxio 2018-05-05:8:11
@@ -12,7 +12,7 @@ public class DaoFactory {
 
     public static CategoryDao getCategoryDao(String type) {
 
-        if (CategoryConstant.BEAUTY.equals(type)) {
+        if (GankCategory.BEAUTY.equals(type)) {
             return CategoryDaoImpl.getInstance();
         }
 

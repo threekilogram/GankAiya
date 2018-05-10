@@ -1,11 +1,11 @@
-package com.example.wuxio.gankexamples.net;
+package com.example.wuxio.gankexamples.model.net;
 
 import retrofit2.Retrofit;
 
 /**
  * @author wuxio 2018-04-29:23:24
  */
-public class NetWork {
+public class RetrofitManger {
 
 
     private static GankCategoryApi sGankCategoryApi;

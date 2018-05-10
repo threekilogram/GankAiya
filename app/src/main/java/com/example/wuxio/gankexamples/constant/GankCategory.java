@@ -3,7 +3,7 @@ package com.example.wuxio.gankexamples.constant;
 /**
  * @author wuxio 2018-05-05:11:22
  */
-public class CategoryConstant {
+public class GankCategory {
 
     public static final String REST_VIDEO      = "休息视频";
     public static final String EXTRA_RESOURCES = "拓展资源";

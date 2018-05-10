@@ -6,7 +6,7 @@ import android.util.ArrayMap;
 import com.example.banner.BannerView;
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseActivityManager;
-import com.example.wuxio.gankexamples.constant.CategoryConstant;
+import com.example.wuxio.gankexamples.constant.GankCategory;
 import com.example.wuxio.gankexamples.gank.CategoryRunnable;
 import com.example.wuxio.gankexamples.gank.beauty.ImageFileLoadRunnable;
 import com.example.wuxio.gankexamples.gank.beauty.ImageLoadRunnable;
@@ -62,7 +62,7 @@ public class MainManager extends BaseActivityManager< MainActivity > {
             /* 从后台准备数据 */
 
             CategoryRunnable categoryRunnable = new CategoryRunnable(
-                    CategoryConstant.BEAUTY,
+                    GankCategory.BEAUTY,
                     5,
                     1
             );

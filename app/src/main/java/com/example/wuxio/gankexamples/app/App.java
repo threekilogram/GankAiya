@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples;
+package com.example.wuxio.gankexamples.app;
 
 import android.app.Application;
 

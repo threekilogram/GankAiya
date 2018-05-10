@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.dao.history;
+package com.example.wuxio.gankexamples.model.dao.history;
 
 import com.example.wuxio.gankexamples.model.HistoryBean;
 

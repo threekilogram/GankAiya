@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.utils.state;
+package com.example.wuxio.gankexamples.utils.netstate;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

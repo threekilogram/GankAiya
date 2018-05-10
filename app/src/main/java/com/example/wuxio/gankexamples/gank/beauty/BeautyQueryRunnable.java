@@ -1,7 +1,7 @@
 package com.example.wuxio.gankexamples.gank.beauty;
 
-import com.example.wuxio.gankexamples.constant.CategoryConstant;
-import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
+import com.example.wuxio.gankexamples.constant.GankCategory;
+import com.example.wuxio.gankexamples.model.dao.factory.DaoFactory;
 import com.example.wuxio.gankexamples.model.ResultsBean;
 
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ public class BeautyQueryRunnable implements Runnable {
         /* 从分类数据读取分类entity */
 
         List< ResultsBean > resultsBeans = DaoFactory
-                .getCategoryDao(CategoryConstant.BEAUTY)
-                .query(CategoryConstant.BEAUTY, count, page);
+                .getCategoryDao(GankCategory.BEAUTY)
+                .query(GankCategory.BEAUTY, count, page);
 
         /* 找出ImageURl */
 

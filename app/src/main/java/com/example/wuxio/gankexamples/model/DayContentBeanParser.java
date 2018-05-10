@@ -2,7 +2,7 @@ package com.example.wuxio.gankexamples.model;
 
 import android.util.JsonReader;
 
-import com.example.wuxio.gankexamples.constant.CategoryConstant;
+import com.example.wuxio.gankexamples.constant.GankCategory;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -55,21 +55,21 @@ public class DayContentBeanParser {
 
             nextName = jsonReader.nextName();
 
-            if (CategoryConstant.Android.equals(nextName)) {
+            if (GankCategory.Android.equals(nextName)) {
                 dayContentBean.setHasAndroid();
-            } else if (CategoryConstant.App.equals(nextName)) {
+            } else if (GankCategory.App.equals(nextName)) {
                 dayContentBean.setHasApp();
-            } else if (CategoryConstant.BEAUTY.equals(nextName)) {
+            } else if (GankCategory.BEAUTY.equals(nextName)) {
                 dayContentBean.setHasBeauty();
-            } else if (CategoryConstant.EXTRA_RESOURCES.equals(nextName)) {
+            } else if (GankCategory.EXTRA_RESOURCES.equals(nextName)) {
                 dayContentBean.setHasExtraResources();
-            } else if (CategoryConstant.FRONT.equals(nextName)) {
+            } else if (GankCategory.FRONT.equals(nextName)) {
                 dayContentBean.setHasFront();
-            } else if (CategoryConstant.iOS.equals(nextName)) {
+            } else if (GankCategory.iOS.equals(nextName)) {
                 dayContentBean.setHasIos();
-            } else if (CategoryConstant.RECOMMEND.equals(nextName)) {
+            } else if (GankCategory.RECOMMEND.equals(nextName)) {
                 dayContentBean.setHasRecommend();
-            } else if (CategoryConstant.REST_VIDEO.equals(nextName)) {
+            } else if (GankCategory.REST_VIDEO.equals(nextName)) {
                 dayContentBean.setHasRestVideo();
             }
         }

@@ -1,5 +1,7 @@
 package com.example.wuxio.gankexamples.model;
 
+import com.example.wuxio.gankexamples.constant.GankCategory;
+
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 import io.objectbox.annotation.Uid;
@@ -24,7 +26,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#REST_VIDEO}
+     * {@link GankCategory#REST_VIDEO}
      */
     public void setHasRestVideo() {
 
@@ -39,7 +41,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#EXTRA_RESOURCES}
+     * {@link GankCategory#EXTRA_RESOURCES}
      */
     public void setHasExtraResources() {
 
@@ -54,7 +56,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#FRONT}
+     * {@link GankCategory#FRONT}
      */
     public void setHasFront() {
 
@@ -69,7 +71,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#Android}
+     * {@link GankCategory#Android}
      */
     public void setHasAndroid() {
 
@@ -84,7 +86,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#RECOMMEND}
+     * {@link GankCategory#RECOMMEND}
      */
     public void setHasRecommend() {
 
@@ -99,7 +101,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#App}
+     * {@link GankCategory#App}
      */
     public void setHasApp() {
 
@@ -114,7 +116,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#iOS}
+     * {@link GankCategory#iOS}
      */
     public void setHasIos() {
 
@@ -129,7 +131,7 @@ public class DayContentBean {
 
 
     /**
-     * {@link com.example.wuxio.gankexamples.constant.CategoryConstant#BEAUTY}
+     * {@link GankCategory#BEAUTY}
      */
     public void setHasBeauty() {
 

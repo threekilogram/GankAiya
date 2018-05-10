@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.util.Pair;
 import android.widget.ImageView;
 
-import com.example.wuxio.gankexamples.constant.ConstantsImageUrl;
+import com.example.wuxio.gankexamples.constant.ImageUrl;
 import com.example.wuxio.gankexamples.gank.beauty.ImageCallable;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 
@@ -35,7 +35,7 @@ public class LoadSplashPicRunnable implements Runnable {
     @Override
     public void run() {
 
-        String[] urls = ConstantsImageUrl.TRANSITION_URLS;
+        String[] urls = ImageUrl.TRANSITION_URLS;
 
         /* int imageUrlIndex = new Random().nextInt(urls.length); */
 

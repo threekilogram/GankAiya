@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.dao.category;
+package com.example.wuxio.gankexamples.model.dao.category;
 
 import com.example.wuxio.gankexamples.model.ResultsBean;
 

@@ -1,11 +1,11 @@
-package com.example.wuxio.gankexamples;
+package com.example.wuxio.gankexamples.app;
 
 import com.example.objectbus.bus.ObjectBus;
-import com.example.wuxio.gankexamples.dao.factory.DaoFactory;
-import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.history.CacheHistoryRunnable;
-import com.example.wuxio.gankexamples.history.GetHistoryJsonRunnable;
+import com.example.wuxio.gankexamples.file.PreferenceManager;
+import com.example.wuxio.gankexamples.gank.history.CacheHistoryRunnable;
+import com.example.wuxio.gankexamples.gank.history.GetHistoryJsonRunnable;
 import com.example.wuxio.gankexamples.model.HistoryBean;
+import com.example.wuxio.gankexamples.model.dao.factory.DaoFactory;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class AppManager {
 
                     } else {
 
-                        long gankDay = FileManager.getCachedGankDay();
+                        long gankDay = PreferenceManager.getAlreadyCachedGankDay();
                         if (gankDay == -1) {
 
                             /* 从最新的开始缓存 */
