@@ -19,23 +19,28 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
-        <!-- splash init something -->
+        <!-- used for exit app singleTask mode -->
 
         <activity
-                android:name=".splash.SplashActivity"
-                android:theme="@style/FullScreenTheme">
+                android:name=".root.RootActivity"
+                android:launchMode="singleTask">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
-        <!-- used for exit app singleTask mode -->
+        <!-- splash init something -->
 
         <activity
-                android:name=".root.RootActivity"
-                android:launchMode="singleTask"/>
+                android:name=".splash.SplashActivity"
+                android:theme="@style/FullScreenTheme">
+
+        </activity>
+
 
         <!-- main page -->
 

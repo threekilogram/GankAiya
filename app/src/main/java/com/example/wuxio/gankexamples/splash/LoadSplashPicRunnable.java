@@ -37,8 +37,6 @@ public class LoadSplashPicRunnable implements Runnable {
 
         String[] urls = ImageUrl.TRANSITION_URLS;
 
-        /* int imageUrlIndex = new Random().nextInt(urls.length); */
-
         ImageCallable callable = new ImageCallable(urls[1]);
 
         try {

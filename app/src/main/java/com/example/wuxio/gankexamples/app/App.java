@@ -24,10 +24,13 @@ public class App extends Application {
         super.onCreate();
         INSTANCE = this;
 
+        /* ObjectBus */
         BusConfig.init();
 
+        /* ObjectBox */
         mBoxStore = MyObjectBox.builder().androidContext(this).build();
 
+        /* LeakCanary */
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -35,7 +38,7 @@ public class App extends Application {
         }
         LeakCanary.install(this);
 
-
+        /* load && cache history data */
         AppManager.getInstance().loadHistoryData();
     }
 

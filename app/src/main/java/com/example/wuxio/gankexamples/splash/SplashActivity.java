@@ -1,5 +1,7 @@
 package com.example.wuxio.gankexamples.splash;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,8 +14,8 @@ import android.widget.TextView;
 
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.main.MainActivity;
+import com.example.wuxio.gankexamples.root.RootActivity;
 
 import java.lang.ref.WeakReference;
 
@@ -24,12 +26,18 @@ import java.lang.ref.WeakReference;
  */
 public class SplashActivity extends AppCompatActivity {
 
-    protected ImageView   mLogoImage;
-    protected TextView    mCountText;
-    protected FrameLayout mRoot;
-
+    protected ImageView    mLogoImage;
+    protected TextView     mCountText;
+    protected FrameLayout  mRoot;
     protected Bitmap       mBitmap;
     private   CountHandler mHandler;
+
+
+    public static void start(Context context) {
+
+        Intent starter = new Intent(context, SplashActivity.class);
+        context.startActivity(starter);
+    }
 
 
     @Override
@@ -44,20 +52,11 @@ public class SplashActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onDestroy() {
-
-        mHandler.removeCallbacksAndMessages(null);
-        super.onDestroy();
-    }
-
-
     private void initView() {
 
         mRoot = findViewById(R.id.root);
         mLogoImage = findViewById(R.id.logoImage);
         mCountText = findViewById(R.id.countText);
-
     }
 
 
@@ -72,6 +71,14 @@ public class SplashActivity extends AppCompatActivity {
             mHandler.startCountDown(3);
 
         });
+    }
+
+
+    @Override
+    protected void onDestroy() {
+
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
 

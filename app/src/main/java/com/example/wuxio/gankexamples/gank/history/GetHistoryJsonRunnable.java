@@ -1,5 +1,7 @@
 package com.example.wuxio.gankexamples.gank.history;
 
+import android.util.Log;
+
 import com.example.wuxio.gankexamples.model.HistoryBean;
 import com.example.wuxio.gankexamples.model.HistoryBeanParser;
 import com.example.wuxio.gankexamples.model.net.GankHistoryApi;
@@ -18,6 +20,8 @@ import retrofit2.Response;
  */
 public class GetHistoryJsonRunnable implements Runnable {
 
+    private static final String TAG = "GetHistoryJsonRunnable";
+
     List< HistoryBean > mHistoryBeans;
 
 
@@ -35,6 +39,7 @@ public class GetHistoryJsonRunnable implements Runnable {
 
         try {
             Response< ResponseBody > execute = historyData.execute();
+
             if (execute.isSuccessful()) {
 
                 Reader reader = execute.body().charStream();
@@ -44,15 +49,16 @@ public class GetHistoryJsonRunnable implements Runnable {
 
             } else {
 
-                // TODO: 2018-05-09 failed
+                // TODO: 2018-05-09 failed code not in {200~300}
+                Log.e(TAG, "run:" + "resource not get");
 
             }
 
         } catch (IOException e) {
             e.printStackTrace();
 
-            // TODO: 2018-05-09 IOException
+            // TODO: 2018-05-09 execute IOException
+            Log.i(TAG, "run:" + "IOException");
         }
-
     }
 }
