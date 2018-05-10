@@ -1,8 +1,8 @@
 package com.example.wuxio.gankexamples.model.dao.factory;
 
 import com.example.wuxio.gankexamples.app.App;
-import com.example.wuxio.gankexamples.model.dao.image.ImageBeanDao;
 import com.example.wuxio.gankexamples.model.ImageBean;
+import com.example.wuxio.gankexamples.model.dao.image.ImageBeanDao;
 import com.example.wuxio.gankexamples.utils.Url2Long;
 
 import java.util.ArrayList;

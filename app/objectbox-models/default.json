@@ -58,44 +58,6 @@
       ]
     },
     {
-      "id": "2:8460219238601032585",
-      "lastPropertyId": "2:5521866781022081023",
-      "name": "GankDayContentBean",
-      "properties": [
-        {
-          "id": "1:251022211197287385",
-          "name": "date"
-        },
-        {
-          "id": "2:5521866781022081023",
-          "name": "contentAllType"
-        }
-      ],
-      "relations": [
-        {
-          "id": "2:3245235183014008079",
-          "name": "categoryBeans"
-        }
-      ]
-    },
-    {
-      "id": "3:9177964346614357841",
-      "lastPropertyId": "2:5778615766048391820",
-      "name": "GankHistoryBean",
-      "properties": [
-        {
-          "id": "1:2248059970483861953",
-          "name": "date"
-        },
-        {
-          "id": "2:5778615766048391820",
-          "indexId": "2:4049748744657878175",
-          "name": "dayContentId"
-        }
-      ],
-      "relations": []
-    },
-    {
       "id": "4:9053400604754289060",
       "lastPropertyId": "2:3648445872379953491",
       "name": "ImageBean",
@@ -118,9 +80,21 @@
   "lastSequenceId": "0:0",
   "modelVersion": 4,
   "modelVersionParserMinimum": 4,
-  "retiredEntityUids": [],
-  "retiredIndexUids": [],
-  "retiredPropertyUids": [],
-  "retiredRelationUids": [],
+  "retiredEntityUids": [
+    9177964346614357841,
+    8460219238601032585
+  ],
+  "retiredIndexUids": [
+    4049748744657878175
+  ],
+  "retiredPropertyUids": [
+    2248059970483861953,
+    5778615766048391820,
+    251022211197287385,
+    5521866781022081023
+  ],
+  "retiredRelationUids": [
+    3245235183014008079
+  ],
   "version": 1
 }
