@@ -16,6 +16,7 @@ import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
+import com.example.wuxio.gankexamples.splash.action.LoadSplashPicRunnable;
 
 import java.lang.ref.WeakReference;
 
@@ -149,7 +150,7 @@ public class SplashActivity extends AppCompatActivity {
         private int countToDown;
 
 
-        public CountHandler(SplashActivity activity) {
+        CountHandler(SplashActivity activity) {
 
             mReference = new WeakReference<>(activity);
         }
@@ -191,7 +192,8 @@ public class SplashActivity extends AppCompatActivity {
         }
 
 
-        public void startCountDown(int second) {
+        @SuppressWarnings("SameParameterValue")
+        void startCountDown(int second) {
 
             countToDown = second;
             sendEmptyMessage(MSG_COUNT_DOWN);
@@ -204,7 +206,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
 
-        public void setSplash() {
+        void setSplash() {
 
             sendEmptyMessage(MSG_SET_SPLASH);
         }

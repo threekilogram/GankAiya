@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.splash;
+package com.example.wuxio.gankexamples.splash.action;
 
 import android.graphics.Bitmap;
 import android.util.Pair;
@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.example.wuxio.gankexamples.constant.ImageUrl;
 import com.example.wuxio.gankexamples.gank.beauty.ImageCallable;
+import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 
 import java.io.File;
