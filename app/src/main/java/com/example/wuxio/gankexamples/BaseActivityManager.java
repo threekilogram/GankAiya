@@ -1,7 +1,6 @@
 package com.example.wuxio.gankexamples;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 
@@ -32,13 +31,13 @@ public abstract class BaseActivityManager < T extends Activity > {
      *
      * @return activity maybe null
      */
-    @Nullable
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public T getActivity() throws NullPointerException {
 
         T t = mReference.get();
 
         /* throw a NullPointerException if t is null  */
-        String s = t.toString();
+        t.toString();
 
         return t;
     }

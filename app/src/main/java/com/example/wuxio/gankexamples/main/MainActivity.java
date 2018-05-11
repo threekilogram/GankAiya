@@ -18,7 +18,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.ArrayMap;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -36,7 +35,6 @@ import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -292,24 +290,15 @@ public class MainActivity extends AppCompatActivity {
     //============================ banner adapter ============================
 
 
-    /**
-     * 用于与{@link MainManager}交互,准备好banner的图片之后,通知activity设置给banner
-     *
-     * @param urls        图片地址
-     * @param bitmapFiles 图片文件
-     */
-    public void setBannerImageData(
-            List< String > urls,
-            ArrayMap< String, File > bitmapFiles,
-            List< Bitmap > bitmaps) {
-
-        mBannerAdapter.setBitmapFiles(urls, bitmapFiles, bitmaps);
-    }
-
-
     public BannerView getBanner() {
 
         return mBanner;
+    }
+
+
+    public void notifyBannerDataChanged() {
+
+        mBannerAdapter.notifyDataSetChanged();
     }
 
 
@@ -319,41 +308,16 @@ public class MainActivity extends AppCompatActivity {
     private class BannerAdapter extends BasePagerAdapter< Bitmap, ImageView > {
 
 
-        /**
-         * 正在显示的图片
-         */
-        private List< Bitmap >           mBitmaps;
-        /**
-         * 图片文件
-         */
-        private ArrayMap< String, File > mBitmapFileMap;
-        /**
-         * 图片对应url
-         */
-        private List< String >           mUrls;
+        private List< Bitmap > mBitmaps = BannerBitmapManager.getBitmaps();
+
         /**
          * 每个item点击事件
          */
-        private BannerItemClickListener  mBannerItemClickListener;
+        private BannerItemClickListener mBannerItemClickListener;
         /**
          * 默认大小
          */
         private static final int DEFAULT_COUNT = 5;
-
-
-        /**
-         * 更新数据
-         */
-        public void setBitmapFiles(
-                List< String > urls,
-                ArrayMap< String, File > bitmapFileMap,
-                List< Bitmap > bitmaps) {
-
-            mUrls = urls;
-            mBitmapFileMap = bitmapFileMap;
-            mBitmaps = bitmaps;
-
-        }
 
 
         @Override
@@ -366,12 +330,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Bitmap getData(int i) {
 
-            if (mBitmaps != null) {
+            try {
                 Bitmap bitmap = mBitmaps.get(i);
                 if (bitmap != null) {
                     return bitmap;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
             return null;
         }
 
@@ -408,7 +375,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 int position = (Integer) v.getTag(R.id.main_banner_item_tag);
-                PictureActivity.start(MainActivity.this, position, mUrls, mBitmapFileMap);
 
                 // TODO: 2018-05-07 转场动画 ,更新数据
             }
