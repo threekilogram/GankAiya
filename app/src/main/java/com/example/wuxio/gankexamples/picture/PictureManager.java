@@ -94,8 +94,11 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
 
     public void releaseBitmap(int position) {
 
-        String s = mUrls.get(position);
-        mBitmaps.get(s).clear();
+        if (position < mUrls.size() - 1) {
+
+            String s = mUrls.get(position);
+            mBitmaps.get(s).clear();
+        }
     }
 
 
