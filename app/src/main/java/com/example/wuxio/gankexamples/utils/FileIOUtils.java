@@ -587,7 +587,7 @@ public final class FileIOUtils {
                                                final int end,
                                                final String charsetName) {
 
-        if (!isFileExists(file)) {
+        if (isFileExists(file)) {
 
             return null;
         }
@@ -680,7 +680,7 @@ public final class FileIOUtils {
      */
     public static String readFile2String(final File file, final String charsetName) {
 
-        if (!isFileExists(file)) {
+        if (isFileExists(file)) {
 
             return null;
         }
@@ -737,7 +737,7 @@ public final class FileIOUtils {
      */
     public static byte[] readFile2BytesByStream(final File file) {
 
-        if (!isFileExists(file)) {
+        if (isFileExists(file)) {
 
             return null;
         }
@@ -794,7 +794,7 @@ public final class FileIOUtils {
      */
     public static byte[] readFile2BytesByChannel(final File file) {
 
-        if (!isFileExists(file)) {
+        if (isFileExists(file)) {
 
             return null;
         }
@@ -844,7 +844,7 @@ public final class FileIOUtils {
      */
     public static byte[] readFile2BytesByMap(final File file) {
 
-        if (!isFileExists(file)) {
+        if (isFileExists(file)) {
 
             return null;
         }
@@ -924,7 +924,7 @@ public final class FileIOUtils {
     }
 
 
-    private static boolean isFileExists(final File file) {
+    private static boolean isFileExists(File file) {
 
         return file != null && file.exists();
     }

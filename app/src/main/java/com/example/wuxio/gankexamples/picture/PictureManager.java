@@ -41,7 +41,7 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
         mBannerPosition = 0;
         mBitmaps = null;
         if (mBus != null) {
-            BusStation.getInstance().recycle(mBus);
+            BusStation.recycle(mBus);
         }
     }
 

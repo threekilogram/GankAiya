@@ -6,9 +6,12 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 
-import com.example.banner.adapter.BasePagerAdapter;
+import com.example.banner.adapter.BaseTypePagerAdapter;
 import com.example.wuxio.gankexamples.R;
 
 import java.util.List;
@@ -58,8 +61,7 @@ public class PictureActivity extends AppCompatActivity {
             PictureManager instance = PictureManager.getInstance();
             instance.onActivityCreate();
             mBitmaps = instance.getBitmaps();
-            mPicturePagerAdapter = new PicturePagerAdapter();
-            mViewPager.setAdapter(mPicturePagerAdapter);
+
         });
     }
 
@@ -78,10 +80,14 @@ public class PictureActivity extends AppCompatActivity {
 
     public void nofityBitmapsChanged(int position) {
 
-        if (mPicturePagerAdapter != null) {
-            mViewPager.setCurrentItem(position);
-            mPicturePagerAdapter.notifyDataSetChanged();
+        if (mPicturePagerAdapter == null) {
+
+            mPicturePagerAdapter = new PicturePagerAdapter();
+            mViewPager.setAdapter(mPicturePagerAdapter);
+            mViewPager.addOnPageChangeListener(new PicturePagerOnPageChangeListener());
         }
+        mPicturePagerAdapter.notifyDataSetChanged();
+        mViewPager.setCurrentItem(position);
     }
 
 
@@ -96,22 +102,57 @@ public class PictureActivity extends AppCompatActivity {
 
     //============================ ViewPagerAdapter ============================
 
-    private class PicturePagerAdapter extends BasePagerAdapter< Bitmap, ImageView > {
+    private class PicturePagerAdapter extends BaseTypePagerAdapter {
+
+        private final int NORMAL = 12;
+        private final int MORE   = 13;
+
 
         @Override
         public int getCount() {
 
-            return mBitmaps.size();
+            return mBitmaps.size() + 1;
         }
 
 
         @Override
-        public Bitmap getData(int i) {
+        public int getViewType(int position) {
 
-            try {
-                return mBitmaps.get(i);
-            } catch (Exception e) {
-                e.printStackTrace();
+            if (position == mBitmaps.size()) {
+
+                return MORE;
+            } else {
+                return NORMAL;
+            }
+        }
+
+
+        @Override
+        public Object getData(int position, int type) {
+
+            if (type == NORMAL) {
+                return mBitmaps.get(position);
+            }
+            return null;
+        }
+
+
+        @Override
+        public View getView(int position, int type) {
+
+            if (type == NORMAL) {
+                ImageView imageView = new ImageView(PictureActivity.this);
+                imageView.setScaleType(ImageView.ScaleType.CENTER);
+                return imageView;
+            }
+
+            if (type == MORE) {
+                return LayoutInflater.from(PictureActivity.this)
+                        .inflate(
+                                R.layout.activity_picture_process,
+                                mViewPager,
+                                false
+                        );
             }
 
             return null;
@@ -119,20 +160,26 @@ public class PictureActivity extends AppCompatActivity {
 
 
         @Override
-        public ImageView getView(int i) {
+        public void bindData(int position, Object data, View view, int type) {
 
-            ImageView imageView = new ImageView(PictureActivity.this);
-            imageView.setScaleType(ImageView.ScaleType.CENTER);
-
-            return imageView;
+            if (data instanceof Bitmap) {
+                ((ImageView) view).setImageBitmap((Bitmap) data);
+            }
         }
+    }
+
+    //============================ pager scroll Listener ============================
+
+    private class PicturePagerOnPageChangeListener extends ViewPager.SimpleOnPageChangeListener {
+
+        private static final String TAG = "PicturePagerOnPageChang";
 
 
         @Override
-        public void bindData(int i, Bitmap bitmap, ImageView imageView) {
+        public void onPageSelected(int position) {
 
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
+            if (position == mBitmaps.size()) {
+                Log.i(TAG, "onPageSelected:" + "load more");
             }
         }
     }

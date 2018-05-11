@@ -77,7 +77,7 @@ public class MainManager extends BaseActivityManager< MainActivity > {
             }
 
             /* all task finished recycle bus */
-            BusStation.getInstance().recycle(bus);
+            BusStation.recycle(bus);
         }).run();
     }
 

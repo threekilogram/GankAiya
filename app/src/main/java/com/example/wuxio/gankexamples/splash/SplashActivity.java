@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +24,6 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
 
     protected ImageView     mLogoImage;
     protected TextView      mCountText;
-    protected FrameLayout   mRoot;
     private   SplashManager mManager;
 
     private static final int MSG_WHAT_COUNT = 3;
@@ -57,7 +55,6 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
 
     private void initView() {
 
-        mRoot = findViewById(R.id.root);
         mLogoImage = findViewById(R.id.logoImage);
         mCountText = findViewById(R.id.countText);
     }
@@ -68,14 +65,13 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
      */
     private void postAction() {
 
-        mRoot.post(() -> {
+        mLogoImage.post(() -> {
 
             /* 加载splash图片 */
             mManager.loadLogoImage();
 
             /* 倒计时 */
             Messengers.send(MSG_WHAT_COUNT, SplashActivity.this);
-
 
         });
     }
