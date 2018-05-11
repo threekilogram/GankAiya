@@ -1,16 +1,13 @@
 package com.example.wuxio.gankexamples.splash;
 
 import android.graphics.Bitmap;
-import android.util.Pair;
 import android.widget.ImageView;
 
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseActivityManager;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.action.DecodeSampledBitmapRunnable;
-import com.example.wuxio.gankexamples.action.ImageCallable;
-import com.example.wuxio.gankexamples.app.App;
-import com.example.wuxio.gankexamples.utils.image.BitmapReader;
+import com.example.wuxio.gankexamples.action.DecodeSampledBitmapAction;
+import com.example.wuxio.gankexamples.action.UrlToFileAction;
 
 import java.io.File;
 
@@ -46,35 +43,19 @@ public class SplashManager extends BaseActivityManager< SplashActivity > {
 
                 try {
 
-                    ImageCallable imageCallable = new ImageCallable(SplashImageManager.getUrl());
-                    Pair< String, File > filePair = imageCallable.call();
+                    File file = UrlToFileAction.loadUrlToFile(SplashImageManager.getUrl());
 
-                    Bitmap bitmap;
-                    if (filePair != null) {
-                        File imageFile = filePair.second;
-                        DecodeSampledBitmapRunnable decodeSampledBitmapRunnable =
-                                new DecodeSampledBitmapRunnable(
-                                        imageFile,
-                                        width,
-                                        height,
-                                        R.drawable.without_net
-                                );
+                    if (file != null) {
 
-                        decodeSampledBitmapRunnable.run();
-                        bitmap = decodeSampledBitmapRunnable.getBitmap();
-
-                    } else {
-
-                        bitmap = BitmapReader.decodeSampledBitmap(
-                                App.INSTANCE.getResources(),
-                                R.drawable.without_net,
+                        Bitmap bitmap = DecodeSampledBitmapAction.decode(
+                                file,
                                 width,
-                                height
+                                height,
+                                R.drawable.without_net
                         );
 
+                        mBus.take(bitmap, "bitmap");
                     }
-
-                    mBus.take(bitmap, "bitmap");
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -88,7 +69,9 @@ public class SplashManager extends BaseActivityManager< SplashActivity > {
                 try {
 
                     Bitmap bitmap = (Bitmap) mBus.getOff("bitmap");
-                    getActivity().setSplashBitmap(bitmap);
+                    if (bitmap != null) {
+                        getActivity().setSplashBitmap(bitmap);
+                    }
 
                 } catch (NullPointerException e) {
                     e.printStackTrace();

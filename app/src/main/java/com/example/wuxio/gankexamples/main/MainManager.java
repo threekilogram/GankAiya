@@ -1,20 +1,15 @@
 package com.example.wuxio.gankexamples.main;
 
 import android.graphics.Bitmap;
-import android.util.Pair;
 
 import com.example.banner.BannerView;
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseActivityManager;
-import com.example.wuxio.gankexamples.action.ImageCallable;
-import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.file.FileNameUtils;
+import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
-import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -64,19 +59,8 @@ public class MainManager extends BaseActivityManager< MainActivity > {
 
             for (int i = 0; i < size; i++) {
                 String url = beauty.get(i).url;
-                File file = getPicFile(url);
 
-                /* load Picture to Disk */
-
-                if (!file.exists()) {
-
-                    ImageCallable imageCallable = new ImageCallable(url);
-                    Pair< String, File > call = imageCallable.call();
-                }
-
-                /* decode bitmap */
-
-                Bitmap bitmap = BitmapReader.decodeSampledBitmap(file, width, height);
+                Bitmap bitmap = UrlToBitmapAction.loadUrlToBitmap(url, width, height);
 
                 /* put bitmap to container, banner data is also link to container,so banner will auto
                 update */
@@ -97,12 +81,4 @@ public class MainManager extends BaseActivityManager< MainActivity > {
         }).run();
     }
 
-
-    private File getPicFile(String url) {
-
-        String name = FileNameUtils.makeName(url);
-        File file = FileManager.getAppPicFile();
-        File pic = new File(file, name);
-        return pic;
-    }
 }

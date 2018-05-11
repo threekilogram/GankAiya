@@ -1,8 +1,6 @@
 package com.example.wuxio.gankexamples.action;
 
-import android.support.annotation.Nullable;
 import android.util.Log;
-import android.util.Pair;
 
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.file.FileNameUtils;
@@ -13,59 +11,37 @@ import com.example.wuxio.gankexamples.utils.FileIOUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.Callable;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
 /**
- * 该callable用于从 网络/本地图片目录 加载一个url对应的图片
- *
- * @author wuxio 2018-05-06:20:33
+ * @author wuxio 2018-05-11:9:02
  */
-public class ImageCallable implements Callable< Pair< String, File > > {
+public class UrlToFileAction {
 
-    private static final String TAG = "ImageCallable";
-
-    private String mUrl;
+    private static final String TAG = "UrlToFileAction";
 
 
-    public ImageCallable(String url) {
-
-        this.mUrl = url;
-    }
-
-
-    @Nullable
-    @Override
-    public Pair< String, File > call() {
-
-        String url = mUrl;
+    public static File loadUrlToFile(String url) {
 
         File picFile = FileManager.getAppPicFile();
         File pic = new File(picFile, FileNameUtils.makeName(url));
 
         if (pic.exists()) {
-            return new Pair<>(url, pic);
+
+            return pic;
         } else {
 
             /* 创建文件 */
+            try {
+                pic.getParentFile().mkdirs();
+                pic.createNewFile();
+            } catch (IOException e) {
 
-            boolean mkdirs = pic.getParentFile().mkdirs();
-            if (mkdirs) {
-                boolean newFile = false;
-                try {
-                    newFile = pic.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "call: createNewFile Failed");
-                }
-                if (!newFile) {
-                    Log.e(TAG, "call: createNewFile Failed");
-                }
-            } else {
-                Log.e(TAG, "call: mkDirs failed");
+                Log.e(TAG, "create pic file failed");
+                return null;
             }
         }
 
@@ -84,18 +60,14 @@ public class ImageCallable implements Callable< Pair< String, File > > {
                 InputStream inputStream = body.byteStream();
 
                 /* 保存到本地 */
-                boolean writeIsSuccess = FileIOUtils.writeFileFromIS(pic, inputStream);
-
-                if (writeIsSuccess) {
-
-                    return new Pair<>(url, pic);
-                } else {
-
-                    Log.e(TAG, "call: write picture failed");
+                try {
+                    FileIOUtils.writeFileFromIS(pic, inputStream);
+                    return pic;
+                } catch (Exception e) {
+                    Log.e(TAG, " write picture to local failed");
                 }
 
             } else {
-
                 Log.e(TAG, "call: code not in 200~300");
             }
 
