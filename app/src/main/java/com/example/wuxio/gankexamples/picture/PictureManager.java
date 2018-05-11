@@ -1,14 +1,9 @@
 package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
-import android.util.ArrayMap;
-import android.widget.ImageView;
 
-import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseActivityManager;
-import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -16,30 +11,24 @@ import java.util.List;
  */
 public class PictureManager extends BaseActivityManager< PictureActivity > {
 
-    private int                      mBannerPosition;
-    private List< String >           mUrls;
-    private ArrayMap< String, File > mBitmapFileMap;
-
-    private ObjectBus mBus = new ObjectBus();
+    private int            mBannerPosition;
+    private int            mDataIndex;
+    private List< Bitmap > mBitmaps;
 
     //============================ data ============================
 
 
-    public void set(int position,
-                    List< String > urls,
-                    ArrayMap< String, File > bitmapFileMap) {
+    public void set(int dataIndex, int position) {
 
         mBannerPosition = position;
-        mUrls = urls;
-        mBitmapFileMap = bitmapFileMap;
+        mDataIndex = dataIndex;
     }
 
 
     public void clear() {
 
-        mBitmapFileMap = null;
-        mUrls = null;
         mBannerPosition = 0;
+        mBitmaps = null;
     }
 
     //============================ core ============================
@@ -48,26 +37,6 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
     @Override
     public void onActivityCreate() {
 
-        mBus.toUnder(() -> {
-
-            PictureActivity activity = mReference.get();
-            if (activity != null) {
-                ImageView imageView = activity.getImageView();
-                Bitmap bitmap = BitmapReader.decodeSampledBitmap(
-                        mBitmapFileMap.get(mUrls.get(mBannerPosition)),
-                        imageView.getWidth(),
-                        imageView.getHeight()
-                );
-
-                mBus.take(bitmap, "key");
-            }
-        }).toMain(() -> {
-
-            PictureActivity activity = mReference.get();
-            if (activity != null) {
-                activity.getImageView().setImageBitmap((Bitmap) mBus.getOff("key"));
-            }
-        }).run();
     }
 
     //============================ singleTon ============================

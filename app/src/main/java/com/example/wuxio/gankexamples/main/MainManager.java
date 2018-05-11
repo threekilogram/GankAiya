@@ -55,40 +55,45 @@ public class MainManager extends BaseActivityManager< MainActivity > {
         int height = banner.getHeight();
 
         ObjectBus bus = BusStation.getInstance().obtainBus();
-        bus.toUnder(new Runnable() {
-            @Override
-            public void run() {
+        bus.toUnder(() -> {
 
-                /* model */
-                List< GankCategoryBean > beauty = ModelManager.getInstance().loadBeauty();
+            /* model get new data */
+            List< GankCategoryBean > beauty = ModelManager.getInstance().loadBeauty();
 
-                int size = beauty.size();
+            int size = beauty.size();
 
-                for (int i = 0; i < size; i++) {
-                    String url = beauty.get(i).url;
-                    File file = getPicFile(url);
+            for (int i = 0; i < size; i++) {
+                String url = beauty.get(i).url;
+                File file = getPicFile(url);
 
-                    if (!file.exists()) {
+                /* load Picture to Disk */
 
-                        ImageCallable imageCallable = new ImageCallable(url);
-                        Pair< String, File > call = imageCallable.call();
-                    }
+                if (!file.exists()) {
 
-                    Bitmap bitmap = BitmapReader.decodeSampledBitmap(file, width, height);
-                    BannerBitmapManager.put(i, bitmap);
+                    ImageCallable imageCallable = new ImageCallable(url);
+                    Pair< String, File > call = imageCallable.call();
                 }
 
-            }
-        }).toMain(new Runnable() {
-            @Override
-            public void run() {
+                /* decode bitmap */
 
-                try {
-                    getActivity().notifyBannerDataChanged();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
+                Bitmap bitmap = BitmapReader.decodeSampledBitmap(file, width, height);
+
+                /* put bitmap to container, banner data is also link to container,so banner will auto
+                update */
+                BannerBitmapManager.put(i, bitmap);
             }
+
+        }).toMain(() -> {
+
+            /* told MainActivity banner data start index */
+            try {
+                getActivity().notifyBannerDataChanged(0);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+
+            /* all task finished recycle bus */
+            BusStation.getInstance().recycle(bus);
         }).run();
     }
 

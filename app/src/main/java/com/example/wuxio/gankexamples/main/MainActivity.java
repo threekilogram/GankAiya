@@ -296,9 +296,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void notifyBannerDataChanged() {
+    public void notifyBannerDataChanged(int index) {
 
         mBannerAdapter.notifyDataSetChanged();
+        mBannerAdapter.mDataStartIndex = index;
     }
 
 
@@ -308,6 +309,10 @@ public class MainActivity extends AppCompatActivity {
     private class BannerAdapter extends BasePagerAdapter< Bitmap, ImageView > {
 
 
+        /**
+         * 记录开始项数据在{@link com.example.wuxio.gankexamples.model.ModelManager#mCategoryBeauties 中的索引}
+         */
+        private int mDataStartIndex;
         private List< Bitmap > mBitmaps = BannerBitmapManager.getBitmaps();
 
         /**
@@ -336,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
                     return bitmap;
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e("MainActivity", "nothing to worry about");
             }
 
             return null;
@@ -375,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 int position = (Integer) v.getTag(R.id.main_banner_item_tag);
-
+                PictureActivity.start(MainActivity.this, mDataStartIndex, position);
                 // TODO: 2018-05-07 转场动画 ,更新数据
             }
         }

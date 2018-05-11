@@ -4,13 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.ArrayMap;
 import android.widget.ImageView;
 
 import com.example.wuxio.gankexamples.R;
-
-import java.io.File;
-import java.util.List;
 
 /**
  * @author wuxio
@@ -21,14 +17,12 @@ public class PictureActivity extends AppCompatActivity {
     protected ImageView mImageView;
 
 
-    public static void start(Context context,
-                             int position,
-                             List< String > urls,
-                             ArrayMap< String, File > bitmapFileMap) {
+    public static void start(Context context, int dataIndex, int position) {
 
         Intent starter = new Intent(context, PictureActivity.class);
         context.startActivity(starter);
-        PictureManager.getInstance().set(position, urls, bitmapFileMap);
+
+        PictureManager.getInstance().set(dataIndex, position);
     }
 
 
@@ -59,6 +53,7 @@ public class PictureActivity extends AppCompatActivity {
     protected void onDestroy() {
 
         PictureManager.getInstance().unRegister();
+        PictureManager.getInstance().clear();
         super.onDestroy();
     }
 }
