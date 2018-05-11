@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseActivityManager;
-import com.example.wuxio.gankexamples.file.FileNameUtils;
+import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
 
@@ -45,11 +45,20 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
         }
     }
 
+
+    public List< Bitmap > getBitmaps() {
+
+        return mBitmaps;
+    }
+
     //============================ core ============================
 
 
     @Override
     public void onActivityCreate() {
+
+        int width = getActivity().getBitmapWidth();
+        int height = getActivity().getBitmapHeight();
 
         if (mBus == null) {
             mBus = BusStation.getInstance().obtainBus();
@@ -66,8 +75,8 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
                 List< GankCategoryBean > beans = ModelManager.getInstance().getCategoryBeauties();
                 for (int i = 0; i < DATA_COUNT; i++) {
                     GankCategoryBean bean = beans.get(mDataIndex + i);
-                    String url = bean.url;
-                    FileNameUtils.makeName(url);
+                    Bitmap bitmap = UrlToBitmapAction.loadUrlToBitmap(bean.url, width, height);
+                    mBitmaps.add(bitmap);
                 }
 
             }
@@ -75,6 +84,11 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
             @Override
             public void run() {
 
+                try {
+                    getActivity().nofityBitmapsChanged(mBannerPosition);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
             }
         }).run();
     }
