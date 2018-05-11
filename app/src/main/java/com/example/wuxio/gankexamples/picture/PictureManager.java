@@ -1,6 +1,7 @@
 package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
+import android.util.ArrayMap;
 
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
@@ -9,6 +10,7 @@ import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +21,10 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
 
     private static final String TAG = "PictureManager";
 
-    private int            mBannerPosition;
-    private int            mDataIndex;
-    private List< Bitmap > mBitmaps;
-    private ObjectBus      mBus;
+    private int                                         mBannerPosition;
+    private int                                         mDataIndex;
+    private ArrayMap< String, WeakReference< Bitmap > > mBitmaps;
+    private List< String >                              mUrls;
 
     private static final int DATA_COUNT = 5;
 
@@ -40,15 +42,7 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
 
         mBannerPosition = 0;
         mBitmaps = null;
-        if (mBus != null) {
-            BusStation.recycle(mBus);
-        }
-    }
 
-
-    public List< Bitmap > getBitmaps() {
-
-        return mBitmaps;
     }
 
     //============================ core ============================
@@ -60,37 +54,120 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
         int width = getActivity().getBitmapWidth();
         int height = getActivity().getBitmapHeight();
 
-        if (mBus == null) {
-            mBus = BusStation.getInstance().obtainBus();
-        }
-
         if (mBitmaps == null) {
-            mBitmaps = new ArrayList<>(DATA_COUNT);
+            mBitmaps = new ArrayMap<>();
+            mUrls = new ArrayList<>();
         }
 
-        mBus.toUnder(new Runnable() {
-            @Override
-            public void run() {
+        ObjectBus bus = BusStation.callNewBus();
+        bus.toUnder(() -> {
 
-                List< GankCategoryBean > beans = ModelManager.getInstance().getCategoryBeauties();
-                for (int i = 0; i < DATA_COUNT; i++) {
-                    GankCategoryBean bean = beans.get(mDataIndex + i);
-                    Bitmap bitmap = UrlToBitmapAction.loadUrlToBitmap(bean.url, width, height);
-                    mBitmaps.add(bitmap);
-                }
-
+            List< GankCategoryBean > beans = ModelManager.getInstance().getCategoryBeauties();
+            for (int i = 0; i < DATA_COUNT; i++) {
+                GankCategoryBean bean = beans.get(mDataIndex + i);
+                String url = bean.url;
+                mUrls.add(url);
+                Bitmap bitmap = UrlToBitmapAction.loadUrlToBitmap(url, width, height);
+                mBitmaps.put(url, new WeakReference<>(bitmap));
             }
-        }).toMain(new Runnable() {
-            @Override
-            public void run() {
 
-                try {
-                    getActivity().nofityBitmapsChanged(mBannerPosition);
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
+        }).toMain(() -> {
+
+            try {
+                getActivity().nofityBitmapsChanged(mBannerPosition);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
+
+            BusStation.recycle(bus);
         }).run();
+    }
+
+    //============================ 图片 ============================
+
+
+    public int getItemCount() {
+
+        return mUrls.size();
+    }
+
+
+    public void releaseBitmap(int position) {
+
+        String s = mUrls.get(position);
+        mBitmaps.get(s).clear();
+    }
+
+
+    public Bitmap loadBitmap(int position) {
+
+        String s = mUrls.get(position);
+
+        Bitmap result = mBitmaps.get(s).get();
+
+        if (result != null) {
+            return result;
+        }
+
+        int width = getActivity().getBitmapWidth();
+        int height = getActivity().getBitmapHeight();
+
+        result = UrlToBitmapAction.loadUrlToBitmap(s, width, height);
+        mBitmaps.put(s, new WeakReference<>(result));
+        return result;
+    }
+
+    //============================ 加载更多 ============================
+
+
+    public void loadMore() {
+
+        int width = getActivity().getBitmapWidth();
+        int height = getActivity().getBitmapHeight();
+
+        ObjectBus bus = BusStation.callNewBus();
+        bus.toUnder(() -> {
+
+            try {
+
+                List< GankCategoryBean > moreBeauty = ModelManager.getInstance().loadMoreBeauty();
+
+                int size = moreBeauty.size();
+                int start = mUrls.size();
+                List< String > temp = new ArrayList<>(size - start);
+
+                for (int i = start; i < size; i++) {
+                    GankCategoryBean bean = moreBeauty.get(i);
+                    String url = bean.url;
+                    temp.add(url);
+                    Bitmap bitmap = UrlToBitmapAction.loadUrlToBitmap(url, width, height);
+                    mBitmaps.put(url, new WeakReference<>(bitmap));
+                }
+
+                bus.take(temp, "newData");
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+            }
+
+        }).toMain(() -> {
+
+            try {
+
+                List< String > temp = (List< String >) bus.getOff("newData");
+                mUrls.addAll(temp);
+                getActivity().nofityBitmapsChanged(-1);
+
+            } catch (NullPointerException e) {
+
+                e.printStackTrace();
+            }
+
+            BusStation.recycle(bus);
+
+        }).run();
+
     }
 
     //============================ singleTon ============================

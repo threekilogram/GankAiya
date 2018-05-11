@@ -94,4 +94,10 @@ public class ModelManager {
 
         return mCategoryBeauties;
     }
+
+
+    public List< GankCategoryBean > loadMoreBeauty() {
+
+        return loadBeauty();
+    }
 }

@@ -4,17 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.banner.adapter.BaseTypePagerAdapter;
 import com.example.wuxio.gankexamples.R;
-
-import java.util.List;
 
 /**
  * @author wuxio
@@ -23,7 +22,6 @@ public class PictureActivity extends AppCompatActivity {
 
 
     protected ViewPager           mViewPager;
-    private   List< Bitmap >      mBitmaps;
     private   PicturePagerAdapter mPicturePagerAdapter;
 
 
@@ -60,8 +58,6 @@ public class PictureActivity extends AppCompatActivity {
 
             PictureManager instance = PictureManager.getInstance();
             instance.onActivityCreate();
-            mBitmaps = instance.getBitmaps();
-
         });
     }
 
@@ -86,8 +82,11 @@ public class PictureActivity extends AppCompatActivity {
             mViewPager.setAdapter(mPicturePagerAdapter);
             mViewPager.addOnPageChangeListener(new PicturePagerOnPageChangeListener());
         }
+
         mPicturePagerAdapter.notifyDataSetChanged();
-        mViewPager.setCurrentItem(position);
+        if (position > 0) {
+            mViewPager.setCurrentItem(position);
+        }
     }
 
 
@@ -96,7 +95,6 @@ public class PictureActivity extends AppCompatActivity {
 
         PictureManager.getInstance().unRegister();
         PictureManager.getInstance().clear();
-        mBitmaps = null;
         super.onDestroy();
     }
 
@@ -111,14 +109,14 @@ public class PictureActivity extends AppCompatActivity {
         @Override
         public int getCount() {
 
-            return mBitmaps.size() + 1;
+            return PictureManager.getInstance().getItemCount() + 1;
         }
 
 
         @Override
         public int getViewType(int position) {
 
-            if (position == mBitmaps.size()) {
+            if (position == getCount() - 1) {
 
                 return MORE;
             } else {
@@ -131,7 +129,7 @@ public class PictureActivity extends AppCompatActivity {
         public Object getData(int position, int type) {
 
             if (type == NORMAL) {
-                return mBitmaps.get(position);
+                return PictureManager.getInstance().loadBitmap(position);
             }
             return null;
         }
@@ -166,6 +164,15 @@ public class PictureActivity extends AppCompatActivity {
                 ((ImageView) view).setImageBitmap((Bitmap) data);
             }
         }
+
+
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+
+            super.destroyItem(container, position, object);
+
+            PictureManager.getInstance().releaseBitmap(position);
+        }
     }
 
     //============================ pager scroll Listener ============================
@@ -178,8 +185,8 @@ public class PictureActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
 
-            if (position == mBitmaps.size()) {
-                Log.i(TAG, "onPageSelected:" + "load more");
+            if (position == mPicturePagerAdapter.getCount() - 1) {
+                PictureManager.getInstance().loadMore();
             }
         }
     }
