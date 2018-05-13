@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
         mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mMainPagerAdapter);
         mViewPager.addOnPageChangeListener(new MainPagerChangeListener());
-        mViewPager.setCurrentItem(0);
         mTabLayout.setupWithViewPager(mViewPager);
 
     }
@@ -127,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
 
             /* 为activity执行后台初始化操作 */
             MainManager.getInstance().onStart();
+
+            /* 设置默认页 */
+            mViewPager.setCurrentItem(0);
         });
     }
 
@@ -439,7 +441,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
 
-            mShowFragments[position] = null;
             super.destroyItem(container, position, object);
         }
     }
@@ -451,14 +452,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
 
-            Log.i(TAG, "onPageSelected:" + position);
+            ShowFragment fragment = mMainPagerAdapter.getCurrentFragment(position);
+            Log.i(TAG, "onPageSelected:" + position + " " + fragment);
 
-            if (mMainPagerAdapter != null) {
-                ShowFragment fragment = mMainPagerAdapter.getCurrentFragment(position);
-                if (fragment != null) {
-                    fragment.loadData(GankCategory.All_CATEGORY[position]);
-                }
-            }
+            fragment.loadData(GankCategory.All_CATEGORY[position]);
         }
     }
 }

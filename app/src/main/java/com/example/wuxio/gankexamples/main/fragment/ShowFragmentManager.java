@@ -1,14 +1,8 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
-import android.util.Log;
-
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseManager;
-import com.example.wuxio.gankexamples.model.GankCategoryBean;
-import com.example.wuxio.gankexamples.model.ModelManager;
-
-import java.util.List;
 
 /**
  * @author wuxio 2018-05-13:9:03
@@ -16,7 +10,6 @@ import java.util.List;
 public class ShowFragmentManager extends BaseManager< ShowFragment > {
 
     private static final String TAG = "ShowFragmentManager";
-
 
     //============================ ui ============================
 
@@ -29,11 +22,13 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
             @Override
             public void run() {
 
-                List< GankCategoryBean > categoryBeans = ModelManager.getInstance().loadCategory(category);
+                //List< GankCategoryBean > categoryBeans = ModelManager.getInstance().loadCategory(category);
 
-                for (GankCategoryBean bean : categoryBeans) {
-                    Log.i(TAG, "run:" + bean);
-                }
+            }
+        }).toMain(new Runnable() {
+            @Override
+            public void run() {
+
             }
         }).run();
     }

@@ -56,12 +56,11 @@ public class ModelManager {
 
                 Reader reader = response.body().charStream();
                 CategoryResult categoryResult = CategoryResultParser.parse(reader);
-
-                if (beanList == null) {
-                    beanList = new ArrayList<>();
-                }
-
                 beanList.addAll(categoryResult.results);
+
+            } else {
+
+                Log.e(TAG, "load: response is not Successful");
             }
 
         } catch (IOException e) {
@@ -106,11 +105,7 @@ public class ModelManager {
 
     public List< GankCategoryBean > loadCategory(String category) {
 
-        if (GankCategory.Android.equals(category)) {
-            return loadAndroid();
-        }
-
-        return null;
+        return loadAndroid();
     }
 
     //============================ load category Android ============================
@@ -127,6 +122,7 @@ public class ModelManager {
         }
 
         int page = mCategoryAndroids.size() / count + 1;
+
         load(GankCategory.Android, count, page, mCategoryAndroids);
 
         return mCategoryAndroids;
