@@ -5,7 +5,7 @@ import android.util.ArrayMap;
 
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
-import com.example.wuxio.gankexamples.BaseActivityManager;
+import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author wuxio 2018-05-07:14:44
  */
-public class PictureManager extends BaseActivityManager< PictureActivity > {
+public class PictureManager extends BaseManager< PictureActivity > {
 
     private static final String TAG = "PictureManager";
 
@@ -41,7 +41,9 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
     public void clear() {
 
         mBannerPosition = 0;
-        mBitmaps = null;
+        mDataIndex = 0;
+        mBitmaps.clear();
+        mUrls.clear();
 
     }
 
@@ -49,10 +51,10 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
 
 
     @Override
-    public void onActivityCreate() {
+    public void onStart() {
 
-        int width = getActivity().getBitmapWidth();
-        int height = getActivity().getBitmapHeight();
+        int width = get().getBitmapWidth();
+        int height = get().getBitmapHeight();
 
         if (mBitmaps == null) {
             mBitmaps = new ArrayMap<>();
@@ -74,7 +76,7 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
         }).toMain(() -> {
 
             try {
-                getActivity().nofityBitmapsChanged(mBannerPosition);
+                get().nofityBitmapsChanged(mBannerPosition);
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
@@ -112,8 +114,8 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
             return result;
         }
 
-        int width = getActivity().getBitmapWidth();
-        int height = getActivity().getBitmapHeight();
+        int width = get().getBitmapWidth();
+        int height = get().getBitmapHeight();
 
         result = UrlToBitmapAction.loadUrlToBitmap(s, width, height);
         mBitmaps.put(s, new WeakReference<>(result));
@@ -125,8 +127,8 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
 
     public void loadMore() {
 
-        int width = getActivity().getBitmapWidth();
-        int height = getActivity().getBitmapHeight();
+        int width = get().getBitmapWidth();
+        int height = get().getBitmapHeight();
 
         ObjectBus bus = BusStation.callNewBus();
         bus.toUnder(() -> {
@@ -160,7 +162,7 @@ public class PictureManager extends BaseActivityManager< PictureActivity > {
 
                 List< String > temp = (List< String >) bus.getOff("newData");
                 mUrls.addAll(temp);
-                getActivity().nofityBitmapsChanged(-1);
+                get().nofityBitmapsChanged(-1);
 
             } catch (NullPointerException e) {
 

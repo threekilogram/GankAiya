@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import com.example.banner.BannerView;
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
-import com.example.wuxio.gankexamples.BaseActivityManager;
+import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * @author wuxio 2018-05-02:15:24
  */
-public class MainManager extends BaseActivityManager< MainActivity > {
+public class MainManager extends BaseManager< MainActivity > {
 
     private static final String TAG = "MainManager";
 
@@ -42,9 +42,9 @@ public class MainManager extends BaseActivityManager< MainActivity > {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void onActivityCreate() {
+    public void onStart() {
 
-        MainActivity activity = getActivity();
+        MainActivity activity = get();
         BannerView banner = activity.getBanner();
         int width = banner.getWidth();
         int height = banner.getHeight();
@@ -71,7 +71,7 @@ public class MainManager extends BaseActivityManager< MainActivity > {
 
             /* told MainActivity banner data start index */
             try {
-                getActivity().notifyBannerDataChanged(0);
+                get().notifyBannerDataChanged(0);
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }

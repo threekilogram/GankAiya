@@ -57,7 +57,7 @@ public class PictureActivity extends AppCompatActivity {
         mViewPager.post(() -> {
 
             PictureManager instance = PictureManager.getInstance();
-            instance.onActivityCreate();
+            instance.onStart();
         });
     }
 

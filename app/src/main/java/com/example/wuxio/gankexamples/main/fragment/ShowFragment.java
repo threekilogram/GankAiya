@@ -48,6 +48,15 @@ public class ShowFragment extends Fragment {
         mRecycler = rootView.findViewById(R.id.recycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecycler.setAdapter(new RecyclerAdapter());
+
+    }
+
+
+    public void loadData(String category) {
+
+        ShowFragmentManager.getInstance().register(this);
+        ShowFragmentManager.getInstance().loadData(category);
+
     }
 
     //============================ recycler adapter ============================

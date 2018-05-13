@@ -1,20 +1,18 @@
 package com.example.wuxio.gankexamples;
 
-import android.app.Activity;
-
 import java.lang.ref.WeakReference;
 
 /**
  * @author wuxio 2018-05-07:15:09
  */
-public abstract class BaseActivityManager < T extends Activity > {
+public abstract class BaseManager < T > {
 
     protected WeakReference< T > mReference;
 
 
-    public void register(T activity) {
+    public void register(T t) {
 
-        mReference = new WeakReference<>(activity);
+        mReference = new WeakReference<>(t);
     }
 
 
@@ -32,7 +30,7 @@ public abstract class BaseActivityManager < T extends Activity > {
      * @return activity maybe null
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public T getActivity() throws NullPointerException {
+    public T get() throws NullPointerException {
 
         T t = mReference.get();
 
@@ -46,7 +44,7 @@ public abstract class BaseActivityManager < T extends Activity > {
     /**
      * 对activity进行操作
      */
-    public void onActivityCreate() {
+    public void onStart() {
 
     }
 }

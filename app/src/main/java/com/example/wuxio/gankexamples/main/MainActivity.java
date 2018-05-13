@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.banner.BannerView;
@@ -28,6 +29,7 @@ import com.example.banner.adapter.BasePagerAdapter;
 import com.example.system_ui.SystemUI;
 import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.constant.GankCategory;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
@@ -54,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     protected ContainerLayout         mBannerContainer;
     protected CollapsingToolbarLayout mCollapsingToolbar;
     private   BannerAdapter           mBannerAdapter;
+    private   MainPagerAdapter        mMainPagerAdapter;
 
 
     /**
@@ -103,8 +106,12 @@ public class MainActivity extends AppCompatActivity {
         mBanner.setAdapter(mBannerAdapter);
 
         /* view Pager */
-        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mMainPagerAdapter);
+        mViewPager.addOnPageChangeListener(new MainPagerChangeListener());
+        mViewPager.setCurrentItem(0);
         mTabLayout.setupWithViewPager(mViewPager);
+
     }
 
 
@@ -119,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             initNavigationView(mNavigationView);
 
             /* 为activity执行后台初始化操作 */
-            MainManager.getInstance().onActivityCreate();
+            MainManager.getInstance().onStart();
         });
     }
 
@@ -390,6 +397,9 @@ public class MainActivity extends AppCompatActivity {
 
     private class MainPagerAdapter extends FragmentPagerAdapter {
 
+        private ShowFragment[] mShowFragments = new ShowFragment[GankCategory.All_CATEGORY.length];
+
+
         public MainPagerAdapter(FragmentManager fm) {
 
             super(fm);
@@ -399,14 +409,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
 
-            return ShowFragment.newInstance();
+            ShowFragment fragment = ShowFragment.newInstance();
+            mShowFragments[position] = fragment;
+            return fragment;
+        }
+
+
+        public ShowFragment getCurrentFragment(int position) {
+
+            return mShowFragments[position];
         }
 
 
         @Override
         public int getCount() {
 
-            return 5;
+            return GankCategory.All_CATEGORY.length;
         }
 
 
@@ -414,7 +432,33 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
 
-            return "pagerTitle";
+            return GankCategory.All_CATEGORY[position];
+        }
+
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+
+            mShowFragments[position] = null;
+            super.destroyItem(container, position, object);
+        }
+    }
+
+    //============================ pager scroll ============================
+
+    private class MainPagerChangeListener extends ViewPager.SimpleOnPageChangeListener {
+
+        @Override
+        public void onPageSelected(int position) {
+
+            Log.i(TAG, "onPageSelected:" + position);
+
+            if (mMainPagerAdapter != null) {
+                ShowFragment fragment = mMainPagerAdapter.getCurrentFragment(position);
+                if (fragment != null) {
+                    fragment.loadData(GankCategory.All_CATEGORY[position]);
+                }
+            }
         }
     }
 }

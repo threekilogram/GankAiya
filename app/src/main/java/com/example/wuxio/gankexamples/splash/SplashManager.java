@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.example.objectbus.bus.ObjectBus;
-import com.example.wuxio.gankexamples.BaseActivityManager;
+import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.action.DecodeSampledBitmapAction;
 import com.example.wuxio.gankexamples.action.UrlToFileAction;
@@ -14,7 +14,7 @@ import java.io.File;
 /**
  * @author wuxio 2018-05-10:10:12
  */
-public class SplashManager extends BaseActivityManager< SplashActivity > {
+public class SplashManager extends BaseManager< SplashActivity > {
 
     //============================ care ============================
 
@@ -22,7 +22,7 @@ public class SplashManager extends BaseActivityManager< SplashActivity > {
 
 
     @Override
-    public void onActivityCreate() {
+    public void onStart() {
 
     }
 
@@ -33,7 +33,7 @@ public class SplashManager extends BaseActivityManager< SplashActivity > {
     @SuppressWarnings("ConstantConditions")
     public void loadLogoImage() {
 
-        ImageView image = getActivity().getLogoImage();
+        ImageView image = get().getLogoImage();
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -70,7 +70,7 @@ public class SplashManager extends BaseActivityManager< SplashActivity > {
 
                     Bitmap bitmap = (Bitmap) mBus.getOff("bitmap");
                     if (bitmap != null) {
-                        getActivity().setSplashBitmap(bitmap);
+                        get().setSplashBitmap(bitmap);
                     }
 
                 } catch (NullPointerException e) {

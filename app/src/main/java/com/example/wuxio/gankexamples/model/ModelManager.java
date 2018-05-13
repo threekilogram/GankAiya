@@ -40,7 +40,7 @@ public class ModelManager {
         private static final ModelManager INSTANCE = new ModelManager();
     }
 
-    //============================ load categoryData ============================
+    //============================ load category beauty ============================
 
     private List< GankCategoryBean > mCategoryBeauties;
 
@@ -100,4 +100,64 @@ public class ModelManager {
 
         return loadBeauty();
     }
+
+    //============================ total ============================
+
+
+    public List< GankCategoryBean > loadCategory(String category) {
+
+        if (GankCategory.Android.equals(category)) {
+            return loadAndroid();
+        }
+
+        return null;
+    }
+
+    //============================ load category Android ============================
+
+    private List< GankCategoryBean > mCategoryAndroids;
+
+
+    public List< GankCategoryBean > loadAndroid() {
+
+        final int count = 20;
+
+        if (mCategoryAndroids == null) {
+            mCategoryAndroids = new ArrayList<>(count);
+        }
+
+        int page = mCategoryAndroids.size() / count + 1;
+        load(GankCategory.Android, count, page, mCategoryAndroids);
+
+        return mCategoryAndroids;
+    }
+
+    //============================ simple ============================
+
+    private interface LoadAction {
+
+        /**
+         * simple method
+         *
+         * @param category category
+         * @param count    count
+         * @param beanList result
+         */
+        void loadCategory(String category, int count, List< GankCategoryBean > beanList);
+
+    }
+
+    private LoadAction mLoadAction = new LoadAction() {
+        @Override
+        public void loadCategory(String category, int count, List< GankCategoryBean > beanList) {
+
+            if (beanList == null) {
+                beanList = new ArrayList<>();
+            }
+
+            int page = beanList.size() / count + 1;
+
+            load(category, count, page, beanList);
+        }
+    };
 }

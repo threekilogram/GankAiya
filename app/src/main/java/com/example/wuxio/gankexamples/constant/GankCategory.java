@@ -14,4 +14,13 @@ public class GankCategory {
     public static final String iOS             = "iOS";
     public static final String BEAUTY          = "福利";
 
+    public static final String[] All_CATEGORY = {
+            Android,
+            App,
+            iOS,
+            FRONT,
+            RECOMMEND,
+            EXTRA_RESOURCES,
+            REST_VIDEO
+    };
 }
