@@ -25,6 +25,7 @@
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                    app:contentScrim="@color/blue"
                     >
 
                 <com.example.banner.BannerView

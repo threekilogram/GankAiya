@@ -37,6 +37,7 @@ import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -97,9 +98,6 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = findViewById(R.id.tabLayout);
         mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
 
-        /* 默认白色 */
-        mCollapsingToolbar.setContentScrimColor(Color.WHITE);
-
         /* 防止tabLayout 进入statusBar */
         int height = SystemUI.getStatusBarHeight(MainActivity.this);
         mCollapsingToolbar.setMinimumHeight(height);
@@ -107,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         /* banner */
         mBannerAdapter = new BannerAdapter();
         mBanner.setAdapter(mBannerAdapter);
-
 
         /* view Pager */
         mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
@@ -314,10 +311,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void notifyBannerDataChanged(int index) {
 
-        mBannerAdapter.notifyDataSetChanged();
-        mBannerAdapter.mDataStartIndex = index;
         mBanner.startLoop();
-        mCollapsingToolbar.setContentScrimColor(getResources().getColor(R.color.blue));
+        mBannerAdapter.mDataStartIndex = index;
+        mBannerAdapter.reBindData(0);
+        mBannerAdapter.reBindData(1);
+
     }
 
 
@@ -332,6 +330,8 @@ public class MainActivity extends AppCompatActivity {
          */
         private int mDataStartIndex;
         private List< Bitmap > mBitmaps = BannerBitmapManager.getBitmaps();
+
+        private List< ImageView > mImageView01 = new ArrayList<>(2);
 
         /**
          * 每个item点击事件
@@ -349,15 +349,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Bitmap getData(int i) {
 
+            Log.i(TAG, "getData:" + i);
             try {
                 Bitmap bitmap = mBitmaps.get(i);
                 if (bitmap != null) {
+                    Log.i(TAG, "getData:" + "return bitmap");
                     return bitmap;
                 }
             } catch (Exception e) {
                 Log.e("MainActivity", "nothing to worry about");
             }
 
+            Log.i(TAG, "getData:" + "return null");
             return null;
         }
 
@@ -385,6 +388,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        public void reBindData(int position) {
+
+            ImageView view = getItemView(position);
+            Bitmap bitmap = getData(position);
+            view.setImageBitmap(bitmap);
+        }
+
+
         /**
          * banner item 点击事件,跳转到{@link PictureActivity}
          */
@@ -397,14 +408,6 @@ public class MainActivity extends AppCompatActivity {
                 PictureActivity.start(MainActivity.this, mDataStartIndex, position);
                 // TODO: 2018-05-07 转场动画 ,更新数据
             }
-        }
-
-
-        @Override
-        public void notifyDataSetChanged() {
-
-            mBitmaps = BannerBitmapManager.getBitmaps();
-            super.notifyDataSetChanged();
         }
     }
 
