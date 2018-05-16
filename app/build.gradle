@@ -32,7 +32,7 @@ dependencies {
     /* net */
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     /* UI */
-    implementation 'com.github.threekilogram:Constraint:1.3.3'
+    implementation 'com.github.threekilogram:Constraint:1.3.4'
     implementation 'com.github.threekilogram:SystemUI:1.0'
     implementation 'com.github.threekilogram:ViewPagerExtra:1.6.3'
     implementation 'com.github.threekilogram:ViewSkin:1.2.3'

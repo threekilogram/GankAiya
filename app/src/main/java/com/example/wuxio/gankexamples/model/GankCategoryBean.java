@@ -8,9 +8,9 @@ import java.util.List;
 public class GankCategoryBean {
 
     public String         _id;
-    public long           createdAt;
+    public String         createdAt;
     public String         desc;
-    public long           publishedAt;
+    public String         publishedAt;
     public String         source;
     public String         type;
     public String         url;

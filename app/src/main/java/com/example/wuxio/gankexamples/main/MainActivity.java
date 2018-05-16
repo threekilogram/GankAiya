@@ -37,7 +37,6 @@ import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     protected CollapsingToolbarLayout mCollapsingToolbar;
     private   BannerAdapter           mBannerAdapter;
     private   MainPagerAdapter        mMainPagerAdapter;
+    private   MainPagerChangeListener mMainPagerChangeListener;
 
 
     /**
@@ -109,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
         /* view Pager */
         mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mMainPagerAdapter);
-        mViewPager.addOnPageChangeListener(new MainPagerChangeListener());
+        mMainPagerChangeListener = new MainPagerChangeListener();
+        mViewPager.addOnPageChangeListener(mMainPagerChangeListener);
         mTabLayout.setupWithViewPager(mViewPager);
 
     }
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
             /* 设置默认页 */
             mViewPager.setCurrentItem(0);
+            mMainPagerChangeListener.onPageSelected(0);
         });
     }
 
@@ -313,9 +315,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBanner.startLoop();
         mBannerAdapter.mDataStartIndex = index;
-        mBannerAdapter.reBindData(0);
         mBannerAdapter.reBindData(1);
-
     }
 
 
@@ -330,8 +330,6 @@ public class MainActivity extends AppCompatActivity {
          */
         private int mDataStartIndex;
         private List< Bitmap > mBitmaps = BannerBitmapManager.getBitmaps();
-
-        private List< ImageView > mImageView01 = new ArrayList<>(2);
 
         /**
          * 每个item点击事件
@@ -349,18 +347,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Bitmap getData(int i) {
 
-            Log.i(TAG, "getData:" + i);
             try {
                 Bitmap bitmap = mBitmaps.get(i);
                 if (bitmap != null) {
-                    Log.i(TAG, "getData:" + "return bitmap");
                     return bitmap;
                 }
             } catch (Exception e) {
                 Log.e("MainActivity", "nothing to worry about");
             }
-
-            Log.i(TAG, "getData:" + "return null");
             return null;
         }
 
@@ -469,9 +463,8 @@ public class MainActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
 
             ShowFragment fragment = mMainPagerAdapter.getCurrentFragment(position);
-            Log.i(TAG, "onPageSelected:" + position + " " + fragment);
-
-            fragment.loadData(GankCategory.All_CATEGORY[position]);
+            String category = GankCategory.All_CATEGORY[position];
+            fragment.loadData(category);
         }
     }
 }

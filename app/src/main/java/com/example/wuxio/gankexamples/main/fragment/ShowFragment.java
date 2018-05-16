@@ -7,22 +7,30 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.constraintlayout.Constraint;
 import com.example.constraintlayout.ConstraintLayout;
 import com.example.constraintlayout.adapter.BaseConstraintAdapter;
+import com.example.objectbus.message.Messengers;
+import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
+
+import java.util.List;
 
 /**
  * @author wuxio 2018-04-29:9:23
  */
-public class ShowFragment extends Fragment {
+public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
+    private static final String TAG = "ShowFragment";
 
     protected View               rootView;
     protected RecyclerView       mRecycler;
@@ -56,7 +64,38 @@ public class ShowFragment extends Fragment {
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mSwipeRefresh.setRefreshing(true);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                Messengers.send(11, 1000, ShowFragment.this);
+            }
+        });
+
     }
+
+    //============================ message receive ============================
+
+
+    @Override
+    public void onReceive(int what) {
+
+        final int flagStopRefresh = 11;
+
+        if (what == flagStopRefresh) {
+            mSwipeRefresh.setRefreshing(false);
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+
+        Messengers.remove(11, this);
+        super.onDestroy();
+    }
+
+    //============================ load data ============================
 
 
     public void loadData(String category) {
@@ -67,10 +106,13 @@ public class ShowFragment extends Fragment {
     }
 
 
-    public void dataReady() {
+    public void dataReady(List< GankCategoryBean > categoryBeans) {
 
         mSwipeRefresh.setRefreshing(false);
-        mRecycler.setAdapter(new RecyclerAdapter());
+
+        if (categoryBeans != null) {
+            mRecycler.setAdapter(new RecyclerAdapter(categoryBeans));
+        }
     }
 
     //============================ recycler adapter ============================
@@ -78,6 +120,14 @@ public class ShowFragment extends Fragment {
     private class RecyclerAdapter extends RecyclerView.Adapter< RecyclerAdapter.Holder > {
 
         private LayoutInflater mInflater;
+        List< GankCategoryBean > mCategoryBeans;
+        private ShowConstraintAdapter mAdapter;
+
+
+        public RecyclerAdapter(List< GankCategoryBean > categoryBeans) {
+
+            this.mCategoryBeans = categoryBeans;
+        }
 
 
         @NonNull
@@ -108,20 +158,31 @@ public class ShowFragment extends Fragment {
         @Override
         public int getItemCount() {
 
-            return 50;
+            return mCategoryBeans.size();
         }
 
 
         class Holder extends RecyclerView.ViewHolder {
 
+            ConstraintLayout mConstraintLayout;
+
+
             Holder(View itemView) {
 
                 super(itemView);
+
+                mConstraintLayout = itemView.findViewById(R.id.constraintLayout);
             }
 
 
-            void bind(int i) {
+            void bind(int position) {
 
+                if (mAdapter == null) {
+                    mAdapter = new ShowConstraintAdapter();
+                }
+                mAdapter.setCategoryBean(mCategoryBeans.get(position));
+                mAdapter.setConstraintLayout(mConstraintLayout);
+                mConstraintLayout.setAdapter(mAdapter);
             }
         }
     }
@@ -130,11 +191,14 @@ public class ShowFragment extends Fragment {
 
     private class ShowConstraintAdapter extends BaseConstraintAdapter {
 
+        private GankCategoryBean mCategoryBean;
         private ConstraintLayout mConstraintLayout;
 
-        private LayoutInflater mInflater = LayoutInflater.from(getContext());
 
-        private GankCategoryBean mCategoryBean;
+        public void setCategoryBean(GankCategoryBean categoryBean) {
+
+            mCategoryBean = categoryBean;
+        }
 
 
         public void setConstraintLayout(ConstraintLayout constraintLayout) {
@@ -148,10 +212,65 @@ public class ShowFragment extends Fragment {
 
             if (i == 0) {
                 TextView textView = new TextView(getContext());
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                textView.setTextColor(getResources().getColor(R.color.category_text));
+                if (mCategoryBean != null) {
+                    textView.setText(mCategoryBean.desc);
+                }
                 return textView;
             }
 
+            if (i <= 3) {
+                TextView textView = new TextView(getContext());
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
+                textView.setTextColor(getResources().getColor(R.color.category_text2));
+
+                if (mCategoryBean != null) {
+
+                    switch (i) {
+                        case 1:
+                            textView.setText(mCategoryBean.who);
+                            break;
+                        case 2:
+                            textView.setText(mCategoryBean.publishedAt.substring(0, 10));
+                            break;
+                        case 3:
+                            textView.setText(mCategoryBean.type);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                return textView;
+            }
+
+            if (i < getChildCount()) {
+                return new ImageView(getContext());
+            }
+
             return null;
+        }
+
+
+        @Override
+        public ConstraintLayout.LayoutParams generateLayoutParamsTo(int position) {
+
+            if (position == 0) {
+                return new ConstraintLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+            }
+
+            if (position <= 3) {
+                return new ConstraintLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+            }
+
+            return super.generateLayoutParamsTo(position);
         }
 
 
@@ -159,22 +278,87 @@ public class ShowFragment extends Fragment {
         public Constraint generateConstraintTo(int i, Constraint constraint) {
 
             if (i == 0) {
+                constraint.leftToLeftOfParent(20)
+                        .topToTopOfParent(20)
+                        .rightToRightOfParent(-20);
+                return constraint;
+            }
 
-                constraint.leftToLeftOfParent(16);
-                constraint.rightToRightOfParent(-16);
-                constraint.topToTopOfParent(16);
+            if (i == 1) {
+
+                int imagesSize = getImagesSize();
+                if (imagesSize > 0) {
+                    int size = constraint.getWeightWidth(4, 1, 20 + 20 + 20 + 20);
+                    int j = imagesSize / 3 + 1;
+                    constraint.leftToLeftOfParent(20)
+                            .topToBottomOfView(i - 1, 20 + j * size + 20);
+                } else {
+                    constraint.leftToLeftOfParent(20)
+                            .topToBottomOfView(i - 1, 20);
+                }
+                return constraint;
+            } else if (i == 2) {
+                constraint.rightToRightOfParent(-20)
+                        .topToTopOfView(i - 1, 0);
+                return constraint;
+            } else if (i == 3) {
+
+                constraint.rightToLeftOfView(i - 1, -20)
+                        .topToTopOfView(i - 1, 0);
+
+                int imagesSize = getImagesSize();
+                if (imagesSize == 0) {
+                    int count = mConstraintLayout.getChildCount();
+                    for (int j = 4; j < count; j++) {
+                        View child = mConstraintLayout.getChildAt(j);
+                        if (child != null) {
+                            child.setVisibility(View.GONE);
+                        }
+                    }
+                }
 
                 return constraint;
             }
 
-            return null;
+            int j = i - 4;
+            if (j == 0) {
+                int size = constraint.getWeightWidth(4, 1, 20 + 20 + 20 + 20);
+                constraint.leftToLeftOfParent(20, size).topToBottomOfView(0, 20, size);
+
+            } else if (j <= 2) {
+                constraint.copyFrom(i - 1).translateX(constraint.getViewWidth(i - 1) + 20);
+
+            } else {
+
+                constraint.copyFrom(i - 3).translateY(constraint.getViewHeight(i - 3) + 20);
+            }
+            mConstraintLayout.getChildAt(i).setVisibility(View.VISIBLE);
+            return constraint;
+        }
+
+
+        @Override
+        public void afterMeasure(int position, View view) {
+
+            int j = position - 4;
+            if (j >= 0) {
+                String url = mCategoryBean.images.get(j);
+                Log.i(TAG, "afterMeasure:" + url);
+                ((ImageView) view).setImageResource(R.drawable.music);
+            }
         }
 
 
         @Override
         public int getChildCount() {
 
-            return 1;
+            return 4 + getImagesSize();
+        }
+
+
+        public int getImagesSize() {
+
+            return mCategoryBean.images == null ? 0 : mCategoryBean.images.size();
         }
     }
 }

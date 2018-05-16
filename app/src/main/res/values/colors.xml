@@ -20,4 +20,6 @@
     <color name="azure">#f0ffff</color><!--天蓝色 -->
 
     <color name="category_text">#323232</color>
+    <color name="category_text2">#b6b4b4</color>
+
 </resources>
