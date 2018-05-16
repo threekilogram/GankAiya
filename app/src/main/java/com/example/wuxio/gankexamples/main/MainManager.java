@@ -18,6 +18,7 @@ import java.util.List;
 public class MainManager extends BaseManager< MainActivity > {
 
     private static final String TAG = "MainManager";
+    private ObjectBus mBus;
 
     //============================ singleTon ============================
 
@@ -49,8 +50,8 @@ public class MainManager extends BaseManager< MainActivity > {
         int width = banner.getWidth();
         int height = banner.getHeight();
 
-        ObjectBus bus = BusStation.getInstance().obtainBus();
-        bus.toUnder(() -> {
+        mBus = BusStation.getInstance().obtainBus();
+        mBus.toUnder(() -> {
 
             /* model get new data */
             List< GankCategoryBean > beauty = ModelManager.getInstance().loadBeauty();
@@ -77,7 +78,7 @@ public class MainManager extends BaseManager< MainActivity > {
             }
 
             /* all task finished recycle bus */
-            BusStation.recycle(bus);
+            BusStation.recycle(mBus);
         }).run();
     }
 

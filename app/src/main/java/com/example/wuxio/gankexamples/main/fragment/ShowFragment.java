@@ -51,11 +51,11 @@ public class ShowFragment extends Fragment {
 
     private void initView(View rootView) {
 
-        mSwipeRefresh =  rootView.findViewById(R.id.swipeRefresh);
+        mSwipeRefresh = rootView.findViewById(R.id.swipeRefresh);
         mRecycler = rootView.findViewById(R.id.recycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecycler.setAdapter(new RecyclerAdapter());
 
+        mSwipeRefresh.setRefreshing(true);
     }
 
 
@@ -64,6 +64,13 @@ public class ShowFragment extends Fragment {
         ShowFragmentManager.getInstance().register(this);
         ShowFragmentManager.getInstance().loadData(category);
 
+    }
+
+
+    public void dataReady() {
+
+        mSwipeRefresh.setRefreshing(false);
+        mRecycler.setAdapter(new RecyclerAdapter());
     }
 
     //============================ recycler adapter ============================

@@ -15,6 +15,7 @@
 
         <android.support.design.widget.AppBarLayout
                 android:id="@+id/appBar"
+                android:background="@android:color/transparent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -22,14 +23,15 @@
                     android:id="@+id/collapsingToolbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                    app:contentScrim="@color/blue"
                     >
 
                 <com.example.banner.BannerView
                         android:id="@+id/banner"
                         android:layout_width="match_parent"
                         android:layout_height="225dp"
+                        android:background="@android:color/transparent"
                         app:IndicatorGravity="end|bottom"
                         app:IndicatorMarginBottom="8dp"
                         app:IndicatorMarginRight="16dp"

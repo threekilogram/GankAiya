@@ -97,6 +97,9 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = findViewById(R.id.tabLayout);
         mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
 
+        /* 默认白色 */
+        mCollapsingToolbar.setContentScrimColor(Color.WHITE);
+
         /* 防止tabLayout 进入statusBar */
         int height = SystemUI.getStatusBarHeight(MainActivity.this);
         mCollapsingToolbar.setMinimumHeight(height);
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         /* banner */
         mBannerAdapter = new BannerAdapter();
         mBanner.setAdapter(mBannerAdapter);
+
 
         /* view Pager */
         mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
@@ -120,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     private void postAction() {
 
         mDrawer.post(() -> {
+
+            mBanner.stopLoop();
 
             /* 设置导航菜单 */
             initNavigationView(mNavigationView);
@@ -293,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
 
         MainManager.getInstance().unRegister();
+        BannerBitmapManager.getBitmaps().clear();
         super.onDestroy();
     }
 
@@ -309,6 +316,8 @@ public class MainActivity extends AppCompatActivity {
 
         mBannerAdapter.notifyDataSetChanged();
         mBannerAdapter.mDataStartIndex = index;
+        mBanner.startLoop();
+        mCollapsingToolbar.setContentScrimColor(getResources().getColor(R.color.blue));
     }
 
 
@@ -328,16 +337,12 @@ public class MainActivity extends AppCompatActivity {
          * 每个item点击事件
          */
         private BannerItemClickListener mBannerItemClickListener;
-        /**
-         * 默认大小
-         */
-        private static final int DEFAULT_COUNT = 5;
 
 
         @Override
         public int getCount() {
 
-            return DEFAULT_COUNT;
+            return 5;
         }
 
 
@@ -392,6 +397,14 @@ public class MainActivity extends AppCompatActivity {
                 PictureActivity.start(MainActivity.this, mDataStartIndex, position);
                 // TODO: 2018-05-07 转场动画 ,更新数据
             }
+        }
+
+
+        @Override
+        public void notifyDataSetChanged() {
+
+            mBitmaps = BannerBitmapManager.getBitmaps();
+            super.notifyDataSetChanged();
         }
     }
 
