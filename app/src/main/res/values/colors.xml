@@ -18,4 +18,6 @@
     <color name="orange">#ffa500</color><!--橙色 -->
     <color name="tomato">#ff6347</color><!--西红柿色 -->
     <color name="azure">#f0ffff</color><!--天蓝色 -->
+
+    <color name="category_text">#323232</color>
 </resources>
