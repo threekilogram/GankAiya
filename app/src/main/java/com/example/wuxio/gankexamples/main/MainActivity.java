@@ -14,7 +14,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
             /* 设置默认页 */
             mViewPager.setCurrentItem(0);
+
             mMainPagerChangeListener.onPageSelected(0);
         });
     }
@@ -407,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
 
     //============================ pager adapter ============================
 
-    private class MainPagerAdapter extends FragmentPagerAdapter {
+    private class MainPagerAdapter extends FragmentStatePagerAdapter {
 
         private ShowFragment[] mShowFragments = new ShowFragment[GankCategory.All_CATEGORY.length];
 

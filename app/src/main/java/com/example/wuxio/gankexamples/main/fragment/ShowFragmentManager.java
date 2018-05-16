@@ -1,7 +1,5 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
-import android.util.Log;
-
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
 import com.example.wuxio.gankexamples.BaseManager;
@@ -24,27 +22,21 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
 
         ObjectBus bus = BusStation.callNewBus();
 
-        bus.toUnder(new Runnable() {
-            @Override
-            public void run() {
+        bus.toUnder(() -> {
 
-                List< GankCategoryBean > categoryBeans = ModelManager.getInstance().loadCategory(category);
+            List< GankCategoryBean > categoryBeans = ModelManager.getInstance().loadCategory(category);
 
-                bus.take(categoryBeans, "temp");
+            bus.take(categoryBeans, "temp");
+        }).toMain(() -> {
+
+            List< GankCategoryBean > categoryBeans = (List< GankCategoryBean >) bus.getOff("temp");
+
+            try {
+                get().dataReady(categoryBeans);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
-        }).toMain(new Runnable() {
-            @Override
-            public void run() {
-
-                List< GankCategoryBean > categoryBeans = (List< GankCategoryBean >) bus.getOff("temp");
-
-                try {
-                    get().dataReady(categoryBeans);
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-
-            }
+            BusStation.recycle(bus);
         }).run();
     }
 

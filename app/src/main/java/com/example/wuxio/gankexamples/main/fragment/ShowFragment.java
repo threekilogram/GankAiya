@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,9 +99,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     public void loadData(String category) {
 
-        ShowFragmentManager.getInstance().register(this);
-        ShowFragmentManager.getInstance().loadData(category);
-
+        ShowFragmentManager instance = ShowFragmentManager.getInstance();
+        instance.register(this);
+        instance.loadData(category);
     }
 
 
@@ -313,6 +312,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                         View child = mConstraintLayout.getChildAt(j);
                         if (child != null) {
                             child.setVisibility(View.GONE);
+                            ((ImageView) child).setImageBitmap(null);
                         }
                     }
                 }
@@ -332,7 +332,12 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
                 constraint.copyFrom(i - 3).translateY(constraint.getViewHeight(i - 3) + 20);
             }
-            mConstraintLayout.getChildAt(i).setVisibility(View.VISIBLE);
+
+            View view = mConstraintLayout.getChildAt(i);
+            if (view != null) {
+                view.setVisibility(View.VISIBLE);
+            }
+
             return constraint;
         }
 
@@ -343,8 +348,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             int j = position - 4;
             if (j >= 0) {
                 String url = mCategoryBean.images.get(j);
-                Log.i(TAG, "afterMeasure:" + url);
-                ((ImageView) view).setImageResource(R.drawable.music);
+                ImageView imageView = (ImageView) view;
+                imageView.setImageResource(R.drawable.music);
+                view.setTag(R.id.show_item_image, url);
             }
         }
 
