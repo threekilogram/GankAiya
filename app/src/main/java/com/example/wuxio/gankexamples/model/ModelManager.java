@@ -24,6 +24,8 @@ public class ModelManager {
 
     //============================ singleTon ============================
 
+    private final int mCount = 20;
+
 
     private ModelManager() {
 
@@ -78,7 +80,7 @@ public class ModelManager {
      */
     public List< GankCategoryBean > loadBeauty() {
 
-        final int count = 5;
+        final int count = mCount;
 
         if (mCategoryBeauties == null) {
             mCategoryBeauties = new ArrayList<>(count);
@@ -172,6 +174,46 @@ public class ModelManager {
         return loadAndroid();
     }
 
+
+    public List< GankCategoryBean > loadCategoryMore(String category) {
+
+        switch (category) {
+
+            case GankCategory.Android:
+
+                return loadAndroid();
+
+            case GankCategory.App:
+
+                return loadApp();
+
+            case GankCategory.iOS:
+
+                return loadIOS();
+
+            case GankCategory.FRONT:
+
+                return loadFront();
+
+            case GankCategory.RECOMMEND:
+
+                return loadRecommend();
+
+            case GankCategory.EXTRA_RESOURCES:
+
+                return loadExtra();
+
+            case GankCategory.REST_VIDEO:
+
+                return loadRest();
+
+            default:
+                break;
+        }
+
+        return loadAndroid();
+    }
+
     //============================ load category Android ============================
 
     private List< GankCategoryBean > mCategoryAndroids;
@@ -179,15 +221,13 @@ public class ModelManager {
 
     public List< GankCategoryBean > loadAndroid() {
 
-        final int count = 20;
-
         if (mCategoryAndroids == null) {
-            mCategoryAndroids = new ArrayList<>(count);
+            mCategoryAndroids = new ArrayList<>(mCount);
         }
 
-        int page = mCategoryAndroids.size() / count + 1;
+        int page = mCategoryAndroids.size() / mCount + 1;
 
-        load(GankCategory.Android, count, page, mCategoryAndroids);
+        load(GankCategory.Android, mCount, page, mCategoryAndroids);
 
         return mCategoryAndroids;
     }
@@ -276,7 +316,7 @@ public class ModelManager {
         @Override
         public List< GankCategoryBean > load(String category, List< GankCategoryBean > gankCategoryBeanList) {
 
-            final int count = 20;
+            final int count = mCount;
 
             if (gankCategoryBeanList == null) {
                 gankCategoryBeanList = new ArrayList<>(count);

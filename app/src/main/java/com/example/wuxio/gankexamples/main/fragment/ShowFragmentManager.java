@@ -2,6 +2,8 @@ package com.example.wuxio.gankexamples.main.fragment;
 
 import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
+import com.example.objectbus.message.Messengers;
+import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
@@ -40,6 +42,23 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
         }).run();
     }
 
+    //============================ load more ============================
+
+
+    public void loadMore(String category, OnMessageReceiveListener listener) {
+
+        ObjectBus bus = BusStation.callNewBus();
+        bus.toUnder(new Runnable() {
+            @Override
+            public void run() {
+
+                ModelManager.getInstance().loadCategoryMore(category);
+                Messengers.send(11, listener);
+                BusStation.recycle(bus);
+            }
+        }).run();
+    }
+
     //============================ singleTon ============================
 
 
@@ -57,4 +76,5 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
     private static class SingletonHolder {
         private static final ShowFragmentManager INSTANCE = new ShowFragmentManager();
     }
+
 }

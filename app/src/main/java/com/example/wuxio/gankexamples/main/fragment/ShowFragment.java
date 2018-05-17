@@ -37,6 +37,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
     protected SwipeRefreshLayout  mSwipeRefresh;
     private   LinearLayoutManager mLayoutManager;
     private   RecyclerAdapter     mRecyclerAdapter;
+    private   String              mCategory;
 
 
     public static ShowFragment newInstance() {
@@ -110,7 +111,8 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
         ShowFragmentManager instance = ShowFragmentManager.getInstance();
         instance.register(this);
-        instance.loadData(category);
+        mCategory = category;
+        instance.loadData(mCategory);
     }
 
 
@@ -194,7 +196,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             if (position == getItemCount() - 1) {
 
-                ((FooterHolder) holder).bind(mCategoryBeans.size());
+                ((FooterHolder) holder).bind();
 
             } else {
 
@@ -239,9 +241,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         /**
          * holder, 创建一个ConstraintLayout
          */
-        class FooterHolder extends RecyclerView.ViewHolder {
+        class FooterHolder extends RecyclerView.ViewHolder implements OnMessageReceiveListener {
 
-            private int count;
+            private boolean calledToLoadMore = false;
 
 
             FooterHolder(View itemView) {
@@ -250,13 +252,22 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             }
 
 
-            void bind(int count) {
+            void bind() {
 
-                if (count != this.count) {
-
-                    this.count = count;
-                    Log.i(TAG, "bind:" + " load more ");
+                if (!calledToLoadMore) {
+                    calledToLoadMore = true;
+                    ShowFragmentManager.getInstance().loadMore(mCategory, this);
                 }
+            }
+
+
+            @Override
+            public void onReceive(int what) {
+
+                calledToLoadMore = false;
+                notifyItemInserted(getItemCount() - 1);
+
+                Log.i(TAG, "onReceive:" + "received");
             }
         }
     }
