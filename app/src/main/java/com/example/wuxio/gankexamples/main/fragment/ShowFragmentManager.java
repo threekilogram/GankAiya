@@ -48,14 +48,13 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
     public void loadMore(String category, OnMessageReceiveListener listener) {
 
         ObjectBus bus = BusStation.callNewBus();
-        bus.toUnder(new Runnable() {
-            @Override
-            public void run() {
 
-                ModelManager.getInstance().loadCategoryMore(category);
-                Messengers.send(11, listener);
-                BusStation.recycle(bus);
-            }
+        bus.toUnder(() -> {
+
+            ModelManager.getInstance().loadCategoryMore(category);
+            Messengers.send(11, listener);
+            BusStation.recycle(bus);
+
         }).run();
     }
 

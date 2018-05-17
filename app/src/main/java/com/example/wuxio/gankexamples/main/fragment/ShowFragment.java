@@ -66,7 +66,6 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         mRecycler = rootView.findViewById(R.id.recycler);
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
-        mRecycler.addOnScrollListener(new ScrollListener());
 
         /* 打开界面 刷新 */
         mSwipeRefresh.setRefreshing(true);
@@ -498,17 +497,4 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
     }
 
     //============================ recycler scroll ============================
-
-    private class ScrollListener extends RecyclerView.OnScrollListener {
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
-            int position = mLayoutManager.findLastVisibleItemPosition();
-            if (position == mRecyclerAdapter.getItemCount() - 1) {
-
-                Log.i(TAG, "onScrolled:" + "to end");
-            }
-        }
-    }
 }
