@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +32,11 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     private static final String TAG = "ShowFragment";
 
-    protected View               rootView;
-    protected RecyclerView       mRecycler;
-    protected SwipeRefreshLayout mSwipeRefresh;
+    protected View                rootView;
+    protected RecyclerView        mRecycler;
+    protected SwipeRefreshLayout  mSwipeRefresh;
+    private   LinearLayoutManager mLayoutManager;
+    private   RecyclerAdapter     mRecyclerAdapter;
 
 
     public static ShowFragment newInstance() {
@@ -60,7 +63,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
         mSwipeRefresh = rootView.findViewById(R.id.swipeRefresh);
         mRecycler = rootView.findViewById(R.id.recycler);
-        mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecycler.setLayoutManager(mLayoutManager);
+        mRecycler.addOnScrollListener(new ScrollListener());
 
         /* 打开界面 刷新 */
         mSwipeRefresh.setRefreshing(true);
@@ -117,7 +122,8 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
         /* 设置recycler 显示数据 */
         if (categoryBeans != null) {
-            mRecycler.setAdapter(new RecyclerAdapter(categoryBeans));
+            mRecyclerAdapter = new RecyclerAdapter(categoryBeans);
+            mRecycler.setAdapter(mRecyclerAdapter);
         }
     }
 
@@ -126,7 +132,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
     /**
      * recycler adapter
      */
-    private class RecyclerAdapter extends RecyclerView.Adapter< RecyclerAdapter.Holder > {
+    private class RecyclerAdapter extends RecyclerView.Adapter< RecyclerView.ViewHolder > {
 
         private LayoutInflater mInflater;
         List< GankCategoryBean > mCategoryBeans;
@@ -139,35 +145,68 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         }
 
 
+        @Override
+        public int getItemViewType(int position) {
+
+            if (position == getItemCount() - 1) {
+
+                return 12;
+            } else {
+
+                return 11;
+            }
+        }
+
+
         @NonNull
         @Override
-        public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
             if (mInflater == null) {
                 mInflater = LayoutInflater.from(parent.getContext());
             }
 
-            View view = mInflater.inflate(
-                    R.layout.item_show_pager_recycler,
-                    parent,
-                    false
-            );
+            if (viewType == 12) {
 
-            return new Holder(view);
+                View view = mInflater.inflate(
+                        R.layout.item_show_pager_recycler_footer,
+                        parent,
+                        false
+                );
+
+                return new FooterHolder(view);
+
+            } else {
+
+                View view = mInflater.inflate(
+                        R.layout.item_show_pager_recycler,
+                        parent,
+                        false
+                );
+
+                return new Holder(view);
+            }
         }
 
 
         @Override
-        public void onBindViewHolder(@NonNull Holder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-            holder.bind(position);
+            if (position == getItemCount() - 1) {
+
+                ((FooterHolder) holder).bind(mCategoryBeans.size());
+
+            } else {
+
+                ((Holder) holder).bind(position);
+            }
         }
 
 
         @Override
         public int getItemCount() {
 
-            return mCategoryBeans.size();
+            return mCategoryBeans.size() + 1;
         }
 
 
@@ -194,6 +233,30 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 mAdapter.setCategoryBean(mCategoryBeans.get(position));
                 mAdapter.setConstraintLayout(mConstraintLayout);
                 mConstraintLayout.setAdapter(mAdapter);
+            }
+        }
+
+        /**
+         * holder, 创建一个ConstraintLayout
+         */
+        class FooterHolder extends RecyclerView.ViewHolder {
+
+            private int count;
+
+
+            FooterHolder(View itemView) {
+
+                super(itemView);
+            }
+
+
+            void bind(int count) {
+
+                if (count != this.count) {
+
+                    this.count = count;
+                    Log.i(TAG, "bind:" + " load more ");
+                }
             }
         }
     }
@@ -420,6 +483,21 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         public int getImagesSize() {
 
             return mCategoryBean.images == null ? 0 : mCategoryBean.images.size();
+        }
+    }
+
+    //============================ recycler scroll ============================
+
+    private class ScrollListener extends RecyclerView.OnScrollListener {
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+            int position = mLayoutManager.findLastVisibleItemPosition();
+            if (position == mRecyclerAdapter.getItemCount() - 1) {
+
+                Log.i(TAG, "onScrolled:" + "to end");
+            }
         }
     }
 }
