@@ -65,6 +65,13 @@ public class UrlToFileAction {
                     return pic;
                 } catch (Exception e) {
                     Log.e(TAG, " write picture to local failed");
+                } finally {
+
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
 
             } else {

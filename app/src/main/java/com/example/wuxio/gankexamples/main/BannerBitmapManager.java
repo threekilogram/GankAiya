@@ -19,9 +19,8 @@ public class BannerBitmapManager {
     }
 
 
-    public static void put(int index, Bitmap bitmap){
+    public static void put(int index, Bitmap bitmap) {
 
-        sBitmaps.add(index,bitmap);
+        sBitmaps.add(index, bitmap);
     }
-
 }

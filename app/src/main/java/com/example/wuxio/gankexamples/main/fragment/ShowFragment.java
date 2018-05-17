@@ -62,14 +62,14 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         mRecycler = rootView.findViewById(R.id.recycler);
         mRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        /* 打开界面 刷新 */
         mSwipeRefresh.setRefreshing(true);
-        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
+        mSwipeRefresh.setOnRefreshListener(
 
-                Messengers.send(11, 1000, ShowFragment.this);
-            }
-        });
+                /* 模拟刷新 */
+
+                () -> Messengers.send(11, 1000, ShowFragment.this)
+        );
 
     }
 
@@ -81,6 +81,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
         final int flagStopRefresh = 11;
 
+        /* 结束刷新 */
         if (what == flagStopRefresh) {
             mSwipeRefresh.setRefreshing(false);
         }
@@ -90,6 +91,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
     @Override
     public void onDestroy() {
 
+        /* 解注册 */
         Messengers.remove(11, this);
         super.onDestroy();
     }
@@ -99,6 +101,8 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     public void loadData(String category) {
 
+        /* 加载数据 */
+
         ShowFragmentManager instance = ShowFragmentManager.getInstance();
         instance.register(this);
         instance.loadData(category);
@@ -107,8 +111,11 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     public void dataReady(List< GankCategoryBean > categoryBeans) {
 
+        /*  后台加载数据完毕,不再刷新 */
+
         mSwipeRefresh.setRefreshing(false);
 
+        /* 设置recycler 显示数据 */
         if (categoryBeans != null) {
             mRecycler.setAdapter(new RecyclerAdapter(categoryBeans));
         }
@@ -116,6 +123,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     //============================ recycler adapter ============================
 
+    /**
+     * recycler adapter
+     */
     private class RecyclerAdapter extends RecyclerView.Adapter< RecyclerAdapter.Holder > {
 
         private LayoutInflater mInflater;
@@ -161,6 +171,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         }
 
 
+        /**
+         * holder, 创建一个ConstraintLayout
+         */
         class Holder extends RecyclerView.ViewHolder {
 
             ConstraintLayout mConstraintLayout;
@@ -169,7 +182,6 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             Holder(View itemView) {
 
                 super(itemView);
-
                 mConstraintLayout = itemView.findViewById(R.id.constraintLayout);
             }
 
@@ -188,7 +200,12 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     //============================ recycler item adapter ============================
 
+    /**
+     * recycler item constraintLayout的adapter
+     */
     private class ShowConstraintAdapter extends BaseConstraintAdapter {
+
+        /* 设置数据 */
 
         private GankCategoryBean mCategoryBean;
         private ConstraintLayout mConstraintLayout;
@@ -213,9 +230,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 TextView textView = new TextView(getContext());
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
                 textView.setTextColor(getResources().getColor(R.color.category_text));
-                if (mCategoryBean != null) {
-                    textView.setText(mCategoryBean.desc);
-                }
+
                 return textView;
             }
 
@@ -223,24 +238,6 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 TextView textView = new TextView(getContext());
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13);
                 textView.setTextColor(getResources().getColor(R.color.category_text2));
-
-                if (mCategoryBean != null) {
-
-                    switch (i) {
-                        case 1:
-                            textView.setText(mCategoryBean.who);
-                            break;
-                        case 2:
-                            textView.setText(mCategoryBean.publishedAt.substring(0, 10));
-                            break;
-                        case 3:
-                            textView.setText(mCategoryBean.type);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
                 return textView;
             }
 
@@ -276,12 +273,16 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         @Override
         public Constraint generateConstraintTo(int i, Constraint constraint) {
 
+            /* 介绍 */
+
             if (i == 0) {
                 constraint.leftToLeftOfParent(20)
                         .topToTopOfParent(20)
                         .rightToRightOfParent(-20);
                 return constraint;
             }
+
+            /* 作者 */
 
             if (i == 1) {
 
@@ -296,14 +297,23 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                             .topToBottomOfView(i - 1, 20);
                 }
                 return constraint;
+
             } else if (i == 2) {
+
+                /* 日期 */
+
                 constraint.rightToRightOfParent(-20)
                         .topToTopOfView(i - 1, 0);
                 return constraint;
+
             } else if (i == 3) {
+
+                /* 分类 */
 
                 constraint.rightToLeftOfView(i - 1, -20)
                         .topToTopOfView(i - 1, 0);
+
+                /* 如果没有图片数据,隐藏imageView */
 
                 int imagesSize = getImagesSize();
                 if (imagesSize == 0) {
@@ -311,6 +321,9 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                     for (int j = 4; j < count; j++) {
                         View child = mConstraintLayout.getChildAt(j);
                         if (child != null) {
+
+                            /* 隐藏imageView,设置bitmap引用为null,释放bitmap */
+
                             child.setVisibility(View.GONE);
                             ((ImageView) child).setImageBitmap(null);
                         }
@@ -320,8 +333,13 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 return constraint;
             }
 
+            /* 如果有图片数据的话,会走到这里 */
+
             int j = i - 4;
             if (j == 0) {
+
+                /* 以第一张图片为基础,从左到右,从上到下排列 */
+
                 int size = constraint.getWeightWidth(4, 1, 20 + 20 + 20 + 20);
                 constraint.leftToLeftOfParent(20, size).topToBottomOfView(0, 20, size);
 
@@ -333,6 +351,8 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 constraint.copyFrom(i - 3).translateY(constraint.getViewHeight(i - 3) + 20);
             }
 
+            /* 因为recycler item 不断复用,前面没有数据的话会将图片隐藏,现在有图片数据,需要还原为可见 */
+
             View view = mConstraintLayout.getChildAt(i);
             if (view != null) {
                 view.setVisibility(View.VISIBLE);
@@ -343,14 +363,49 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
 
         @Override
+        public void beforeMeasure(int position, View view) {
+
+            /* 设置数据 */
+
+            if (position == 0) {
+                if (mCategoryBean != null) {
+                    ((TextView) view).setText(mCategoryBean.desc);
+                }
+            }
+
+            if (mCategoryBean != null) {
+
+                switch (position) {
+                    case 1:
+                        ((TextView) view).setText(mCategoryBean.who);
+                        break;
+                    case 2:
+                        ((TextView) view).setText(mCategoryBean.publishedAt.substring(0, 10));
+                        break;
+                    case 3:
+                        ((TextView) view).setText(mCategoryBean.type);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+
+        @Override
         public void afterMeasure(int position, View view) {
+
+            /* 如果有图片数据 */
 
             int j = position - 4;
             if (j >= 0) {
+
+                /* 加载图片数据 */
+
                 String url = mCategoryBean.images.get(j);
                 ImageView imageView = (ImageView) view;
                 imageView.setImageResource(R.drawable.music);
-                view.setTag(R.id.show_item_image, url);
+                imageView.setTag(R.id.show_item_image, url);
             }
         }
 
