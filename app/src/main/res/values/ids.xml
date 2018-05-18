@@ -3,5 +3,7 @@
 
     <item name="main_banner_item_tag" type="id"/>
     <item name="show_item_image" type="id"/>
+    <item name="show_item_url" type="id"/>
+    <item name="show_item_desc" type="id"/>
 
 </resources>

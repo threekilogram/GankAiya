@@ -29,11 +29,19 @@
     </style>
 
     <!-- text style -->
+
     <style name="MainTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">@dimen/tab_text_size</item>
         <item name="android:textColor">@color/colorTabTextUnSelected</item>
         <item name="android:textStyle">bold</item>
         <item name="textAllCaps">false</item>
+    </style>
+
+    <!-- toolBar style -->
+
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/white</item>
     </style>
 
 </resources>

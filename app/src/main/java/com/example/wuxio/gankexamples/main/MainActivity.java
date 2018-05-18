@@ -316,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
         mBanner.startLoop();
         mBannerAdapter.mDataStartIndex = index;
+        mBannerAdapter.reBindData(0);
         mBannerAdapter.reBindData(1);
     }
 

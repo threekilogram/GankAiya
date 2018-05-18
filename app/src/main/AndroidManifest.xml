@@ -24,13 +24,11 @@
         <activity
                 android:name=".root.RootActivity"
                 android:launchMode="singleTask">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
         </activity>
 
         <!-- splash init something -->
@@ -38,9 +36,7 @@
         <activity
                 android:name=".splash.SplashActivity"
                 android:theme="@style/FullScreenTheme">
-
         </activity>
-
 
         <!-- main page -->
 
@@ -49,6 +45,13 @@
                 android:launchMode="singleTop"
                 android:screenOrientation="portrait"/>
         <activity android:name=".picture.PictureActivity">
+        </activity>
+
+        <!-- webView -->
+
+        <activity
+                android:name=".web.WebActivity"
+                android:launchMode="singleTop">
         </activity>
     </application>
 

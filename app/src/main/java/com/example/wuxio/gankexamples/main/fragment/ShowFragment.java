@@ -22,6 +22,7 @@ import com.example.objectbus.message.Messengers;
 import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
+import com.example.wuxio.gankexamples.web.WebActivity;
 
 import java.util.List;
 
@@ -138,6 +139,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         private LayoutInflater mInflater;
         List< GankCategoryBean > mCategoryBeans;
         private ShowConstraintAdapter mAdapter;
+        private View.OnClickListener  mOnClickListener;
 
 
         public RecyclerAdapter(List< GankCategoryBean > categoryBeans) {
@@ -185,6 +187,12 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                         false
                 );
 
+                if (mOnClickListener == null) {
+                    mOnClickListener = new ShowItemClickListener();
+                }
+
+                view.setOnClickListener(mOnClickListener);
+
                 return new Holder(view);
             }
         }
@@ -231,7 +239,13 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 if (mAdapter == null) {
                     mAdapter = new ShowConstraintAdapter();
                 }
-                mAdapter.setCategoryBean(mCategoryBeans.get(position));
+
+                GankCategoryBean bean = mCategoryBeans.get(position);
+
+                itemView.setTag(R.id.show_item_url, bean.url);
+                itemView.setTag(R.id.show_item_desc, bean.desc);
+
+                mAdapter.setCategoryBean(bean);
                 mAdapter.setConstraintLayout(mConstraintLayout);
                 mConstraintLayout.setAdapter(mAdapter);
             }
@@ -496,5 +510,19 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         }
     }
 
-    //============================ recycler scroll ============================
+    //============================ recycler item click ============================
+
+    /**
+     * recycler normal item click
+     */
+    private class ShowItemClickListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+
+            String url = (String) v.getTag(R.id.show_item_url);
+            String title = (String) v.getTag(R.id.show_item_desc);
+            WebActivity.start(getContext(), url, title);
+        }
+    }
 }
