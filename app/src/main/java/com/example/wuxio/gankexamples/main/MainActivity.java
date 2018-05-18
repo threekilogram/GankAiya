@@ -24,13 +24,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.animatedrawable.BiliBiliLoadingDrawable;
 import com.example.banner.BannerView;
 import com.example.banner.adapter.BasePagerAdapter;
 import com.example.system_ui.SystemUI;
-import com.example.viewskin.ContainerLayout;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.GankCategory;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.model.ModelManager;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
@@ -53,11 +54,12 @@ public class MainActivity extends AppCompatActivity {
     protected CoordinatorLayout       mCoordinator;
     protected ViewPager               mViewPager;
     protected TabLayout               mTabLayout;
-    protected ContainerLayout         mBannerContainer;
     protected CollapsingToolbarLayout mCollapsingToolbar;
+    protected ImageView               mBannerLoading;
     private   BannerAdapter           mBannerAdapter;
     private   MainPagerAdapter        mMainPagerAdapter;
     private   MainPagerChangeListener mMainPagerChangeListener;
+    private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
 
 
     /**
@@ -97,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
         mViewPager = findViewById(R.id.viewPager);
         mTabLayout = findViewById(R.id.tabLayout);
         mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
+        mBannerLoading = findViewById(R.id.bannerLoading);
 
         /* 防止tabLayout 进入statusBar */
         int height = SystemUI.getStatusBarHeight(MainActivity.this);
@@ -112,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         mMainPagerChangeListener = new MainPagerChangeListener();
         mViewPager.addOnPageChangeListener(mMainPagerChangeListener);
         mTabLayout.setupWithViewPager(mViewPager);
-
     }
 
 
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawer.post(() -> {
 
             mBanner.stopLoop();
+            initBannerLoading();
 
             /* 设置导航菜单 */
             initNavigationView(mNavigationView);
@@ -154,6 +157,41 @@ public class MainActivity extends AppCompatActivity {
     private void closeDrawer() {
 
         mDrawer.closeDrawer(Gravity.START);
+    }
+
+
+    /**
+     * 初始化banner Loading
+     */
+    private void initBannerLoading() {
+
+        mBiliLoadingDrawable = new BiliBiliLoadingDrawable(mBannerLoading.getMeasuredWidth());
+        mBiliLoadingDrawable.setStrokeWidth(5);
+        mBiliLoadingDrawable.setDuration(2400);
+        mBiliLoadingDrawable.setRepeat(300000);
+        mBiliLoadingDrawable.setColor(getResources().getColor(R.color.blue));
+        mBannerLoading.setImageDrawable(mBiliLoadingDrawable);
+        mBiliLoadingDrawable.start();
+    }
+
+
+    /**
+     * 显示loading
+     */
+    private void showBannerLoading() {
+
+        mBannerLoading.setVisibility(View.VISIBLE);
+        mBiliLoadingDrawable.start();
+    }
+
+
+    /**
+     * 隐藏loading
+     */
+    private void hideBannerLoading() {
+
+        mBannerLoading.setVisibility(View.INVISIBLE);
+        mBiliLoadingDrawable.stop();
     }
 
     //============================ 设置导航栏界面 ============================
@@ -316,10 +354,12 @@ public class MainActivity extends AppCompatActivity {
 
         mBanner.startLoop();
         mBannerAdapter.mDataStartIndex = index;
+        hideBannerLoading();
         mBannerAdapter.reBindData(0);
         mBannerAdapter.reBindData(1);
     }
 
+    //============================ banner adapter ============================
 
     /**
      * banner adapter
@@ -328,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         /**
-         * 记录开始项数据在{@link com.example.wuxio.gankexamples.model.ModelManager#mCategoryBeauties 中的索引}
+         * 记录开始项数据在{@link ModelManager#mCategoryBeauties 中的索引}
          */
         private int mDataStartIndex;
         private List< Bitmap > mBitmaps = BannerBitmapManager.getBitmaps();

@@ -15,9 +15,9 @@
 
         <android.support.design.widget.AppBarLayout
                 android:id="@+id/appBar"
-                android:background="@android:color/transparent"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent">
 
             <android.support.design.widget.CollapsingToolbarLayout
                     android:id="@+id/collapsingToolbar"
@@ -38,6 +38,13 @@
                         app:IndicatorMarginRight="16dp"
                         app:layout_collapseMode="parallax"
                         app:layout_collapseParallaxMultiplier="0.4"
+                        />
+
+                <ImageView
+                        android:id="@+id/bannerLoading"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="center"
                         />
 
             </android.support.design.widget.CollapsingToolbarLayout>
