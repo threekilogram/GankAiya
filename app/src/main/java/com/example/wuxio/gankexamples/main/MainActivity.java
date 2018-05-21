@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        public ImageView getView(int i) {
+        public ImageView getView(ViewGroup container, int position) {
 
             ImageView imageView = new ImageView(MainActivity.this);
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);

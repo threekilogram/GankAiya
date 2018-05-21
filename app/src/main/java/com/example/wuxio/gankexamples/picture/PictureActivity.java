@@ -136,7 +136,7 @@ public class PictureActivity extends AppCompatActivity {
 
 
         @Override
-        public View getView(int position, int type) {
+        public View getView(ViewGroup container, int position, int type) {
 
             if (type == NORMAL) {
                 ImageView imageView = new ImageView(PictureActivity.this);
