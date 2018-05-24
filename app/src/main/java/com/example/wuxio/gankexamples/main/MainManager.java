@@ -10,6 +10,7 @@ import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,7 +19,6 @@ import java.util.List;
 public class MainManager extends BaseManager< MainActivity > {
 
     private static final String TAG = "MainManager";
-    private ObjectBus mBus;
 
     //============================ singleTon ============================
 
@@ -50,35 +50,43 @@ public class MainManager extends BaseManager< MainActivity > {
         int width = banner.getWidth();
         int height = banner.getHeight();
 
-        mBus = BusStation.getInstance().obtainBus();
-        mBus.toUnder(() -> {
+        ObjectBus bus = BusStation.getInstance().obtainBus();
+
+        bus.toUnder(() -> {
 
             /* model get new data */
             List< GankCategoryBean > beauty = ModelManager.getInstance().loadBeauty();
 
             int size = beauty.size();
-
+            ArrayList< Bitmap > bitmaps = new ArrayList<>();
             for (int i = 0; i < size; i++) {
                 String url = beauty.get(i).url;
 
                 Bitmap bitmap = UrlToBitmapAction.loadUrlToBitmap(url, width, height);
+                bitmaps.add(bitmap);
 
-                /* put bitmap to container, banner data is also link to container,so banner will auto
-                update */
-                BannerBitmapManager.put(i, bitmap);
             }
+
+            bus.take(bitmaps, "temp");
 
         }).toMain(() -> {
 
             /* told MainActivity banner data start index */
+
             try {
-                get().notifyBannerDataChanged(0);
+
+                ArrayList< Bitmap > bitmaps = (ArrayList< Bitmap >) bus.getOff("temp");
+
+                get().notifyBannerDataChanged(0, bitmaps);
+
             } catch (NullPointerException e) {
+
                 e.printStackTrace();
             }
 
             /* all task finished recycle bus */
-            BusStation.recycle(mBus);
+            BusStation.recycle(bus);
+
         }).run();
     }
 }

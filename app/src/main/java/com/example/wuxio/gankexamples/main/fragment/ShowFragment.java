@@ -337,7 +337,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
 
         @Override
-        public ConstraintLayout.LayoutParams generateLayoutParamsTo(int position) {
+        public ConstraintLayout.LayoutParams generateLayoutParamsTo(int position, View view) {
 
             if (position == 0) {
                 return new ConstraintLayout.LayoutParams(
@@ -353,12 +353,12 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 );
             }
 
-            return super.generateLayoutParamsTo(position);
+            return super.generateLayoutParamsTo(position, view);
         }
 
 
         @Override
-        public Constraint generateConstraintTo(int i, Constraint constraint) {
+        public Constraint generateConstraintTo(int i, Constraint constraint, View view) {
 
             /* 介绍 */
 
@@ -374,11 +374,15 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             if (i == 1) {
 
                 int imagesSize = getImagesSize();
+
                 if (imagesSize > 0) {
-                    int size = constraint.getWeightWidth(4, 1, 20 + 20 + 20 + 20);
-                    int j = imagesSize / 3 + 1;
+
+                    int size = constraint.getWeightWidth(3, 1, 20 + 20 + 20 + 20);
+                    int j = imagesSize / 3;
+                    int k = imagesSize % 3 == 0 ? 0 : 1;
+
                     constraint.leftToLeftOfParent(20)
-                            .topToBottomOfView(i - 1, 20 + j * size + 20);
+                            .topToBottomOfView(i - 1, 20 + (j + k) * size + 20);
                 } else {
                     constraint.leftToLeftOfParent(20)
                             .topToBottomOfView(i - 1, 20);
@@ -400,21 +404,14 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 constraint.rightToLeftOfView(i - 1, -20)
                         .topToTopOfView(i - 1, 0);
 
-                /* 如果没有图片数据,隐藏imageView */
+                int count = mConstraintLayout.getChildCount();
 
-                int imagesSize = getImagesSize();
-                if (imagesSize == 0) {
-                    int count = mConstraintLayout.getChildCount();
-                    for (int j = 4; j < count; j++) {
-                        View child = mConstraintLayout.getChildAt(j);
-                        if (child != null) {
+                for (int j = 4; j < count; j++) {
 
-                            /* 隐藏imageView,设置bitmap引用为null,释放bitmap */
-
-                            child.setVisibility(View.GONE);
-                            ((ImageView) child).setImageBitmap(null);
-                        }
-                    }
+                    View child = mConstraintLayout.getChildAt(j);
+                    /* 隐藏imageView,设置bitmap引用为null,释放bitmap */
+                    child.setVisibility(View.GONE);
+                    ((ImageView) child).setImageBitmap(null);
                 }
 
                 return constraint;
@@ -427,10 +424,11 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
                 /* 以第一张图片为基础,从左到右,从上到下排列 */
 
-                int size = constraint.getWeightWidth(4, 1, 20 + 20 + 20 + 20);
+                int size = constraint.getWeightWidth(3, 1, 20 + 20 + 20 + 20);
                 constraint.leftToLeftOfParent(20, size).topToBottomOfView(0, 20, size);
 
             } else if (j <= 2) {
+
                 constraint.copyFrom(i - 1).translateX(constraint.getViewWidth(i - 1) + 20);
 
             } else {
@@ -440,10 +438,16 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             /* 因为recycler item 不断复用,前面没有数据的话会将图片隐藏,现在有图片数据,需要还原为可见 */
 
-            View view = mConstraintLayout.getChildAt(i);
-            if (view != null) {
-                view.setVisibility(View.VISIBLE);
-            }
+            CharSequence text = ((TextView) mConstraintLayout.getChildAt(0)).getText();
+            Log.i(TAG, "generateConstraintTo:" + i + constraint + " " + view.getVisibility() + " " + text);
+            view.setVisibility(View.VISIBLE);
+
+            /* 加载图片数据 */
+
+            String url = mCategoryBean.images.get(j);
+            ImageView imageView = (ImageView) view;
+            imageView.setImageResource(R.drawable.music);
+            imageView.setTag(R.id.show_item_image, url);
 
             return constraint;
         }
@@ -480,24 +484,6 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
 
         @Override
-        public void afterMeasure(int position, View view) {
-
-            /* 如果有图片数据 */
-
-            int j = position - 4;
-            if (j >= 0) {
-
-                /* 加载图片数据 */
-
-                String url = mCategoryBean.images.get(j);
-                ImageView imageView = (ImageView) view;
-                imageView.setImageResource(R.drawable.music);
-                imageView.setTag(R.id.show_item_image, url);
-            }
-        }
-
-
-        @Override
         public int getChildCount() {
 
             return 4 + getImagesSize();
@@ -508,6 +494,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             return mCategoryBean.images == null ? 0 : mCategoryBean.images.size();
         }
+
     }
 
     //============================ recycler item click ============================

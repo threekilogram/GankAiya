@@ -337,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
 
         MainManager.getInstance().unRegister();
-        BannerBitmapManager.getBitmaps().clear();
         super.onDestroy();
     }
 
@@ -350,10 +349,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void notifyBannerDataChanged(int index) {
+    public void notifyBannerDataChanged(int index, List< Bitmap > bitmaps) {
 
-        mBanner.startLoop();
+        mBannerAdapter.setBitmaps(bitmaps);
         mBannerAdapter.mDataStartIndex = index;
+        mBanner.startLoop();
         hideBannerLoading();
         mBannerAdapter.reBindData(0);
         mBannerAdapter.reBindData(1);
@@ -370,13 +370,19 @@ public class MainActivity extends AppCompatActivity {
         /**
          * 记录开始项数据在{@link ModelManager#mCategoryBeauties 中的索引}
          */
-        private int mDataStartIndex;
-        private List< Bitmap > mBitmaps = BannerBitmapManager.getBitmaps();
+        private int            mDataStartIndex;
+        private List< Bitmap > mBitmaps;
 
         /**
          * 每个item点击事件
          */
         private BannerItemClickListener mBannerItemClickListener;
+
+
+        public void setBitmaps(List< Bitmap > bitmaps) {
+
+            mBitmaps = bitmaps;
+        }
 
 
         @Override
@@ -442,7 +448,6 @@ public class MainActivity extends AppCompatActivity {
 
                 int position = (Integer) v.getTag(R.id.main_banner_item_tag);
                 PictureActivity.start(MainActivity.this, mDataStartIndex, position);
-                // TODO: 2018-05-07 转场动画 ,更新数据
             }
         }
     }
