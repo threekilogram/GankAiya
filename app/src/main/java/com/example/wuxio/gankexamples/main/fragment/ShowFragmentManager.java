@@ -8,6 +8,7 @@ import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -49,10 +50,16 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
 
         ObjectBus bus = BusStation.callNewBus();
 
+        WeakReference< OnMessageReceiveListener > listenerRef = new WeakReference<>(listener);
+
         bus.toUnder(() -> {
 
             ModelManager.getInstance().loadCategoryMore(category);
-            Messengers.send(11, listener);
+            OnMessageReceiveListener ref = listenerRef.get();
+            if (ref != null) {
+
+                Messengers.send(11, ref);
+            }
             BusStation.recycle(bus);
 
         }).run();

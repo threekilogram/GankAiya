@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.wuxio.gankexamples.app.App;
+import com.example.wuxio.gankexamples.model.ModelManager;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.example.wuxio.gankexamples.utils.netstate.NetworkChangedReceiver;
 
@@ -51,6 +52,7 @@ public class RootActivity extends AppCompatActivity {
 
         /* 应用退出之后,不再需要监视网络状态 */
         NetworkChangedReceiver.unRegister(App.INSTANCE);
+        ModelManager.getInstance().clear();
         super.finish();
     }
 }

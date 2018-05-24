@@ -298,6 +298,52 @@ public class ModelManager {
         return mCategoryRest;
     }
 
+    //============================ clear ============================
+
+
+    public void clear() {
+
+        try {
+            mCategoryRest.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+        try {
+            mCategoryExtra.clear();
+        } catch (Exception e) {
+        }
+        try {
+            mCategoryRecommend.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+        try {
+            mCategoryFront.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+        try {
+            mCategoryIOSs.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+        try {
+            mCategoryApps.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+        try {
+            mCategoryAndroids.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+        try {
+            mCategoryBeauties.clear();
+        } catch (Exception e) {
+            Log.e(TAG, "clear: nothing to worry about");
+        }
+    }
+
     //============================ 简化编程 ============================
 
     private interface LoadAction {
