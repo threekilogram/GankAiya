@@ -2,14 +2,12 @@ package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
 import android.util.ArrayMap;
-
-import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
+import com.example.objectbus.bus.ObjectBusStation;
 import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +59,7 @@ public class PictureManager extends BaseManager< PictureActivity > {
             mUrls = new ArrayList<>();
         }
 
-        ObjectBus bus = BusStation.callNewBus();
+        ObjectBus bus = ObjectBusStation.callNewBus();
         bus.toUnder(() -> {
 
             List< GankCategoryBean > beans = ModelManager.getInstance().getCategoryBeauties();
@@ -81,7 +79,7 @@ public class PictureManager extends BaseManager< PictureActivity > {
                 e.printStackTrace();
             }
 
-            BusStation.recycle(bus);
+            ObjectBusStation.recycle(bus);
         }).run();
     }
 
@@ -130,7 +128,7 @@ public class PictureManager extends BaseManager< PictureActivity > {
         int width = get().getBitmapWidth();
         int height = get().getBitmapHeight();
 
-        ObjectBus bus = BusStation.callNewBus();
+        ObjectBus bus = ObjectBusStation.callNewBus();
         bus.toUnder(() -> {
 
             try {
@@ -169,7 +167,7 @@ public class PictureManager extends BaseManager< PictureActivity > {
                 e.printStackTrace();
             }
 
-            BusStation.recycle(bus);
+            ObjectBusStation.recycle(bus);
 
         }).run();
 

@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.constraintlayout.Constraint;
 import com.example.constraintlayout.ConstraintLayout;
 import com.example.constraintlayout.adapter.BaseConstraintAdapter;
@@ -23,7 +22,6 @@ import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.web.WebActivity;
-
 import java.util.List;
 
 /**
@@ -81,55 +79,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
     //============================ message receive ============================
 
-
     @Override
-    public void onReceive(int what) {
+    public void onReceive (int what, Object extra) {
 
-        final int flagStopRefresh = 11;
-
-        /* 结束刷新 */
-        if (what == flagStopRefresh) {
-            mSwipeRefresh.setRefreshing(false);
-        }
     }
-
-
-    @Override
-    public void onDestroy() {
-
-        /* 解注册 */
-        Messengers.remove(11, this);
-        super.onDestroy();
-    }
-
-    //============================ load data ============================
-
-
-    public void loadData(String category) {
-
-        /* 加载数据 */
-
-        ShowFragmentManager instance = ShowFragmentManager.getInstance();
-        instance.register(this);
-        mCategory = category;
-        instance.loadData(mCategory);
-    }
-
-
-    public void dataReady(List< GankCategoryBean > categoryBeans) {
-
-        /*  后台加载数据完毕,不再刷新 */
-
-        mSwipeRefresh.setRefreshing(false);
-
-        /* 设置recycler 显示数据 */
-        if (categoryBeans != null) {
-            mRecyclerAdapter = new RecyclerAdapter(categoryBeans);
-            mRecycler.setAdapter(mRecyclerAdapter);
-        }
-    }
-
-    //============================ recycler adapter ============================
 
     /**
      * recycler adapter
@@ -141,12 +94,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
         private ShowConstraintAdapter mAdapter;
         private View.OnClickListener  mOnClickListener;
 
-
         public RecyclerAdapter(List< GankCategoryBean > categoryBeans) {
 
             this.mCategoryBeans = categoryBeans;
         }
-
 
         @Override
         public int getItemViewType(int position) {
@@ -160,7 +111,6 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             }
         }
 
-
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -172,19 +122,18 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             if (viewType == 12) {
 
                 View view = mInflater.inflate(
-                        R.layout.item_show_pager_recycler_footer,
-                        parent,
-                        false
+                    R.layout.item_show_pager_recycler_footer,
+                    parent,
+                    false
                 );
 
                 return new FooterHolder(view);
-
             } else {
 
                 View view = mInflater.inflate(
-                        R.layout.item_show_pager_recycler,
-                        parent,
-                        false
+                    R.layout.item_show_pager_recycler,
+                    parent,
+                    false
                 );
 
                 if (mOnClickListener == null) {
@@ -197,27 +146,23 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             }
         }
 
-
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
             if (position == getItemCount() - 1) {
 
                 ((FooterHolder) holder).bind();
-
             } else {
 
                 ((Holder) holder).bind(position);
             }
         }
 
-
         @Override
         public int getItemCount() {
 
             return mCategoryBeans.size() + 1;
         }
-
 
         /**
          * holder, 创建一个ConstraintLayout
@@ -226,13 +171,11 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             ConstraintLayout mConstraintLayout;
 
-
             Holder(View itemView) {
 
                 super(itemView);
                 mConstraintLayout = itemView.findViewById(R.id.constraintLayout);
             }
-
 
             void bind(int position) {
 
@@ -258,12 +201,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             private boolean calledToLoadMore = false;
 
-
             FooterHolder(View itemView) {
 
                 super(itemView);
             }
-
 
             void bind() {
 
@@ -273,6 +214,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                 }
             }
 
+            @Override
+            public void onReceive (int what, Object extra) {
+
+            }
 
             @Override
             public void onReceive(int what) {
@@ -284,6 +229,54 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             }
         }
     }
+
+    @Override
+    public void onReceive (int what) {
+
+        final int flagStopRefresh = 11;
+
+        /* 结束刷新 */
+        if(what == flagStopRefresh) {
+            mSwipeRefresh.setRefreshing(false);
+        }
+    }
+
+    @Override
+    public void onDestroy () {
+
+        /* 解注册 */
+        Messengers.remove(11, this);
+        super.onDestroy();
+    }
+
+    //============================ load data ============================
+
+    public void loadData (String category) {
+
+        /* 加载数据 */
+
+        ShowFragmentManager instance = ShowFragmentManager.getInstance();
+        instance.register(this);
+        mCategory = category;
+        instance.loadData(mCategory);
+    }
+
+    public void dataReady (List<GankCategoryBean> categoryBeans) {
+
+        /*  后台加载数据完毕,不再刷新 */
+
+        mSwipeRefresh.setRefreshing(false);
+
+        /* 设置recycler 显示数据 */
+        if(categoryBeans != null) {
+            mRecyclerAdapter = new RecyclerAdapter(categoryBeans);
+            mRecycler.setAdapter(mRecyclerAdapter);
+        }
+    }
+
+    //============================ recycler adapter ============================
+
+
 
     //============================ recycler item adapter ============================
 

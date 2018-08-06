@@ -23,10 +23,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.example.animatedrawable.BiliBiliLoadingDrawable;
-import com.example.banner.BannerView;
-import com.example.banner.adapter.BasePagerAdapter;
+import com.example.drawable.anim.BiliBiliLoadingDrawable;
 import com.example.system_ui.SystemUI;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.GankCategory;
@@ -37,7 +34,8 @@ import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
-
+import com.threekilogram.banner.BannerView;
+import com.threekilogram.banner.adapter.BasePagerAdapter;
 import java.util.List;
 
 /**

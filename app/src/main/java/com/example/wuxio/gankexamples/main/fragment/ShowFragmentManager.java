@@ -1,13 +1,12 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
-import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
+import com.example.objectbus.bus.ObjectBusStation;
 import com.example.objectbus.message.Messengers;
 import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
-
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
 
     public void loadData(String category) {
 
-        ObjectBus bus = BusStation.callNewBus();
+        ObjectBus bus = ObjectBusStation.callNewBus();
 
         bus.toUnder(() -> {
 
@@ -39,7 +38,7 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-            BusStation.recycle(bus);
+            ObjectBusStation.recycle(bus);
         }).run();
     }
 
@@ -48,7 +47,7 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
 
     public void loadMore(String category, OnMessageReceiveListener listener) {
 
-        ObjectBus bus = BusStation.callNewBus();
+        ObjectBus bus = ObjectBusStation.callNewBus();
 
         WeakReference< OnMessageReceiveListener > listenerRef = new WeakReference<>(listener);
 
@@ -60,7 +59,7 @@ public class ShowFragmentManager extends BaseManager< ShowFragment > {
 
                 Messengers.send(11, ref);
             }
-            BusStation.recycle(bus);
+            ObjectBusStation.recycle(bus);
 
         }).run();
     }

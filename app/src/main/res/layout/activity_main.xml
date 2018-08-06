@@ -28,7 +28,7 @@
                     app:contentScrim="@color/blue"
                     >
 
-                <com.example.banner.BannerView
+                  <com.threekilogram.banner.BannerView
                         android:id="@+id/banner"
                         android:layout_width="match_parent"
                         android:layout_height="225dp"

@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
-import com.example.wuxio.gankexamples.app.App;
 import com.example.wuxio.gankexamples.model.ModelManager;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
-import com.example.wuxio.gankexamples.utils.netstate.NetworkChangedReceiver;
+import tech.threekilogram.network.state.manager.NetStateChangeManager;
 
 /**
  * 作为根activity,使用singleTask模式,用来清除任务栈
@@ -17,42 +15,38 @@ import com.example.wuxio.gankexamples.utils.netstate.NetworkChangedReceiver;
  */
 public class RootActivity extends AppCompatActivity {
 
-    private static final String TAG = "RootActivity";
+      private static final String TAG = "RootActivity";
 
+      public static void start (Context context) {
 
-    public static void start(Context context) {
+            Intent starter = new Intent(context, RootActivity.class);
+            context.startActivity(starter);
+      }
 
-        Intent starter = new Intent(context, RootActivity.class);
-        context.startActivity(starter);
-    }
+      @Override
+      protected void onCreate (Bundle savedInstanceState) {
 
+            super.onCreate(savedInstanceState);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+            SplashActivity.start(RootActivity.this);
 
-        super.onCreate(savedInstanceState);
+            /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
+            NetStateChangeManager.registerReceiver(this);
+      }
 
-        SplashActivity.start(RootActivity.this);
+      @Override
+      protected void onNewIntent (Intent intent) {
 
-        /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
-        NetworkChangedReceiver.register(App.INSTANCE);
-    }
+            super.onNewIntent(intent);
+            finish();
+      }
 
+      @Override
+      public void finish () {
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-
-        super.onNewIntent(intent);
-        finish();
-    }
-
-
-    @Override
-    public void finish() {
-
-        /* 应用退出之后,不再需要监视网络状态 */
-        NetworkChangedReceiver.unRegister(App.INSTANCE);
-        ModelManager.getInstance().clear();
-        super.finish();
-    }
+            /* 应用退出之后,不再需要监视网络状态 */
+            NetStateChangeManager.unRegisterReceiver(this);
+            ModelManager.getInstance().clear();
+            super.finish();
+      }
 }

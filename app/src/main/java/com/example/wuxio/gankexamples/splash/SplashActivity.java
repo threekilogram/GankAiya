@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.example.objectbus.message.Messengers;
 import com.example.objectbus.message.OnMessageReceiveListener;
 import com.example.wuxio.gankexamples.R;
@@ -44,12 +43,11 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
         super.setContentView(R.layout.activity_splash);
         initView();
 
-        /* 检验本地缓存数据库 */
 
         /* 委托manager加载splash图片 */
-        mManager = new SplashManager();
-        mManager.register(this);
-        postAction();
+//        mManager = new SplashManager();
+//        mManager.register(this);
+//        postAction();
     }
 
 
@@ -101,6 +99,10 @@ public class SplashActivity extends AppCompatActivity implements OnMessageReceiv
 
     //============================ 更新倒计时 ============================
 
+      @Override
+      public void onReceive (int what, Object extra) {
+
+      }
 
     @Override
     public void onReceive(int what) {

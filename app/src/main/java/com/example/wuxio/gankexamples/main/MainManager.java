@@ -1,15 +1,13 @@
 package com.example.wuxio.gankexamples.main;
 
 import android.graphics.Bitmap;
-
-import com.example.banner.BannerView;
-import com.example.objectbus.bus.BusStation;
 import com.example.objectbus.bus.ObjectBus;
+import com.example.objectbus.bus.ObjectBusStation;
 import com.example.wuxio.gankexamples.BaseManager;
 import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import com.example.wuxio.gankexamples.model.GankCategoryBean;
 import com.example.wuxio.gankexamples.model.ModelManager;
-
+import com.threekilogram.banner.BannerView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +48,7 @@ public class MainManager extends BaseManager< MainActivity > {
         int width = banner.getWidth();
         int height = banner.getHeight();
 
-        ObjectBus bus = BusStation.getInstance().obtainBus();
+        ObjectBus bus = ObjectBusStation.callNewBus();
 
         bus.toUnder(() -> {
 
@@ -85,7 +83,7 @@ public class MainManager extends BaseManager< MainActivity > {
             }
 
             /* all task finished recycle bus */
-            BusStation.recycle(bus);
+            ObjectBusStation.recycle(bus);
 
         }).run();
     }

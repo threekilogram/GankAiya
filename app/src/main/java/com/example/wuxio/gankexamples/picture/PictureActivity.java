@@ -11,9 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
-import com.example.banner.adapter.BaseTypePagerAdapter;
 import com.example.wuxio.gankexamples.R;
+import com.threekilogram.banner.adapter.BaseTypePagerAdapter;
 
 /**
  * @author wuxio

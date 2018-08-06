@@ -19,6 +19,9 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
 
+        <receiver android:name="tech.threekilogram.network.state.manager.NetStateReceiver">
+        </receiver>
+
         <!-- used for exit app singleTask mode -->
 
         <activity
