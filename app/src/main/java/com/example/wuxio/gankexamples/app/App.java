@@ -1,8 +1,7 @@
 package com.example.wuxio.gankexamples.app;
 
 import android.app.Application;
-
-import com.example.objectbus.BusConfig;
+import com.example.objectbus.ObjectBusConfig;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -19,9 +18,6 @@ public class App extends Application {
         super.onCreate();
         INSTANCE = this;
 
-        /* ObjectBus */
-        BusConfig.init();
-
 
         /* LeakCanary */
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -31,5 +27,7 @@ public class App extends Application {
         }
         LeakCanary.install(this);
 
+          /* ObjectBus */
+          ObjectBusConfig.init();
     }
 }
