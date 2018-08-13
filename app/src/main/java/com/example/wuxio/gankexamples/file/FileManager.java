@@ -1,9 +1,7 @@
 package com.example.wuxio.gankexamples.file;
 
 import android.os.Environment;
-
-import com.example.wuxio.gankexamples.app.App;
-
+import com.example.wuxio.gankexamples.App;
 import java.io.File;
 
 /**

@@ -23,8 +23,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import com.example.drawable.anim.BiliBiliLoadingDrawable;
-import com.example.system_ui.SystemUI;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.GankCategory;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
@@ -36,6 +34,8 @@ import com.example.wuxio.gankexamples.utils.image.BitmapReader;
 import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 import com.threekilogram.banner.BannerView;
 import com.threekilogram.banner.adapter.BasePagerAdapter;
+import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
+import com.threekilogram.systemui.SystemUi;
 import java.util.List;
 
 /**
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         mBannerLoading = findViewById(R.id.bannerLoading);
 
         /* 防止tabLayout 进入statusBar */
-        int height = SystemUI.getStatusBarHeight(MainActivity.this);
+          int height = SystemUi.getStatusBarHeight( MainActivity.this );
         mCollapsingToolbar.setMinimumHeight(height);
 
         /* banner */
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setSystemUI() {
 
-        SystemUI.setStatusColor(this, Color.TRANSPARENT);
+          SystemUi.setStatusColor( this, Color.TRANSPARENT );
     }
 
 
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initBannerLoading() {
 
-        mBiliLoadingDrawable = new BiliBiliLoadingDrawable(mBannerLoading.getMeasuredWidth());
+          mBiliLoadingDrawable = new BiliBiliLoadingDrawable( mBannerLoading.getMeasuredWidth() );
         mBiliLoadingDrawable.setStrokeWidth(5);
         mBiliLoadingDrawable.setDuration(2400);
         mBiliLoadingDrawable.setRepeat(300000);

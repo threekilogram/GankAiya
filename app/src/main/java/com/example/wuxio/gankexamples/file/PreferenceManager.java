@@ -2,8 +2,7 @@ package com.example.wuxio.gankexamples.file;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.example.wuxio.gankexamples.app.App;
+import com.example.wuxio.gankexamples.App;
 
 /**
  * @author wuxio 2018-05-10:9:33

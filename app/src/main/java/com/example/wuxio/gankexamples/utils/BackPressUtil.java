@@ -8,25 +8,33 @@ import android.widget.Toast;
  */
 public class BackPressUtil {
 
-    private static long exitTime = 0;
+      private static long exitTime = 0;
 
+      /**
+       * 提示消息
+       *
+       * @param activity 将要退出的Activity
+       *
+       * @return : false:两次backPress间隔大于2s,true:小于2s
+       */
+      public static boolean showInfo ( Activity activity ) {
 
-    /**
-     * 提示消息
-     *
-     * @param activity 将要退出的Activity
-     * @return : false:两次backPress间隔大于2s,true:小于2s
-     */
-    public static boolean showInfo(Activity activity) {
+            final int delayTime = 2000;
 
-        final int delayTime = 2000;
+            long timeMillis = System.currentTimeMillis();
 
-        if ((System.currentTimeMillis() - exitTime) > delayTime) {
-            Toast.makeText(activity.getApplicationContext(), "再按一次退出程序", Toast.LENGTH_SHORT).show();
-            exitTime = System.currentTimeMillis();
-            return false;
-        }
-        return true;
-    }
+            if( ( timeMillis - exitTime ) > delayTime ) {
 
+                  exitTime = timeMillis;
+
+                  Toast.makeText(
+                      activity.getApplicationContext(),
+                      "再按一次退出程序",
+                      Toast.LENGTH_SHORT
+                  ).show();
+
+                  return false;
+            }
+            return true;
+      }
 }

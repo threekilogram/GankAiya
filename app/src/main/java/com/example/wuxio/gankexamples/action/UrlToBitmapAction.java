@@ -2,13 +2,11 @@ package com.example.wuxio.gankexamples.action;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-
+import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.app.App;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.file.FileNameUtils;
 import com.example.wuxio.gankexamples.utils.image.BitmapReader;
-
 import java.io.File;
 
 /**

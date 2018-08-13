@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import com.example.wuxio.gankexamples.model.ModelManager;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 
@@ -17,36 +16,35 @@ public class RootActivity extends AppCompatActivity {
 
       private static final String TAG = "RootActivity";
 
-      public static void start (Context context) {
+      public static void start ( Context context ) {
 
-            Intent starter = new Intent(context, RootActivity.class);
-            context.startActivity(starter);
+            Intent starter = new Intent( context, RootActivity.class );
+            context.startActivity( starter );
       }
 
       @Override
-      protected void onCreate (Bundle savedInstanceState) {
+      protected void onCreate ( Bundle savedInstanceState ) {
 
-            super.onCreate(savedInstanceState);
+            super.onCreate( savedInstanceState );
 
-            SplashActivity.start(RootActivity.this);
+            SplashActivity.start( this );
 
             /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
-            NetStateChangeManager.registerReceiver(this);
+            NetStateChangeManager.registerReceiver( this );
       }
 
       @Override
-      protected void onNewIntent (Intent intent) {
+      protected void onNewIntent ( Intent intent ) {
 
-            super.onNewIntent(intent);
+            super.onNewIntent( intent );
             finish();
       }
 
       @Override
-      public void finish () {
+      public void finish ( ) {
 
             /* 应用退出之后,不再需要监视网络状态 */
-            NetStateChangeManager.unRegisterReceiver(this);
-            ModelManager.getInstance().clear();
+            NetStateChangeManager.unRegisterReceiver( this );
             super.finish();
       }
 }
