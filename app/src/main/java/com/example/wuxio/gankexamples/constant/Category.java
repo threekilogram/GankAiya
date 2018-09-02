@@ -3,7 +3,7 @@ package com.example.wuxio.gankexamples.constant;
 /**
  * @author wuxio 2018-05-05:11:22
  */
-public class GankCategory {
+public class Category {
 
     /* 福利 | Android | iOS | 休息视频 | 拓展资源 | 前端 | all */
 

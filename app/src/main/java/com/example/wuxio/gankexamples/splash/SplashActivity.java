@@ -130,7 +130,7 @@ public class SplashActivity extends AppCompatActivity {
 
                   if( left <= 0 ) {
 
-                        //toMainActivity( null );
+                        toMainActivity( null );
                   } else {
 
                         Messengers.send( mWhat, 1000, this );

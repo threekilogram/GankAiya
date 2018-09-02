@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.model.GankCategoryBean;
+import com.example.wuxio.gankexamples.model.GankCategory;
 import com.example.wuxio.gankexamples.web.WebActivity;
 import com.threekilogram.constraint.Constraint;
 import com.threekilogram.constraint.ConstraintLayout;
@@ -106,7 +106,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
       //============================ load data ============================
 
-      public void dataReady ( List<GankCategoryBean> categoryBeans ) {
+      public void dataReady ( List<GankCategory> categoryBeans ) {
 
             /*  后台加载数据完毕,不再刷新 */
 
@@ -114,7 +114,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             /* 设置recycler 显示数据 */
             if( categoryBeans != null ) {
-                  mRecyclerAdapter = new RecyclerAdapter( categoryBeans );
+                  // mRecyclerAdapter = new RecyclerAdapter( categoryBeans );
                   mRecycler.setAdapter( mRecyclerAdapter );
             }
       }
@@ -124,12 +124,12 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
        */
       private class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-            List<GankCategoryBean> mCategoryBeans;
+            List<GankCategory> mCategoryBeans;
             private LayoutInflater        mInflater;
             private ShowConstraintAdapter mAdapter;
             private View.OnClickListener  mOnClickListener;
 
-            public RecyclerAdapter ( List<GankCategoryBean> categoryBeans ) {
+            public RecyclerAdapter ( List<GankCategory> categoryBeans ) {
 
                   this.mCategoryBeans = categoryBeans;
             }
@@ -219,10 +219,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
                               mAdapter = new ShowConstraintAdapter();
                         }
 
-                        GankCategoryBean bean = mCategoryBeans.get( position );
+                        GankCategory bean = mCategoryBeans.get( position );
 
-                        itemView.setTag( R.id.show_item_url, bean.url );
-                        itemView.setTag( R.id.show_item_desc, bean.desc );
+                        // itemView.setTag( R.id.show_item_url, bean.url );
+                        //itemView.setTag( R.id.show_item_desc, bean.desc );
 
                         mAdapter.setCategoryBean( bean );
                         mAdapter.setConstraintLayout( mConstraintLayout );
@@ -272,10 +272,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             /* 设置数据 */
 
-            private GankCategoryBean mCategoryBean;
+            private GankCategory     mCategoryBean;
             private ConstraintLayout mConstraintLayout;
 
-            public void setCategoryBean ( GankCategoryBean categoryBean ) {
+            public void setCategoryBean ( GankCategory categoryBean ) {
 
                   mCategoryBean = categoryBean;
             }
@@ -420,10 +420,10 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
                   /* 加载图片数据 */
 
-                  String url = mCategoryBean.images.get( j );
+                  //String url = mCategoryBean.images.get( j );
                   ImageView imageView = (ImageView) view;
                   imageView.setImageResource( R.drawable.music );
-                  imageView.setTag( R.id.show_item_image, url );
+                  //imageView.setTag( R.id.show_item_image, url );
 
                   return constraint;
             }
@@ -441,7 +441,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
                   if( position == 0 ) {
                         if( mCategoryBean != null ) {
-                              ( (TextView) view ).setText( mCategoryBean.desc );
+                              // ( (TextView) view ).setText( mCategoryBean.desc );
                         }
                   }
 
@@ -449,14 +449,14 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
                         switch( position ) {
                               case 1:
-                                    ( (TextView) view ).setText( mCategoryBean.who );
+                                    //   ( (TextView) view ).setText( mCategoryBean.who );
                                     break;
                               case 2:
-                                    ( (TextView) view )
-                                        .setText( mCategoryBean.publishedAt.substring( 0, 10 ) );
+                                    //( (TextView) view )
+                                    //    .setText( mCategoryBean.publishedAt.substring( 0, 10 ) );
                                     break;
                               case 3:
-                                    ( (TextView) view ).setText( mCategoryBean.type );
+                                    //( (TextView) view ).setText( mCategoryBean.type );
                                     break;
                               default:
                                     break;
@@ -466,7 +466,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
 
             public int getImagesSize ( ) {
 
-                  return mCategoryBean.images == null ? 0 : mCategoryBean.images.size();
+                  return 0;//mCategoryBean.images == null ? 0 : mCategoryBean.images.size();
             }
       }
 

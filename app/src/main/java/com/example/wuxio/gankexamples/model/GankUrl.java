@@ -44,7 +44,7 @@ public class GankUrl {
             );
       }
 
-      public static String splashUrl ( ) {
+      public static String splashImageUrl ( ) {
 
             String encode = null;
             try {

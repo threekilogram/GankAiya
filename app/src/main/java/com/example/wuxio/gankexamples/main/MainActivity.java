@@ -26,7 +26,7 @@ import android.widget.ImageView;
 import com.example.bitmapreader.BitmapReader;
 import com.example.bitmapreader.RoundBitmapFactory;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.constant.GankCategory;
+import com.example.wuxio.gankexamples.constant.Category;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class MainPagerAdapter extends FragmentStatePagerAdapter {
 
-        private ShowFragment[] mShowFragments = new ShowFragment[GankCategory.All_CATEGORY.length];
+        private ShowFragment[] mShowFragments = new ShowFragment[ Category.All_CATEGORY.length ];
 
 
         public MainPagerAdapter(FragmentManager fm) {
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
 
-            return GankCategory.All_CATEGORY.length;
+            return Category.All_CATEGORY.length;
         }
 
 
@@ -488,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public CharSequence getPageTitle(int position) {
 
-            return GankCategory.All_CATEGORY[position];
+            return Category.All_CATEGORY[ position ];
         }
 
 
@@ -507,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
         public void onPageSelected(int position) {
 
             ShowFragment fragment = mMainPagerAdapter.getCurrentFragment(position);
-            String category = GankCategory.All_CATEGORY[position];
+            String category = Category.All_CATEGORY[ position ];
             fragment.loadData(category);
         }
     }
