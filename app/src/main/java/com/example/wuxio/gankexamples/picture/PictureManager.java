@@ -3,7 +3,6 @@ package com.example.wuxio.gankexamples.picture;
 import android.graphics.Bitmap;
 import android.util.ArrayMap;
 import com.example.wuxio.gankexamples.BaseManager;
-import com.example.wuxio.gankexamples.action.UrlToBitmapAction;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +110,7 @@ public class PictureManager extends BaseManager< PictureActivity > {
         int width = get().getBitmapWidth();
         int height = get().getBitmapHeight();
 
-        result = UrlToBitmapAction.loadUrlToBitmap(s, width, height);
+          //result = UrlToBitmapAction.loadUrlToBitmap(s, width, height);
         mBitmaps.put(s, new WeakReference<>(result));
         return result;
     }

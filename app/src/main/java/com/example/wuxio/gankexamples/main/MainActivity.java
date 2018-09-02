@@ -23,15 +23,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import com.example.bitmapreader.BitmapReader;
+import com.example.bitmapreader.RoundBitmapFactory;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.GankCategory;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
-import com.example.wuxio.gankexamples.model.ModelManager;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
-import com.example.wuxio.gankexamples.utils.image.BitmapReader;
-import com.example.wuxio.gankexamples.utils.image.RoundBitmapFactory;
 import com.threekilogram.banner.BannerView;
 import com.threekilogram.banner.adapter.BasePagerAdapter;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
@@ -207,13 +206,13 @@ public class MainActivity extends AppCompatActivity {
 
         /* 设置圆角图片给导航栏的头像框 */
 
-        Bitmap bitmap = BitmapReader.decodeSampledBitmap(
-                getResources(),
+        Bitmap bitmap = BitmapReader.sampledBitmap(
+            this,
                 R.drawable.avatar,
                 avatarImageView.getWidth(),
                 avatarImageView.getHeight());
 
-        Drawable drawable = RoundBitmapFactory.circleBitmap(this, bitmap);
+        Drawable drawable = RoundBitmapFactory.circleBitmap( this, bitmap );
         avatarImageView.setImageDrawable(drawable);
 
         /* 给导航栏条目设置点击事件 */

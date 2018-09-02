@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author wuxio
  */
-public class CategoryResult {
+public class GankCategory {
 
     public boolean                  error;
     public List< GankCategoryBean > results;
@@ -15,7 +15,7 @@ public class CategoryResult {
     @Override
     public String toString() {
 
-        return "CategoryResult{" +
+        return "GankCategory{" +
                 "error=" + error +
                 ", results=" + results +
                 '}';

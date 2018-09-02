@@ -37,17 +37,22 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     /* UI */
     implementation 'com.github.threekilogram:Constraint:1.3.9'
+    /* status Bar */
     implementation 'com.github.threekilogram:SystemUI:1.2.2'
+    /* loop page */
     implementation 'com.github.threekilogram:ViewPagerExtra:1.6.5'
+    /* layout */
     implementation 'com.github.threekilogram:ViewSkin:1.2.7'
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:2.1.1'
+    implementation 'com.github.threekilogram:ObjectBus:2.1.3'
     /* loading */
     implementation 'com.github.threekilogram:animateDrawable:1.1.6'
     /* net state */
-    implementation 'com.github.threekilogram:NetWorkStateChangeListener:1.2.2'
+    implementation 'com.github.threekilogram:NetWorkStateChangeListener:1.2.3'
     /* cache */
-    implementation 'com.github.threekilogram:object-cache:1.1'
+    implementation 'com.github.threekilogram:AndroidModel:1.8.0'
     /* bitmap */
-    implementation 'com.github.threekilogram:BitmapReader:1.1.3'
+    implementation 'com.github.threekilogram:BitmapReader:1.1.9'
+    /* jsonParser */
+    implementation 'com.github.threekilogram:JsonParser:3.0'
 }

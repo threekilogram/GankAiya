@@ -7,8 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.example.bitmapreader.ScreenSize;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
+import com.example.wuxio.gankexamples.model.GankModel;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import tech.threekilogram.messengers.Messengers;
 import tech.threekilogram.messengers.OnMessageReceiveListener;
@@ -24,10 +26,7 @@ public class SplashActivity extends AppCompatActivity {
       protected TextView  mCountText;
       private   CountDown mCountDownMachine;
 
-      /**
-       * 用于和数据层交互
-       */
-      private SplashManager mManager;
+      private static final String TAG = SplashActivity.class.getSimpleName();
 
       public static void start ( Context context ) {
 
@@ -42,6 +41,10 @@ public class SplashActivity extends AppCompatActivity {
             super.setContentView( R.layout.activity_splash );
             initView();
             postAction();
+
+            GankModel.prepareSplashImage(
+                mLogoImage, ScreenSize.getWidth(), ScreenSize.getHeight()
+            );
       }
 
       private void initView ( ) {
@@ -72,8 +75,6 @@ public class SplashActivity extends AppCompatActivity {
             super.onBackPressed();
       }
 
-      //============================ 加载Splash图片 ============================
-
       @Override
       public void finish ( ) {
 
@@ -82,8 +83,6 @@ public class SplashActivity extends AppCompatActivity {
             mCountDownMachine.cancel();
             super.finish();
       }
-
-      //============================ 跳转到主界面 ============================
 
       /**
        * 倒计时
