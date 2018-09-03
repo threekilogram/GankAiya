@@ -42,473 +42,434 @@ import java.util.List;
  */
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+      private static final String TAG = "MainActivity";
 
-    protected DrawerLayout            mDrawer;
-    protected NavigationView          mNavigationView;
-    protected BannerView              mBanner;
-    protected AppBarLayout            mAppBar;
-    protected CoordinatorLayout       mCoordinator;
-    protected ViewPager               mViewPager;
-    protected TabLayout               mTabLayout;
-    protected CollapsingToolbarLayout mCollapsingToolbar;
-    protected ImageView               mBannerLoading;
-    private   BannerAdapter           mBannerAdapter;
-    private   MainPagerAdapter        mMainPagerAdapter;
-    private   MainPagerChangeListener mMainPagerChangeListener;
-    private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
+      protected DrawerLayout            mDrawer;
+      protected NavigationView          mNavigationView;
+      protected BannerView              mBanner;
+      protected AppBarLayout            mAppBar;
+      protected CoordinatorLayout       mCoordinator;
+      protected ViewPager               mViewPager;
+      protected TabLayout               mTabLayout;
+      protected CollapsingToolbarLayout mCollapsingToolbar;
+      protected ImageView               mBannerLoading;
+      private   BannerAdapter           mBannerAdapter;
+      private   MainPagerAdapter        mMainPagerAdapter;
+      private   MainPagerChangeListener mMainPagerChangeListener;
+      private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
 
+      /**
+       * 静态启动方法
+       */
+      public static void start ( Context context ) {
 
-    /**
-     * 静态启动方法
-     */
-    public static void start(Context context) {
+            Intent starter = new Intent( context, MainActivity.class );
+            context.startActivity( starter );
+      }
 
-        Intent starter = new Intent(context, MainActivity.class);
-        context.startActivity(starter);
-    }
+      @Override
+      protected void onCreate ( Bundle savedInstanceState ) {
 
+            super.onCreate( savedInstanceState );
+            super.setContentView( R.layout.activity_main );
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+            initView();
+            setSystemUI();
+            postAction();
+      }
 
-        super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_main);
+      /**
+       * 初始化view
+       */
+      private void initView ( ) {
 
-        MainManager.getInstance().register(this);
+            mDrawer = findViewById( R.id.drawer );
+            mNavigationView = findViewById( R.id.navigationView );
+            mBanner = findViewById( R.id.banner );
+            mAppBar = findViewById( R.id.appBar );
+            mCoordinator = findViewById( R.id.coordinator );
+            mViewPager = findViewById( R.id.viewPager );
+            mTabLayout = findViewById( R.id.tabLayout );
+            mCollapsingToolbar = findViewById( R.id.collapsingToolbar );
+            mBannerLoading = findViewById( R.id.bannerLoading );
 
-        initView();
-        setSystemUI();
-        postAction();
-    }
-
-
-    /**
-     * 初始化view
-     */
-    private void initView() {
-
-        mDrawer = findViewById(R.id.drawer);
-        mNavigationView = findViewById(R.id.navigationView);
-        mBanner = findViewById(R.id.banner);
-        mAppBar = findViewById(R.id.appBar);
-        mCoordinator = findViewById(R.id.coordinator);
-        mViewPager = findViewById(R.id.viewPager);
-        mTabLayout = findViewById(R.id.tabLayout);
-        mCollapsingToolbar = findViewById(R.id.collapsingToolbar);
-        mBannerLoading = findViewById(R.id.bannerLoading);
-
-        /* 防止tabLayout 进入statusBar */
-          int height = SystemUi.getStatusBarHeight( MainActivity.this );
-        mCollapsingToolbar.setMinimumHeight(height);
-
-        /* banner */
-        mBannerAdapter = new BannerAdapter();
-        mBanner.setAdapter(mBannerAdapter);
-
-        /* view Pager */
-        mMainPagerAdapter = new MainPagerAdapter(getSupportFragmentManager());
-        mViewPager.setAdapter(mMainPagerAdapter);
-        mMainPagerChangeListener = new MainPagerChangeListener();
-        mViewPager.addOnPageChangeListener(mMainPagerChangeListener);
-        mTabLayout.setupWithViewPager(mViewPager);
-    }
-
-
-    /**
-     * 创建好 activity 之后执行一些初始化activity的操作
-     */
-    private void postAction() {
-
-        mDrawer.post(() -> {
-
-            mBanner.stopLoop();
+            /* banner Loading */
             initBannerLoading();
 
-            /* 设置导航菜单 */
-            initNavigationView(mNavigationView);
+            /* 防止tabLayout 进入statusBar */
+            int height = SystemUi.getStatusBarHeight( MainActivity.this );
+            mCollapsingToolbar.setMinimumHeight( height );
 
-            /* 为activity执行后台初始化操作 */
-            MainManager.getInstance().onStart();
+            /* banner */
+            mBannerAdapter = new BannerAdapter();
+            mBanner.setAdapter( mBannerAdapter );
 
-            /* 设置默认页 */
-            mViewPager.setCurrentItem(0);
+            /* view Pager */
+            mMainPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
+            mViewPager.setAdapter( mMainPagerAdapter );
 
-            mMainPagerChangeListener.onPageSelected(0);
-        });
-    }
+            /* tabLayout */
+            mMainPagerChangeListener = new MainPagerChangeListener();
+            mViewPager.addOnPageChangeListener( mMainPagerChangeListener );
+            mTabLayout.setupWithViewPager( mViewPager );
+      }
 
+      /**
+       * 创建好 activity 之后执行一些初始化activity的操作
+       */
+      private void postAction ( ) {
 
-    /**
-     * 设置状态栏
-     */
-    private void setSystemUI() {
+            mDrawer.post( ( ) -> {
 
-          SystemUi.setStatusColor( this, Color.TRANSPARENT );
-    }
+                  mBanner.stopLoop();
 
+                  /* 设置导航菜单 */
+                  initNavigationView( mNavigationView );
 
-    /**
-     * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
-     */
-    private void closeDrawer() {
+                  /* 设置默认页 */
+                  mViewPager.setCurrentItem( 0 );
 
-        mDrawer.closeDrawer(Gravity.START);
-    }
+                  mMainPagerChangeListener.onPageSelected( 0 );
+            } );
+      }
 
+      /**
+       * 设置状态栏
+       */
+      private void setSystemUI ( ) {
 
-    /**
-     * 初始化banner Loading
-     */
-    private void initBannerLoading() {
+            SystemUi.setStatusColor( this, Color.TRANSPARENT );
+      }
 
-          mBiliLoadingDrawable = new BiliBiliLoadingDrawable( mBannerLoading.getMeasuredWidth() );
-        mBiliLoadingDrawable.setStrokeWidth(5);
-        mBiliLoadingDrawable.setDuration(2400);
-        mBiliLoadingDrawable.setRepeat(300000);
-        mBiliLoadingDrawable.setColor(getResources().getColor(R.color.blue));
-        mBannerLoading.setImageDrawable(mBiliLoadingDrawable);
-        mBiliLoadingDrawable.start();
-    }
+      /**
+       * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
+       */
+      private void closeDrawer ( ) {
 
+            mDrawer.closeDrawer( Gravity.START );
+      }
 
-    /**
-     * 显示loading
-     */
-    private void showBannerLoading() {
+      /**
+       * 初始化banner Loading
+       */
+      private void initBannerLoading ( ) {
 
-        mBannerLoading.setVisibility(View.VISIBLE);
-        mBiliLoadingDrawable.start();
-    }
+            mBiliLoadingDrawable = new BiliBiliLoadingDrawable(
+                getResources().getDimensionPixelSize( R.dimen.banner_loading_size ) );
+            mBiliLoadingDrawable.setStrokeWidth( 5 );
+            mBiliLoadingDrawable.setDuration( 2400 );
+            mBiliLoadingDrawable.setRepeat( 300000 );
+            mBiliLoadingDrawable.setRadius( 5 );
+            mBiliLoadingDrawable.setPaintColor( getResources().getColor( R.color.blue ) );
+            mBannerLoading.setImageDrawable( mBiliLoadingDrawable );
+            mBiliLoadingDrawable.start();
+      }
 
+      /**
+       * 显示loading
+       */
+      private void showBannerLoading ( ) {
 
-    /**
-     * 隐藏loading
-     */
-    private void hideBannerLoading() {
+            mBannerLoading.setVisibility( View.VISIBLE );
+            mBiliLoadingDrawable.start();
+      }
 
-        mBannerLoading.setVisibility(View.INVISIBLE);
-        mBiliLoadingDrawable.stop();
-    }
+      /**
+       * 隐藏loading
+       */
+      private void hideBannerLoading ( ) {
 
-    //============================ 设置导航栏界面 ============================
+            mBannerLoading.setVisibility( View.INVISIBLE );
+            mBiliLoadingDrawable.stop();
+      }
 
+      //============================ 设置导航栏界面 ============================
 
-    /**
-     * 设置navigation布局,因为需要获得view宽高,使用post runnable 读取
-     *
-     * @param navigationView 导航view
-     */
-    private void initNavigationView(NavigationView navigationView) {
+      /**
+       * 设置navigation布局,因为需要获得view宽高,使用post runnable 读取
+       *
+       * @param navigationView 导航view
+       */
+      private void initNavigationView ( NavigationView navigationView ) {
 
-        View headerView = navigationView.getHeaderView(0);
-        ImageView avatarImageView = headerView.findViewById(R.id.userAvatar);
+            View headerView = navigationView.getHeaderView( 0 );
+            ImageView avatarImageView = headerView.findViewById( R.id.userAvatar );
 
-        /* 设置圆角图片给导航栏的头像框 */
+            /* 设置圆角图片给导航栏的头像框 */
 
-        Bitmap bitmap = BitmapReader.sampledBitmap(
-            this,
+            Bitmap bitmap = BitmapReader.sampledBitmap(
+                this,
                 R.drawable.avatar,
                 avatarImageView.getWidth(),
-                avatarImageView.getHeight());
-
-        Drawable drawable = RoundBitmapFactory.circleBitmap( this, bitmap );
-        avatarImageView.setImageDrawable(drawable);
-
-        /* 给导航栏条目设置点击事件 */
-
-        NavigationItemClickListener clickListener = new NavigationItemClickListener();
-        headerView.findViewById(R.id.toAbout).setOnClickListener(clickListener);
-        headerView.findViewById(R.id.toQuestFeedback).setOnClickListener(clickListener);
-        headerView.findViewById(R.id.toDonate).setOnClickListener(clickListener);
-        headerView.findViewById(R.id.toLoginGithub).setOnClickListener(clickListener);
-        headerView.findViewById(R.id.exitApp).setOnClickListener(clickListener);
-    }
-
-    //============================ 导航栏功能 ============================
-
-    /**
-     * 导航栏item点击事件
-     */
-    private class NavigationItemClickListener implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-
-            switch (v.getId()) {
-
-                case R.id.toAbout:
-                    toAbout();
-                    break;
-
-                case R.id.toQuestFeedback:
-                    toQuestionFeedback();
-                    break;
-
-                case R.id.toDonate:
-                    toDonate();
-                    break;
-
-                case R.id.toLoginGithub:
-                    toLoginGitHub();
-                    break;
-
-                case R.id.exitApp:
-                    exitApp();
-                    break;
-
-                default:
-                    break;
-            }
-            closeDrawer();
-        }
-
-
-        /**
-         * to about page
-         */
-        private void toAbout() {
-
-            Log.i(TAG, "toAbout:" + "");
-
-        }
-
-
-        /**
-         * to QuestionFeedback page
-         */
-        private void toQuestionFeedback() {
-
-            Log.i(TAG, "toQuestionFeedback:" + "");
-
-        }
-
-
-        /**
-         * to Donate page
-         */
-        private void toDonate() {
-
-            Log.i(TAG, "toDonate:" + "");
-
-        }
-
-
-        /**
-         * to LoginGitHub page
-         */
-        private void toLoginGitHub() {
-
-            Log.i(TAG, "toLoginGitHub:" + "");
-
-        }
-
-
-        /**
-         * to exitApp
-         */
-        private void exitApp() {
-
-            Log.i(TAG, "exitApp:" + "");
-            RootActivity.start(MainActivity.this);
-        }
-    }
-
-    //============================ 返回按键 ============================
-
-
-    /**
-     * 添加点击两次退出activity
-     */
-    @Override
-    public void onBackPressed() {
-
-        if (BackPressUtil.showInfo(this)) {
-            RootActivity.start(this);
-            super.onBackPressed();
-        }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-
-        MainManager.getInstance().unRegister();
-        super.onDestroy();
-    }
-
-    //============================ banner adapter ============================
-
-
-    public BannerView getBanner() {
-
-        return mBanner;
-    }
-
-
-    public void notifyBannerDataChanged(int index, List< Bitmap > bitmaps) {
-
-        mBannerAdapter.setBitmaps(bitmaps);
-        mBannerAdapter.mDataStartIndex = index;
-        mBanner.startLoop();
-        hideBannerLoading();
-        mBannerAdapter.reBindData(0);
-        mBannerAdapter.reBindData(1);
-    }
-
-    //============================ banner adapter ============================
-
-    /**
-     * banner adapter
-     */
-    private class BannerAdapter extends BasePagerAdapter< Bitmap, ImageView > {
-
-
-        /**
-         * 记录开始项数据在{@link ModelManager#mCategoryBeauties 中的索引}
-         */
-        private int            mDataStartIndex;
-        private List< Bitmap > mBitmaps;
-
-        /**
-         * 每个item点击事件
-         */
-        private BannerItemClickListener mBannerItemClickListener;
-
-
-        public void setBitmaps(List< Bitmap > bitmaps) {
-
-            mBitmaps = bitmaps;
-        }
-
-
-        @Override
-        public int getCount() {
-
-            return 5;
-        }
-
-
-        @Override
-        public Bitmap getData(int i) {
-
-            try {
-                Bitmap bitmap = mBitmaps.get(i);
-                if (bitmap != null) {
-                    return bitmap;
-                }
-            } catch (Exception e) {
-                Log.e("MainActivity", "nothing to worry about");
-            }
-            return null;
-        }
-
-
-        @Override
-        public ImageView getView(ViewGroup container, int position) {
-
-            ImageView imageView = new ImageView(MainActivity.this);
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            return imageView;
-        }
-
-
-        @Override
-        public void bindData(int i, Bitmap o, ImageView imageView) {
-
-            if (o != null) {
-                imageView.setImageBitmap(o);
-                if (mBannerItemClickListener == null) {
-                    mBannerItemClickListener = new BannerItemClickListener();
-                }
-                imageView.setTag(R.id.main_banner_item_tag, i);
-                imageView.setOnClickListener(mBannerItemClickListener);
-            }
-        }
-
-
-        public void reBindData(int position) {
-
-            ImageView view = getItemView(position);
-            Bitmap bitmap = getData(position);
-            view.setImageBitmap(bitmap);
-        }
-
-
-        /**
-         * banner item 点击事件,跳转到{@link PictureActivity}
-         */
-        private class BannerItemClickListener implements View.OnClickListener {
+                avatarImageView.getHeight()
+            );
+
+            Drawable drawable = RoundBitmapFactory.circleBitmap( this, bitmap );
+            avatarImageView.setImageDrawable( drawable );
+
+            /* 给导航栏条目设置点击事件 */
+
+            NavigationItemClickListener clickListener = new NavigationItemClickListener();
+            headerView.findViewById( R.id.toAbout ).setOnClickListener( clickListener );
+            headerView.findViewById( R.id.toQuestFeedback ).setOnClickListener( clickListener );
+            headerView.findViewById( R.id.toDonate ).setOnClickListener( clickListener );
+            headerView.findViewById( R.id.toLoginGithub ).setOnClickListener( clickListener );
+            headerView.findViewById( R.id.exitApp ).setOnClickListener( clickListener );
+      }
+
+      //============================ 导航栏功能 ============================
+
+      /**
+       * 导航栏item点击事件
+       */
+      private class NavigationItemClickListener implements View.OnClickListener {
 
             @Override
-            public void onClick(View v) {
+            public void onClick ( View v ) {
 
-                int position = (Integer) v.getTag(R.id.main_banner_item_tag);
-                PictureActivity.start(MainActivity.this, mDataStartIndex, position);
+                  switch( v.getId() ) {
+
+                        case R.id.toAbout:
+                              toAbout();
+                              break;
+
+                        case R.id.toQuestFeedback:
+                              toQuestionFeedback();
+                              break;
+
+                        case R.id.toDonate:
+                              toDonate();
+                              break;
+
+                        case R.id.toLoginGithub:
+                              toLoginGitHub();
+                              break;
+
+                        case R.id.exitApp:
+                              exitApp();
+                              break;
+
+                        default:
+                              break;
+                  }
+                  closeDrawer();
             }
-        }
-    }
 
-    //============================ pager adapter ============================
+            /**
+             * to about page
+             */
+            private void toAbout ( ) {
 
-    private class MainPagerAdapter extends FragmentStatePagerAdapter {
+                  Log.i( TAG, "toAbout:" + "" );
+            }
 
-        private ShowFragment[] mShowFragments = new ShowFragment[ Category.All_CATEGORY.length ];
+            /**
+             * to QuestionFeedback page
+             */
+            private void toQuestionFeedback ( ) {
 
+                  Log.i( TAG, "toQuestionFeedback:" + "" );
+            }
 
-        public MainPagerAdapter(FragmentManager fm) {
+            /**
+             * to Donate page
+             */
+            private void toDonate ( ) {
 
-            super(fm);
-        }
+                  Log.i( TAG, "toDonate:" + "" );
+            }
 
+            /**
+             * to LoginGitHub page
+             */
+            private void toLoginGitHub ( ) {
 
-        @Override
-        public Fragment getItem(int position) {
+                  Log.i( TAG, "toLoginGitHub:" + "" );
+            }
 
-            ShowFragment fragment = ShowFragment.newInstance();
-            mShowFragments[position] = fragment;
-            return fragment;
-        }
+            /**
+             * to exitApp
+             */
+            private void exitApp ( ) {
 
+                  Log.i( TAG, "exitApp:" + "" );
+                  RootActivity.start( MainActivity.this );
+            }
+      }
 
-        public ShowFragment getCurrentFragment(int position) {
+      //============================ 返回按键 ============================
 
-            return mShowFragments[position];
-        }
+      /**
+       * 添加点击两次退出activity
+       */
+      @Override
+      public void onBackPressed ( ) {
 
+            if( BackPressUtil.showInfo( this ) ) {
+                  RootActivity.start( this );
+                  super.onBackPressed();
+            }
+      }
 
-        @Override
-        public int getCount() {
+      @Override
+      protected void onDestroy ( ) {
 
-            return Category.All_CATEGORY.length;
-        }
+            super.onDestroy();
+      }
 
+      //============================ banner adapter ============================
 
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
+      public BannerView getBanner ( ) {
 
-            return Category.All_CATEGORY[ position ];
-        }
+            return mBanner;
+      }
 
+      public void notifyBannerDataChanged ( int index, List<Bitmap> bitmaps ) {
 
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
+            mBannerAdapter.setBitmaps( bitmaps );
+            mBannerAdapter.mDataStartIndex = index;
+            mBanner.startLoop();
+            hideBannerLoading();
+            mBannerAdapter.reBindData( 0 );
+            mBannerAdapter.reBindData( 1 );
+      }
 
-            super.destroyItem(container, position, object);
-        }
-    }
+      //============================ banner adapter ============================
 
-    //============================ pager scroll ============================
+      /**
+       * banner adapter
+       */
+      private class BannerAdapter extends BasePagerAdapter<Bitmap, ImageView> {
 
-    private class MainPagerChangeListener extends ViewPager.SimpleOnPageChangeListener {
+            private int          mDataStartIndex;
+            private List<Bitmap> mBitmaps;
 
-        @Override
-        public void onPageSelected(int position) {
+            /**
+             * 每个item点击事件
+             */
+            private BannerItemClickListener mBannerItemClickListener;
 
-            ShowFragment fragment = mMainPagerAdapter.getCurrentFragment(position);
-            String category = Category.All_CATEGORY[ position ];
-            fragment.loadData(category);
-        }
-    }
+            public void setBitmaps ( List<Bitmap> bitmaps ) {
+
+                  mBitmaps = bitmaps;
+            }
+
+            @Override
+            public int getCount ( ) {
+
+                  return 5;
+            }
+
+            @Override
+            public Bitmap getData ( int i ) {
+
+                  try {
+                        Bitmap bitmap = mBitmaps.get( i );
+                        if( bitmap != null ) {
+                              return bitmap;
+                        }
+                  } catch(Exception e) {
+                        Log.e( "MainActivity", "nothing to worry about" );
+                  }
+                  return null;
+            }
+
+            @Override
+            public ImageView getView ( ViewGroup container, int position ) {
+
+                  ImageView imageView = new ImageView( MainActivity.this );
+                  imageView.setScaleType( ImageView.ScaleType.CENTER_CROP );
+                  return imageView;
+            }
+
+            @Override
+            public void bindData ( int i, Bitmap o, ImageView imageView ) {
+
+                  if( o != null ) {
+                        imageView.setImageBitmap( o );
+                        if( mBannerItemClickListener == null ) {
+                              mBannerItemClickListener = new BannerItemClickListener();
+                        }
+                        imageView.setTag( R.id.main_banner_item_tag, i );
+                        imageView.setOnClickListener( mBannerItemClickListener );
+                  }
+            }
+
+            public void reBindData ( int position ) {
+
+                  ImageView view = getItemView( position );
+                  Bitmap bitmap = getData( position );
+                  view.setImageBitmap( bitmap );
+            }
+
+            /**
+             * banner item 点击事件,跳转到{@link PictureActivity}
+             */
+            private class BannerItemClickListener implements View.OnClickListener {
+
+                  @Override
+                  public void onClick ( View v ) {
+
+                        int position = (Integer) v.getTag( R.id.main_banner_item_tag );
+                        PictureActivity.start( MainActivity.this, mDataStartIndex, position );
+                  }
+            }
+      }
+
+      //============================ pager adapter ============================
+
+      private class MainPagerAdapter extends FragmentStatePagerAdapter {
+
+            private ShowFragment[] mShowFragments = new ShowFragment[ Category.All_CATEGORY.length ];
+
+            MainPagerAdapter ( FragmentManager fm ) {
+
+                  super( fm );
+            }
+
+            @Override
+            public Fragment getItem ( int position ) {
+
+                  ShowFragment fragment = ShowFragment.newInstance();
+                  mShowFragments[ position ] = fragment;
+                  return fragment;
+            }
+
+            public ShowFragment getCurrentFragment ( int position ) {
+
+                  return mShowFragments[ position ];
+            }
+
+            @Override
+            public int getCount ( ) {
+
+                  return Category.All_CATEGORY.length;
+            }
+
+            @Nullable
+            @Override
+            public CharSequence getPageTitle ( int position ) {
+
+                  return Category.All_CATEGORY[ position ];
+            }
+
+            @Override
+            public void destroyItem ( ViewGroup container, int position, Object object ) {
+
+                  super.destroyItem( container, position, object );
+            }
+      }
+
+      //============================ pager scroll ============================
+
+      private class MainPagerChangeListener extends ViewPager.SimpleOnPageChangeListener {
+
+            @Override
+            public void onPageSelected ( int position ) {
+
+                  ShowFragment fragment = mMainPagerAdapter.getCurrentFragment( position );
+                  String category = Category.All_CATEGORY[ position ];
+                  fragment.loadData( category );
+            }
+      }
 }
