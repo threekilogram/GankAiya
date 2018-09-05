@@ -26,7 +26,7 @@ public class SplashActivity extends AppCompatActivity {
       protected TextView  mCountText;
       private   CountDown mCountDownMachine;
 
-      private static final String TAG = SplashActivity.class.getSimpleName();
+
 
       public static void start ( Context context ) {
 
@@ -39,11 +39,14 @@ public class SplashActivity extends AppCompatActivity {
 
             super.onCreate( savedInstanceState );
             super.setContentView( R.layout.activity_splash );
+
             initView();
             postAction();
 
-            GankModel.prepareSplashImage(
-                mLogoImage, ScreenSize.getWidth(), ScreenSize.getHeight()
+            GankModel.setSplashBitmap(
+                mLogoImage,
+                ScreenSize.getWidth(),
+                ScreenSize.getHeight()
             );
       }
 
@@ -79,7 +82,6 @@ public class SplashActivity extends AppCompatActivity {
       public void finish ( ) {
 
             /* 释放资源 */
-
             mCountDownMachine.cancel();
             super.finish();
       }

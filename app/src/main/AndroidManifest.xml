@@ -23,7 +23,8 @@
 
             <activity
                 android:launchMode="singleTask"
-                android:name=".root.RootActivity">
+                android:name=".root.RootActivity"
+                android:theme="@style/TranslucentActivityTheme">
                   <intent-filter>
                         <action android:name="android.intent.action.MAIN"/>
 

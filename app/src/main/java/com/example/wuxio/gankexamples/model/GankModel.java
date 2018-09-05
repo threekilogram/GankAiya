@@ -5,14 +5,11 @@ import android.graphics.Bitmap;
 import android.widget.ImageView;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
-import java.io.File;
-import tech.threekilogram.depository.bitmap.BitmapLoader;
-import tech.threekilogram.depository.json.GsonConverter;
-import tech.threekilogram.depository.json.JsonLoader;
-import tech.threekilogram.depository.net.LoadingUrls;
+import java.lang.ref.WeakReference;
+import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
+import tech.threekilogram.depository.cache.json.ObjectLoader;
+import tech.threekilogram.depository.function.Doing;
 import tech.threekilogram.depository.preference.Preference;
-import tech.threekilogram.network.state.manager.NetStateChangeManager;
-import tech.threekilogram.network.state.manager.NetStateValue;
 
 /**
  * @author: Liujin
@@ -27,27 +24,29 @@ public class GankModel {
       /**
        * 异步任务
        */
-      private static ObjectBus                sObjectBus;
+      private static ObjectBus    sObjectBus;
       /**
        * 图片加载
        */
-      private static BitmapLoader             sBitmapLoader;
-      /**
-       * json加载
-       */
-      private static JsonLoader<GankCategory> sJsonLoader;
-      /**
-       * 配置文件
-       */
-      private static Preference               sPreference;
+      private static BitmapLoader sBitmapLoader;
       /**
        * 防止重复加载
        */
-      private static LoadingUrls              sUrls;
+      private static Doing        sDoing;
+
       /**
-       * {@link com.example.wuxio.gankexamples.splash.SplashActivity#mLogoImage}图片地址
+       * splash配置
        */
-      private static final String TODAY_IMAGE_URL = "today_image_url";
+      private static Preference sPreference;
+      /**
+       * {@link #sPreference}配置名字,app一些配置项
+       */
+      private static final String GANK_CONFIG = "GankConfig";
+      /**
+       * 该键对应的值是{@link com.example.wuxio.gankexamples.splash.SplashActivity#mLogoImage}图片地址,
+       * 可以直接从本地加载,从本地加载可以防止网络反应慢,设置不及时,体验不好
+       */
+      private static final String SPLASH_URL  = "SplashUrl";
 
       /**
        * 初始化
@@ -56,105 +55,80 @@ public class GankModel {
        */
       public static void init ( Context context ) {
 
-            sObjectBus = ObjectBus.newList();
+            if( sObjectBus == null ) {
+                  sObjectBus = ObjectBus.newList();
+            }
 
-            sBitmapLoader = new BitmapLoader(
-                (int) Runtime.getRuntime().maxMemory() >> 3,
-                context.getExternalFilesDir( "gankImage" )
-            );
+            if( sBitmapLoader == null ) {
+                  sBitmapLoader = new BitmapLoader(
+                      (int) Runtime.getRuntime().maxMemory() >> 3,
+                      context.getExternalFilesDir( "gankImage" )
+                  );
+            }
 
-            sJsonLoader = new JsonLoader<>(
-                context.getExternalFilesDir( "gankBean" ),
-                new GsonConverter<>( GankCategory.class )
-            );
+            if( sDoing == null ) {
+                  sDoing = new Doing();
+            }
 
-            sPreference = new Preference( context, "gankConfig" );
-
-            sUrls = new LoadingUrls();
+            if( sPreference == null ) {
+                  sPreference = new Preference( context, GANK_CONFIG );
+            }
       }
 
       /**
-       * 为{@link com.example.wuxio.gankexamples.splash.SplashActivity}设置展示图片
+       * 先尝试从本地加载url对应图片,存在该图片设置给imageView,并更新最新的图片
+       *
+       * @param imageView imageView
+       * @param width bitmap宽度
+       * @param height bitmap高度
        */
-      public static void prepareSplashImage ( ImageView view, int width, int height ) {
+      public static void setSplashBitmap (
+          ImageView imageView,
+          int width,
+          int height ) {
 
-            loadNewTodayImage();
+            WeakReference<ImageView> ref = new WeakReference<>( imageView );
 
-            String imageUrl = sPreference.getString( TODAY_IMAGE_URL );
-            if( imageUrl != null ) {
+            /* 从本地加载配置图片,并设置给imageView,如果没有配置什么都不做 */
+            final String keyBitmap = "splash_bitmap";
+            sObjectBus.toPool( ( ) -> {
 
-                  Bitmap bitmap = sBitmapLoader.loadFromMemory( imageUrl );
-                  if( bitmap == null ) {
-
-                        /* 2.内存中没有,尝试从文件读取 */
-                        if( !sBitmapLoader.containsOfFile( imageUrl ) ) {
-                              return;
-                        }
-
-                        sBitmapLoader.configBitmap( width, height );
-                        bitmap = sBitmapLoader.loadFromFile( imageUrl );
+                  String url = sPreference.getString( SPLASH_URL );
+                  if( url != null ) {
+                        Bitmap bitmap = sBitmapLoader.loadFromMemory( url );
                         if( bitmap == null ) {
-                              return;
-                        }
-                        view.setImageBitmap( bitmap );
-                  } else {
-
-                        /* 1.先尝试从内存中读取是否已经有该宽度高度bitmap */
-                        if( bitmap.getWidth() >= width || bitmap.getHeight() >= height ) {
-                              view.setImageBitmap( bitmap );
-                        } else {
                               sBitmapLoader.configBitmap( width, height );
-                              bitmap = sBitmapLoader.loadFromFile( imageUrl );
-                              if( bitmap == null ) {
-                                    return;
-                              }
-                              view.setImageBitmap( bitmap );
+                              bitmap = sBitmapLoader.loadFromFile( url );
+                        }
+                        if( bitmap != null ) {
+
+                              sObjectBus.setResult( keyBitmap, bitmap );
                         }
                   }
-            }
-      }
+            } ).toMain( ( ) -> {
 
-      /**
-       * 尝试加载是否有新的图片
-       */
-      private static void loadNewTodayImage ( ) {
+                  Bitmap result = sObjectBus.getResultOff( keyBitmap );
+                  if( result != null ) {
+                        ImageView view = ref.get();
+                        if( view != null ) {
+                              view.setImageBitmap( result );
+                        }
+                  }
+            } ).run();
 
-            int currentNetState = NetStateChangeManager.getInstance().getCurrentNetState();
-            /* 处于 wifi 状态 */
-            if( currentNetState > NetStateValue.ONLY_MOBILE_CONNECT ) {
-                  PoolExecutor.execute( ( ) -> {
+            /* 更新本地配置图片,用于下次加载时使用 */
+            PoolExecutor.execute( ( ) -> {
 
-                        /* 1.从网络加载jsonBean */
-                        String url = GankUrl.splashImageUrl();
-                        if( sUrls.isLoading( url ) ) {
-                              return;
-                        }
-                        GankCategory gankCategory = sJsonLoader.loadFromNet( url );
-                        sUrls.removeLoadingUrl( url );
-                        if( gankCategory == null ) {
-                              return;
-                        }
-                        /* 2. 读取bean中url */
-                        String todayImageUrl = gankCategory.getResults().get( 0 ).getUrl();
-                        if( todayImageUrl == null ) {
-                              return;
-                        }
-
-                        /* 3.如果没有该图片那么下载他,并更新配置 */
-                        File file = sBitmapLoader.getFile( todayImageUrl );
-                        if( file.exists() ) {
-                              return;
-                        }
-                        if( sUrls.isLoading( todayImageUrl ) ) {
-                              return;
-                        }
-                        sBitmapLoader.downLoad( todayImageUrl );
-                        sUrls.removeLoadingUrl( todayImageUrl );
-                        file = sBitmapLoader.getFile( todayImageUrl );
-                        if( file.exists() ) {
-                              sPreference.save( TODAY_IMAGE_URL, todayImageUrl );
-                        }
-                  } );
-            }
+                  String url = GankUrl.splashImageUrl();
+                  sDoing.isRunning( url );
+                  GankCategory gankCategory = ObjectLoader.loadFromNet( url, GankCategory.class );
+                  sDoing.remove( url );
+                  url = gankCategory.getResults().get( 0 ).getUrl();
+                  if( !sBitmapLoader.containsOf( url ) ) {
+                        sDoing.isRunning( url );
+                        sBitmapLoader.downLoad( url );
+                        sDoing.remove( url );
+                  }
+            } );
       }
 }

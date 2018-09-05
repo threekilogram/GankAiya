@@ -54,4 +54,24 @@ public class GankUrl {
             }
             return category( encode, 1, 1 );
       }
+
+      public static String historyUrl ( ) {
+
+            return "https://gank.io/api/day/history";
+      }
+
+      public static String dayUrl ( String date ) {
+
+            String year = date.substring( 0, 4 );
+            String month = date.substring( 5, 7 );
+            String day = date.substring( 8 );
+
+            return String.format(
+                Locale.ENGLISH,
+                "https://gank.io/api/day/%s/%s/%s",
+                year,
+                month,
+                day
+            );
+      }
 }

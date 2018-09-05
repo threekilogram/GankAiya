@@ -3,7 +3,7 @@ package com.example.wuxio.gankexamples.constant;
 /**
  * @author wuxio 2018-05-05:11:22
  */
-public class Category {
+public class Constant {
 
     /* 福利 | Android | iOS | 休息视频 | 拓展资源 | 前端 | all */
 
@@ -25,4 +25,6 @@ public class Category {
             EXTRA_RESOURCES,
             REST_VIDEO
     };
+
+      public static final String APP_PREFERENCE_CONFIG = "gankConfig";
 }

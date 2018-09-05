@@ -3,7 +3,6 @@ package com.example.wuxio.gankexamples.main;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,7 +25,7 @@ import android.widget.ImageView;
 import com.example.bitmapreader.BitmapReader;
 import com.example.bitmapreader.RoundBitmapFactory;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.constant.Category;
+import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
        */
       private void setSystemUI ( ) {
 
-            SystemUi.setStatusColor( this, Color.TRANSPARENT );
+            SystemUi.transparentStatus( MainActivity.this );
       }
 
       /**
@@ -159,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             mBiliLoadingDrawable.setStrokeWidth( 5 );
             mBiliLoadingDrawable.setDuration( 2400 );
             mBiliLoadingDrawable.setRepeat( 300000 );
-            mBiliLoadingDrawable.setRadius( 5 );
+            mBiliLoadingDrawable.setRadius( 7 );
             mBiliLoadingDrawable.setPaintColor( getResources().getColor( R.color.blue ) );
             mBannerLoading.setImageDrawable( mBiliLoadingDrawable );
             mBiliLoadingDrawable.start();
@@ -420,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
 
       private class MainPagerAdapter extends FragmentStatePagerAdapter {
 
-            private ShowFragment[] mShowFragments = new ShowFragment[ Category.All_CATEGORY.length ];
+            private ShowFragment[] mShowFragments = new ShowFragment[ Constant.All_CATEGORY.length ];
 
             MainPagerAdapter ( FragmentManager fm ) {
 
@@ -443,14 +442,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public int getCount ( ) {
 
-                  return Category.All_CATEGORY.length;
+                  return Constant.All_CATEGORY.length;
             }
 
             @Nullable
             @Override
             public CharSequence getPageTitle ( int position ) {
 
-                  return Category.All_CATEGORY[ position ];
+                  return Constant.All_CATEGORY[ position ];
             }
 
             @Override
@@ -468,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPageSelected ( int position ) {
 
                   ShowFragment fragment = mMainPagerAdapter.getCurrentFragment( position );
-                  String category = Category.All_CATEGORY[ position ];
+                  String category = Constant.All_CATEGORY[ position ];
                   fragment.loadData( category );
             }
       }
