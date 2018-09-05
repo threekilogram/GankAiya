@@ -22,7 +22,7 @@
                   <android.support.design.widget.CollapsingToolbarLayout
                       android:id="@+id/collapsingToolbar"
                       android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
+                      android:layout_height="@dimen/main_appbar_height"
                       android:background="@android:color/transparent"
                       app:contentScrim="@color/blue"
                       app:layout_scrollFlags="scroll|exitUntilCollapsed"
@@ -31,7 +31,7 @@
                         <com.threekilogram.banner.BannerView
                             android:id="@+id/banner"
                             android:layout_width="match_parent"
-                            android:layout_height="225dp"
+                            android:layout_height="@dimen/main_appbar_height"
                             android:background="@android:color/transparent"
                             app:IndicatorGravity="end|bottom"
                             app:IndicatorMarginBottom="8dp"

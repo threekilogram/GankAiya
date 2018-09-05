@@ -70,5 +70,31 @@ public class GankCategory {
             public List<String> getImages ( ) { return images;}
 
             public void setImages ( List<String> images ) { this.images = images;}
+
+            @Override
+            public String toString ( ) {
+
+                  return "ResultsBean{" +
+                      "_id='" + _id + '\'' +
+                      ", createdAt='" + createdAt + '\'' +
+                      ", desc='" + desc + '\'' +
+                      ", publishedAt='" + publishedAt + '\'' +
+                      ", source='" + source + '\'' +
+                      ", type='" + type + '\'' +
+                      ", url='" + url + '\'' +
+                      ", used=" + used +
+                      ", who='" + who + '\'' +
+                      ", images=" + images +
+                      '}';
+            }
+      }
+
+      @Override
+      public String toString ( ) {
+
+            return "GankCategory{" +
+                "error=" + error +
+                ", results=" + results +
+                '}';
       }
 }

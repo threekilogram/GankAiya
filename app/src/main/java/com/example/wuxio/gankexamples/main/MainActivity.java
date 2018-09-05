@@ -22,19 +22,22 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import com.example.bitmapreader.BitmapReader;
-import com.example.bitmapreader.RoundBitmapFactory;
+import android.widget.Toast;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.model.GankModel;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.banner.BannerView;
 import com.threekilogram.banner.adapter.BasePagerAdapter;
+import com.threekilogram.bitmapreader.BitmapReader;
+import com.threekilogram.bitmapreader.RoundBitmapFactory;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
 import java.util.List;
+import tech.threekilogram.screen.ScreenSize;
 
 /**
  * @author wuxio
@@ -75,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
             initView();
             setSystemUI();
             postAction();
+
+            GankModel.setBannerBitmaps(
+                this,
+                ScreenSize.getWidth(),
+                ScreenSize.resToPx( this, R.dimen.main_appbar_height )
+            );
       }
 
       /**
@@ -180,6 +189,11 @@ public class MainActivity extends AppCompatActivity {
 
             mBannerLoading.setVisibility( View.INVISIBLE );
             mBiliLoadingDrawable.stop();
+      }
+
+      public void notifyWithoutBannerResource ( ) {
+
+            Toast.makeText( this, "无法收到电波", Toast.LENGTH_SHORT ).show();
       }
 
       //============================ 设置导航栏界面 ============================
@@ -323,20 +337,8 @@ public class MainActivity extends AppCompatActivity {
             return mBanner;
       }
 
-      public void notifyBannerDataChanged ( int index, List<Bitmap> bitmaps ) {
-
-            mBannerAdapter.setBitmaps( bitmaps );
-            mBannerAdapter.mDataStartIndex = index;
-            mBanner.startLoop();
-            hideBannerLoading();
-            mBannerAdapter.reBindData( 0 );
-            mBannerAdapter.reBindData( 1 );
-      }
-
-      //============================ banner adapter ============================
-
       /**
-       * banner adapter
+       * 轮播图适配器
        */
       private class BannerAdapter extends BasePagerAdapter<Bitmap, ImageView> {
 
@@ -347,11 +349,6 @@ public class MainActivity extends AppCompatActivity {
              * 每个item点击事件
              */
             private BannerItemClickListener mBannerItemClickListener;
-
-            public void setBitmaps ( List<Bitmap> bitmaps ) {
-
-                  mBitmaps = bitmaps;
-            }
 
             @Override
             public int getCount ( ) {

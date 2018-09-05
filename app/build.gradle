@@ -50,9 +50,10 @@ dependencies {
     /* net state */
     implementation 'com.github.threekilogram:NetWorkStateChangeListener:1.2.4'
     /* cache */
-    implementation 'com.github.threekilogram:AndroidModel:1.9.0'
-    /* bitmap */
-    implementation 'com.github.threekilogram:BitmapReader:1.1.9'
-    /* jsonParser */
-    implementation 'com.github.threekilogram:JsonParser:3.0'
+    implementation 'com.github.threekilogram:AndroidModel:1.9.4'
+    /* screen size */
+    implementation 'com.github.threekilogram:ScreenSize:1.0.1'
+    /* event */
+    implementation 'com.github.threekilogram:EventBoard:1.0.1'
+
 }

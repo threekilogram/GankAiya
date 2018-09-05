@@ -2,14 +2,21 @@ package com.example.wuxio.gankexamples.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.widget.ImageView;
+import com.example.wuxio.gankexamples.main.MainActivity;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
+import tech.threekilogram.depository.cache.json.JsonLoader;
 import tech.threekilogram.depository.cache.json.ObjectLoader;
-import tech.threekilogram.depository.function.Doing;
 import tech.threekilogram.depository.preference.Preference;
+import tech.threekilogram.network.state.manager.NetStateChangeManager;
+import tech.threekilogram.network.state.manager.NetStateValue;
 
 /**
  * @author: Liujin
@@ -24,15 +31,21 @@ public class GankModel {
       /**
        * 异步任务
        */
-      private static ObjectBus    sObjectBus;
+      private static ObjectBus               sObjectBus;
       /**
        * 图片加载
        */
-      private static BitmapLoader sBitmapLoader;
+      private static BitmapLoader            sBitmapLoader;
       /**
-       * 防止重复加载
+       * 加载发布过的历史日期
        */
-      private static Doing        sDoing;
+      private static JsonLoader<GankHistory> sHistoryLoader;
+      private static GankHistory             sGankHistory;
+      private static JsonLoader<GankDay>     sDayLoader;
+      /**
+       * 图片链接
+       */
+      private static List<String> sImageUrls = new ArrayList<>();
 
       /**
        * splash配置
@@ -66,17 +79,102 @@ public class GankModel {
                   );
             }
 
-            if( sDoing == null ) {
-                  sDoing = new Doing();
-            }
-
             if( sPreference == null ) {
                   sPreference = new Preference( context, GANK_CONFIG );
             }
+
+            if( sHistoryLoader == null ) {
+                  File dir = context.getExternalFilesDir( "gankHistory" );
+                  sHistoryLoader = new JsonLoader<>( dir, GankHistory.class );
+            }
+
+            if( sDayLoader == null ) {
+                  File dir = context.getExternalFilesDir( "ganDay" );
+                  sDayLoader = new JsonLoader<>( dir, GankDay.class );
+            }
+
+            initHistory();
+            cacheHistory();
       }
 
       /**
-       * 先尝试从本地加载url对应图片,存在该图片设置给imageView,并更新最新的图片
+       * 初始化history
+       */
+      private static void initHistory ( ) {
+
+            if( sGankHistory != null ) {
+                  cacheHistory();
+                  return;
+            }
+
+            PoolExecutor.execute( ( ) -> {
+
+                  String url = GankUrl.historyUrl();
+                  /* 先从网络获取最新的数据 */
+                  sGankHistory = sHistoryLoader.loadFromDownload( url );
+
+                  /* 如果网络获取失败那么从缓存读取 */
+                  if( sGankHistory == null ) {
+                        sGankHistory = sHistoryLoader.loadFromFile( url );
+                  }
+
+                  /* 缓存读取失败了,检查网络,如果网络没有问题,那么是服务器挂了 */
+                  if( sGankHistory == null ) {
+
+                        int currentNetState = NetStateChangeManager.getInstance()
+                                                                   .getCurrentNetState();
+
+                        if( currentNetState == NetStateValue.WIFI_MOBILE_DISCONNECT ) {
+                              Log.e( TAG, "run : 没有网络" );
+                        } else {
+                              Log.e( TAG, "run : 服务器挂了" );
+                        }
+                  } else {
+
+                        cacheHistory();
+                  }
+            } );
+      }
+
+      /**
+       * 缓存history
+       */
+      private static void cacheHistory ( ) {
+
+            /* 没有历史数据 */
+            if( sGankHistory == null ) {
+                  return;
+            }
+
+            /* 就绪,开始缓存 */
+            PoolExecutor.execute( ( ) -> {
+
+                  /* 判断是否处于wifi状态 */
+                  NetStateChangeManager netState = NetStateChangeManager.getInstance();
+                  /* 所有日期 */
+                  List<String> results = sGankHistory.getResults();
+                  for( String result : results ) {
+
+                        String url = GankUrl.dayUrl( result );
+                        if( !sDayLoader.containsOfFile( url ) ) {
+
+                              /* 缓存时判断网络状态 */
+                              if( netState.getCurrentNetState()
+                                  <= NetStateValue.ONLY_MOBILE_CONNECT ) {
+
+                                    /* app 退出时会停止,因为解注册了网络监听 */
+                                    return;
+                              }
+
+                              /* wifi状态,缓存数据 */
+                              sDayLoader.download( url );
+                        }
+                  }
+            } );
+      }
+
+      /**
+       * 为{@link com.example.wuxio.gankexamples.splash.SplashActivity}设置图片,并且准备下次需要的图片
        *
        * @param imageView imageView
        * @param width bitmap宽度
@@ -94,6 +192,7 @@ public class GankModel {
             sObjectBus.toPool( ( ) -> {
 
                   String url = sPreference.getString( SPLASH_URL );
+                  Log.e( TAG, "setSplashBitmap : splash url " + url );
                   if( url != null ) {
                         Bitmap bitmap = sBitmapLoader.loadFromMemory( url );
                         if( bitmap == null ) {
@@ -120,15 +219,22 @@ public class GankModel {
             PoolExecutor.execute( ( ) -> {
 
                   String url = GankUrl.splashImageUrl();
-                  sDoing.isRunning( url );
                   GankCategory gankCategory = ObjectLoader.loadFromNet( url, GankCategory.class );
-                  sDoing.remove( url );
                   url = gankCategory.getResults().get( 0 ).getUrl();
-                  if( !sBitmapLoader.containsOf( url ) ) {
-                        sDoing.isRunning( url );
-                        sBitmapLoader.downLoad( url );
-                        sDoing.remove( url );
+                  if( !sBitmapLoader.containsOfFile( url ) ) {
+                        sBitmapLoader.download( url );
+                  }
+
+                  if( sBitmapLoader.containsOfFile( url ) ) {
+                        sPreference.save( SPLASH_URL, url );
                   }
             } );
+      }
+
+      /**
+       * 设置mainActivity banner 图片
+       */
+      public static void setBannerBitmaps ( MainActivity activity, int width, int height ) {
+
       }
 }

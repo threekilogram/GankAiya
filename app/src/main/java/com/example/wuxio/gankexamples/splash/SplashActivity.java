@@ -7,13 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.example.bitmapreader.ScreenSize;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.model.GankModel;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import tech.threekilogram.messengers.Messengers;
 import tech.threekilogram.messengers.OnMessageReceiveListener;
+import tech.threekilogram.screen.ScreenSize;
 
 /**
  * show splash ,than goto mainActivity
