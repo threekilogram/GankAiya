@@ -28,94 +28,91 @@ public class GankDay {
 
       public static class ResultsBean {
 
-            private List<GankCategory.ResultsBean> Android;
-            private List<GankCategory.ResultsBean> App;
-            private List<GankCategory.ResultsBean> iOS;
-            private List<GankCategory.ResultsBean> 休息视频;
-            private List<GankCategory.ResultsBean> 前端;
-            private List<GankCategory.ResultsBean> 拓展资源;
-            private List<GankCategory.ResultsBean> 瞎推荐;
-            private List<GankCategory.ResultsBean> 福利;
+            private List<GankCategoryItem> Android;
+            private List<GankCategoryItem> App;
+            private List<GankCategoryItem> iOS;
+            private List<GankCategoryItem> 休息视频;
+            private List<GankCategoryItem> 前端;
+            private List<GankCategoryItem> 拓展资源;
+            private List<GankCategoryItem> 瞎推荐;
+            private List<GankCategoryItem> 福利;
 
-            public List<GankCategory.ResultsBean> getAndroid ( ) {
+            public List<GankCategoryItem> getAndroid ( ) {
 
                   return Android;
             }
 
-            public void setAndroid (
-                List<GankCategory.ResultsBean> android ) {
+            public void setAndroid ( List<GankCategoryItem> android ) {
 
                   Android = android;
             }
 
-            public List<GankCategory.ResultsBean> getApp ( ) {
+            public List<GankCategoryItem> getApp ( ) {
 
                   return App;
             }
 
-            public void setApp ( List<GankCategory.ResultsBean> app ) {
+            public void setApp ( List<GankCategoryItem> app ) {
 
                   App = app;
             }
 
-            public List<GankCategory.ResultsBean> getiOS ( ) {
+            public List<GankCategoryItem> getiOS ( ) {
 
                   return iOS;
             }
 
-            public void setiOS ( List<GankCategory.ResultsBean> iOS ) {
+            public void setiOS ( List<GankCategoryItem> iOS ) {
 
                   this.iOS = iOS;
             }
 
-            public List<GankCategory.ResultsBean> get休息视频 ( ) {
+            public List<GankCategoryItem> get休息视频 ( ) {
 
                   return 休息视频;
             }
 
-            public void set休息视频 (
-                List<GankCategory.ResultsBean> 休息视频 ) {
+            public void set休息视频 ( List<GankCategoryItem> 休息视频 ) {
 
                   this.休息视频 = 休息视频;
             }
 
-            public List<GankCategory.ResultsBean> get前端 ( ) {
+            public List<GankCategoryItem> get前端 ( ) {
 
                   return 前端;
             }
 
-            public void set前端 ( List<GankCategory.ResultsBean> 前端 ) {
+            public void set前端 ( List<GankCategoryItem> 前端 ) {
 
                   this.前端 = 前端;
             }
 
-            public List<GankCategory.ResultsBean> get拓展资源 ( ) {
+            public List<GankCategoryItem> get拓展资源 ( ) {
 
                   return 拓展资源;
             }
 
-            public void set拓展资源 (
-                List<GankCategory.ResultsBean> 拓展资源 ) {
+            public void set拓展资源 ( List<GankCategoryItem> 拓展资源 ) {
 
                   this.拓展资源 = 拓展资源;
             }
 
-            public List<GankCategory.ResultsBean> get瞎推荐 ( ) {
+            public List<GankCategoryItem> get瞎推荐 ( ) {
 
                   return 瞎推荐;
             }
 
-            public void set瞎推荐 ( List<GankCategory.ResultsBean> 瞎推荐 ) {
+            public void set瞎推荐 ( List<GankCategoryItem> 瞎推荐 ) {
 
                   this.瞎推荐 = 瞎推荐;
             }
 
-            public List<GankCategory.ResultsBean> get福利 ( ) {
+            public List<GankCategoryItem> get福利 ( ) {
 
                   return 福利;
             }
 
-            public void set福利 ( List<GankCategory.ResultsBean> 福利 ) {
+            public void set福利 ( List<GankCategoryItem> 福利 ) {
 
                   this.福利 = 福利;
             }
@@ -123,7 +120,7 @@ public class GankDay {
             @Override
             public String toString ( ) {
 
-                  return "ResultsBean{" +
+                  return "GankCategoryItem{" +
                       "Android=" + Android +
                       ", App=" + App +
                       ", iOS=" + iOS +

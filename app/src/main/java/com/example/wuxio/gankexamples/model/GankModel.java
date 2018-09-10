@@ -94,7 +94,6 @@ public class GankModel {
             }
 
             initHistory();
-            cacheHistory();
       }
 
       /**
@@ -130,7 +129,6 @@ public class GankModel {
                               Log.e( TAG, "run : 服务器挂了" );
                         }
                   } else {
-
                         cacheHistory();
                   }
             } );
@@ -192,7 +190,6 @@ public class GankModel {
             sObjectBus.toPool( ( ) -> {
 
                   String url = sPreference.getString( SPLASH_URL );
-                  Log.e( TAG, "setSplashBitmap : splash url " + url );
                   if( url != null ) {
                         Bitmap bitmap = sBitmapLoader.loadFromMemory( url );
                         if( bitmap == null ) {
@@ -215,18 +212,53 @@ public class GankModel {
                   }
             } ).run();
 
+            updateSplashPreference();
+      }
+
+      private static void updateSplashPreference ( ) {
+
             /* 更新本地配置图片,用于下次加载时使用 */
             PoolExecutor.execute( ( ) -> {
 
-                  String url = GankUrl.splashImageUrl();
-                  GankCategory gankCategory = ObjectLoader.loadFromNet( url, GankCategory.class );
-                  url = gankCategory.getResults().get( 0 ).getUrl();
-                  if( !sBitmapLoader.containsOfFile( url ) ) {
-                        sBitmapLoader.download( url );
-                  }
+                  if( sGankHistory != null ) {
 
-                  if( sBitmapLoader.containsOfFile( url ) ) {
-                        sPreference.save( SPLASH_URL, url );
+                        /* 从day bean 中读取最新的bitmap url */
+                        String date = sGankHistory.getResults().get( 0 );
+                        String dayUrl = GankUrl.dayUrl( date );
+                        GankDay gankDay = sDayLoader.load( dayUrl );
+                        if( gankDay == null ) {
+                              return;
+                        }
+                        String url = gankDay.getResults().get福利().get( 0 ).getUrl();
+                        if( url == null ) {
+                              return;
+                        }
+
+                        /* 如果本地没有该图片,缓存图片 */
+                        if( !sBitmapLoader.containsOfFile( url ) ) {
+                              sBitmapLoader.download( url );
+                        }
+
+                        /* 更新配置 */
+                        if( sBitmapLoader.containsOfFile( url ) ) {
+                              sPreference.save( SPLASH_URL, url );
+                        }
+                  } else {
+
+                        String beautyUrl = GankUrl.splashImageUrl();
+                        GankCategory category = ObjectLoader
+                            .loadFromNet( beautyUrl, GankCategory.class );
+                        String url = category.getResults().get( 0 ).getUrl();
+
+                        /* 如果本地没有该图片,缓存图片 */
+                        if( !sBitmapLoader.containsOfFile( url ) ) {
+                              sBitmapLoader.download( url );
+                        }
+
+                        /* 更新配置 */
+                        if( sBitmapLoader.containsOfFile( url ) ) {
+                              sPreference.save( SPLASH_URL, url );
+                        }
                   }
             } );
       }
@@ -235,6 +267,17 @@ public class GankModel {
        * 设置mainActivity banner 图片
        */
       public static void setBannerBitmaps ( MainActivity activity, int width, int height ) {
+
+            PoolExecutor.execute( new Runnable() {
+
+                  @Override
+                  public void run ( ) {
+
+                  }
+            } );
+      }
+
+      public static void main ( String[] args ) {
 
       }
 }

@@ -16,7 +16,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
@@ -31,10 +30,10 @@ dependencies {
     /* memory */
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
-    /* gif */
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.15'
     /* net */
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    /* gif */
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.15'
     /* UI */
     implementation 'com.github.threekilogram:Constraint:1.3.9'
     /* status Bar */
@@ -53,7 +52,8 @@ dependencies {
     implementation 'com.github.threekilogram:AndroidModel:1.9.4'
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
-    /* event */
-    implementation 'com.github.threekilogram:EventBoard:1.0.1'
+    /* view model */
+    implementation 'com.github.threekilogram:ObservableModel:1.0.1'
 
 }
+
