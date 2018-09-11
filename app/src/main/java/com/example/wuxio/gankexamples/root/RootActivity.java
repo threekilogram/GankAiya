@@ -19,8 +19,6 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class RootActivity extends AppCompatActivity {
 
-      private static final String TAG = "RootActivity";
-
       public static void start ( Context context ) {
 
             Intent starter = new Intent( context, RootActivity.class );
@@ -38,8 +36,8 @@ public class RootActivity extends AppCompatActivity {
             PoolExecutor.execute( ( ) -> {
                   /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
                   NetStateChangeManager.registerReceiver( App.INSTANCE );
-                  GankModel.init( App.INSTANCE );
                   ScreenSize.init( App.INSTANCE );
+                  GankModel.init( App.INSTANCE );
             } );
       }
 

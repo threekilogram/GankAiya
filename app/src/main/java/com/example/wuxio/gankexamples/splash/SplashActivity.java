@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
-import com.example.wuxio.gankexamples.model.GankModel;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import tech.threekilogram.messengers.Messengers;
 import tech.threekilogram.messengers.OnMessageReceiveListener;
@@ -22,12 +21,22 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class SplashActivity extends AppCompatActivity {
 
+      /**
+       * logo
+       */
       protected ImageView mLogoImage;
+      /**
+       * countdown
+       */
       protected TextView  mCountText;
+      /**
+       * count down timer
+       */
       private   CountDown mCountDownMachine;
 
-
-
+      /**
+       * start
+       */
       public static void start ( Context context ) {
 
             Intent starter = new Intent( context, SplashActivity.class );
@@ -43,7 +52,7 @@ public class SplashActivity extends AppCompatActivity {
             initView();
             postAction();
 
-            GankModel.setSplashBitmap(
+            SplashModel.setSplashImage(
                 mLogoImage,
                 ScreenSize.getWidth(),
                 ScreenSize.getHeight()

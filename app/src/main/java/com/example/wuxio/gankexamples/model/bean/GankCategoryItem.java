@@ -1,4 +1,4 @@
-package com.example.wuxio.gankexamples.model;
+package com.example.wuxio.gankexamples.model.bean;
 
 import java.util.List;
 

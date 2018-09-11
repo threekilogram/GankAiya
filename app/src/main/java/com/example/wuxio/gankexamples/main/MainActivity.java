@@ -26,7 +26,6 @@ import android.widget.Toast;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
-import com.example.wuxio.gankexamples.model.GankModel;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
@@ -37,7 +36,6 @@ import com.threekilogram.bitmapreader.RoundBitmapFactory;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
 import java.util.List;
-import tech.threekilogram.screen.ScreenSize;
 
 /**
  * @author wuxio
@@ -79,11 +77,6 @@ public class MainActivity extends AppCompatActivity {
             setSystemUI();
             postAction();
 
-            GankModel.setBannerBitmaps(
-                this,
-                ScreenSize.getWidth(),
-                ScreenSize.resToPx( this, R.dimen.main_appbar_height )
-            );
       }
 
       /**

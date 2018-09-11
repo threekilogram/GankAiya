@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.model.GankCategory;
+import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.web.WebActivity;
 import com.threekilogram.constraint.Constraint;
 import com.threekilogram.constraint.ConstraintLayout;

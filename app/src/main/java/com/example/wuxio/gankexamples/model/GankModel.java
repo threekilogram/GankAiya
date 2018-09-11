@@ -3,18 +3,16 @@ package com.example.wuxio.gankexamples.model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.ImageView;
-import com.example.wuxio.gankexamples.main.MainActivity;
+import com.example.wuxio.gankexamples.constant.Constant;
+import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
+import com.example.wuxio.gankexamples.model.bean.GankDay;
+import com.example.wuxio.gankexamples.model.bean.GankHistory;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.List;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
-import tech.threekilogram.depository.cache.json.ObjectLoader;
-import tech.threekilogram.depository.preference.Preference;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.network.state.manager.NetStateValue;
 
@@ -42,24 +40,6 @@ public class GankModel {
       private static JsonLoader<GankHistory> sHistoryLoader;
       private static GankHistory             sGankHistory;
       private static JsonLoader<GankDay>     sDayLoader;
-      /**
-       * 图片链接
-       */
-      private static List<String> sImageUrls = new ArrayList<>();
-
-      /**
-       * splash配置
-       */
-      private static Preference sPreference;
-      /**
-       * {@link #sPreference}配置名字,app一些配置项
-       */
-      private static final String GANK_CONFIG = "GankConfig";
-      /**
-       * 该键对应的值是{@link com.example.wuxio.gankexamples.splash.SplashActivity#mLogoImage}图片地址,
-       * 可以直接从本地加载,从本地加载可以防止网络反应慢,设置不及时,体验不好
-       */
-      private static final String SPLASH_URL  = "SplashUrl";
 
       /**
        * 初始化
@@ -79,18 +59,14 @@ public class GankModel {
                   );
             }
 
-            if( sPreference == null ) {
-                  sPreference = new Preference( context, GANK_CONFIG );
-            }
-
             if( sHistoryLoader == null ) {
                   File dir = context.getExternalFilesDir( "gankHistory" );
-                  sHistoryLoader = new JsonLoader<>( dir, GankHistory.class );
+                  sHistoryLoader = new JsonLoader<>( -1, dir, GankHistory.class );
             }
 
             if( sDayLoader == null ) {
                   File dir = context.getExternalFilesDir( "ganDay" );
-                  sDayLoader = new JsonLoader<>( dir, GankDay.class );
+                  sDayLoader = new JsonLoader<>( 60, dir, GankDay.class );
             }
 
             initHistory();
@@ -110,6 +86,7 @@ public class GankModel {
 
                   String url = GankUrl.historyUrl();
                   /* 先从网络获取最新的数据 */
+                  sHistoryLoader.removeFromFile( url );
                   sGankHistory = sHistoryLoader.loadFromDownload( url );
 
                   /* 如果网络获取失败那么从缓存读取 */
@@ -172,112 +149,134 @@ public class GankModel {
       }
 
       /**
-       * 为{@link com.example.wuxio.gankexamples.splash.SplashActivity}设置图片,并且准备下次需要的图片
+       * 加载指定url对应的图片,并且按照配置读取,读取完毕后通知回调
        *
-       * @param imageView imageView
+       * @param url url
        * @param width bitmap宽度
        * @param height bitmap高度
+       * @param listener 回调监听
        */
-      public static void setSplashBitmap (
-          ImageView imageView,
+      public static void loadBitmap (
+          String url,
           int width,
-          int height ) {
+          int height,
+          OnLoadBitmapFinishedListener listener ) {
 
-            WeakReference<ImageView> ref = new WeakReference<>( imageView );
-
-            /* 从本地加载配置图片,并设置给imageView,如果没有配置什么都不做 */
-            final String keyBitmap = "splash_bitmap";
             sObjectBus.toPool( ( ) -> {
+                  /* 如果已经有该url对应bitmap缓存,那么读取缓存 */
+                  if( sBitmapLoader.containsOf( url ) ) {
 
-                  String url = sPreference.getString( SPLASH_URL );
-                  if( url != null ) {
                         Bitmap bitmap = sBitmapLoader.loadFromMemory( url );
                         if( bitmap == null ) {
                               sBitmapLoader.configBitmap( width, height );
                               bitmap = sBitmapLoader.loadFromFile( url );
                         }
-                        if( bitmap != null ) {
+                        sObjectBus.setResult( url, bitmap );
+                  } else {
 
-                              sObjectBus.setResult( keyBitmap, bitmap );
-                        }
+                        /* 没有该url对应bitmap缓存,从网络读取 */
+                        sBitmapLoader.configBitmap( width, height );
+                        sBitmapLoader.download( url );
                   }
             } ).toMain( ( ) -> {
 
-                  Bitmap result = sObjectBus.getResultOff( keyBitmap );
-                  if( result != null ) {
-                        ImageView view = ref.get();
-                        if( view != null ) {
-                              view.setImageBitmap( result );
-                        }
-                  }
+                  /* 回到主线程回调监听 */
+                  Bitmap result = sObjectBus.getResultOff( url );
+                  listener.onFinished( url, result );
             } ).run();
-
-            updateSplashPreference();
       }
 
-      private static void updateSplashPreference ( ) {
+      /**
+       * {@link #loadBitmap(String, int, int, OnLoadBitmapFinishedListener)}图片加载完成回调
+       */
+      public interface OnLoadBitmapFinishedListener {
 
-            /* 更新本地配置图片,用于下次加载时使用 */
-            PoolExecutor.execute( ( ) -> {
+            /**
+             * 图片加载完成,回调发生在主线程
+             *
+             * @param url 请求的url
+             * @param bitmap 根据url获取的图片,可能为null
+             */
+            void onFinished ( String url, Bitmap bitmap );
+      }
+
+      public static void loadBeautyItem ( int index, OnLoadCategoryItemFinishedListener listener ) {
+
+            String key = Constant.BEAUTY + index;
+
+            sObjectBus.toPool( ( ) -> {
 
                   if( sGankHistory != null ) {
 
                         /* 从day bean 中读取最新的bitmap url */
-                        String date = sGankHistory.getResults().get( 0 );
+                        String date = sGankHistory.getResults().get( index );
                         String dayUrl = GankUrl.dayUrl( date );
                         GankDay gankDay = sDayLoader.load( dayUrl );
+
                         if( gankDay == null ) {
-                              return;
-                        }
-                        String url = gankDay.getResults().get福利().get( 0 ).getUrl();
-                        if( url == null ) {
-                              return;
+                              gankDay = sDayLoader.loadFromNet( dayUrl );
                         }
 
-                        /* 如果本地没有该图片,缓存图片 */
-                        if( !sBitmapLoader.containsOfFile( url ) ) {
-                              sBitmapLoader.download( url );
-                        }
+                        if( gankDay != null ) {
 
-                        /* 更新配置 */
-                        if( sBitmapLoader.containsOfFile( url ) ) {
-                              sPreference.save( SPLASH_URL, url );
-                        }
-                  } else {
-
-                        String beautyUrl = GankUrl.splashImageUrl();
-                        GankCategory category = ObjectLoader
-                            .loadFromNet( beautyUrl, GankCategory.class );
-                        String url = category.getResults().get( 0 ).getUrl();
-
-                        /* 如果本地没有该图片,缓存图片 */
-                        if( !sBitmapLoader.containsOfFile( url ) ) {
-                              sBitmapLoader.download( url );
-                        }
-
-                        /* 更新配置 */
-                        if( sBitmapLoader.containsOfFile( url ) ) {
-                              sPreference.save( SPLASH_URL, url );
+                              GankCategoryItem gankCategoryItem = gankDay.getResults().get福利()
+                                                                         .get( 0 );
+                              sObjectBus.setResult( key, gankCategoryItem );
                         }
                   }
+            } ).toMain( ( ) -> {
+
+                  GankCategoryItem result = sObjectBus.getResultOff( key );
+                  listener.onFinished( Constant.BEAUTY, index, result );
+            } ).run();
+      }
+
+      /**
+       * {@link #loadBeautyItem(int, OnLoadCategoryItemFinishedListener)}加载完成回调
+       */
+      public interface OnLoadCategoryItemFinishedListener {
+
+            /**
+             * 根据分类加载完成所需索引条目{@link GankCategoryItem}的回调
+             *
+             * @param category 分类
+             * @param index 索引
+             * @param item 对应条目
+             */
+            void onFinished ( String category, int index, GankCategoryItem item );
+      }
+
+      /**
+       * 下载url对应的图片
+       *
+       * @param url url
+       * @param listener 回调
+       */
+      public static void downLoadImage ( String url, OnDownLoadFinishedListener listener ) {
+
+            PoolExecutor.execute( ( ) -> {
+
+                  File file = sBitmapLoader.getFile( url );
+                  if( !file.exists() ) {
+                        sBitmapLoader.download( url );
+                        file = sBitmapLoader.getFile( url );
+                  }
+
+                  listener.onFinished( url, file );
             } );
       }
 
       /**
-       * 设置mainActivity banner 图片
+       * 下载完成后的回调
        */
-      public static void setBannerBitmaps ( MainActivity activity, int width, int height ) {
+      public interface OnDownLoadFinishedListener {
 
-            PoolExecutor.execute( new Runnable() {
-
-                  @Override
-                  public void run ( ) {
-
-                  }
-            } );
-      }
-
-      public static void main ( String[] args ) {
-
+            /**
+             * 下载完成后回调
+             *
+             * @param url url
+             * @param file 该url对应文件
+             */
+            void onFinished ( String url, File file );
       }
 }
