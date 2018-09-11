@@ -44,7 +44,7 @@ public class GankUrl {
             );
       }
 
-      public static String splashImageUrl ( ) {
+      public static String beautyUrl ( int count, int page ) {
 
             String encode = null;
             try {
@@ -52,7 +52,7 @@ public class GankUrl {
             } catch(UnsupportedEncodingException e) {
                   e.printStackTrace();
             }
-            return category( encode, 1, 1 );
+            return category( encode, count, page );
       }
 
       public static String historyUrl ( ) {

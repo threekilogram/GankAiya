@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.splash;
 
-import android.util.Log;
 import android.widget.ImageView;
 import com.example.wuxio.gankexamples.model.GankModel;
 import java.lang.ref.WeakReference;
@@ -11,12 +10,22 @@ import tech.threekilogram.depository.preference.PreferenceLoader;
  */
 public class SplashModel {
 
-      private static final String TAG = SplashModel.class.getSimpleName();
-
+      /**
+       * splash preference name
+       */
       private static final String SPLASH_CONFIG           = "splash_config";
+      /**
+       * splash image logo url key
+       */
       private static final String SPLASH_IMAGE_CACHED_URL = "splash_image_cached_url";
 
+      /**
+       * 读取的image url
+       */
       private static String           sSplashImageUrl;
+      /**
+       * splash 配置
+       */
       private static PreferenceLoader sPreferenceLoader;
 
       /**
@@ -34,18 +43,13 @@ public class SplashModel {
                       view.getContext().getApplicationContext(), SPLASH_CONFIG );
             }
 
-            if( sSplashImageUrl == null ) {
-                  sSplashImageUrl = sPreferenceLoader.getString( SPLASH_IMAGE_CACHED_URL );
-            }
+            sSplashImageUrl = sPreferenceLoader.getString( SPLASH_IMAGE_CACHED_URL );
 
             if( sSplashImageUrl == null ) {
                   /* 如果没有配置的url,那么去缓存一下,用于下一次设置splashImage */
-                  Log.e( TAG, "setSplashImage : null splash image url" );
                   updateNextSplashImageUrl();
                   return;
             }
-
-            Log.e( TAG, "setSplashImage : splash url " + sSplashImageUrl );
 
             /* 从数据层根据url读取bitmap */
             WeakReference<ImageView> ref = new WeakReference<>( view );
@@ -77,23 +81,20 @@ public class SplashModel {
 
                   if( item != null ) {
                         String url = item.getUrl();
-                        Log.e( TAG, "updateNextSplashImageUrl : " + url );
                         if( !url.equals( sSplashImageUrl ) ) {
                               /* 有新的图片,下载它 */
+                              sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url );
                               cacheNextSplashImage( url );
                         }
                   }
             } );
       }
 
+      /**
+       * 下载图片
+       */
       private static void cacheNextSplashImage ( String url ) {
 
-            GankModel.downLoadImage( url, ( url1, file ) -> {
-
-                  /* 下载成功,更新配置 */
-                  if( file.exists() ) {
-                        sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url1 );
-                  }
-            } );
+            GankModel.downLoadImage( url, null );
       }
 }

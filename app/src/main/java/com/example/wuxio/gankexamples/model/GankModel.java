@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 import com.example.wuxio.gankexamples.constant.Constant;
+import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.GankDay;
 import com.example.wuxio.gankexamples.model.bean.GankHistory;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.List;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
+import tech.threekilogram.depository.cache.json.ObjectLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.network.state.manager.NetStateValue;
 
@@ -223,6 +225,20 @@ public class GankModel {
                                                                          .get( 0 );
                               sObjectBus.setResult( key, gankCategoryItem );
                         }
+                  } else {
+
+                        /* 加载最新的图片url */
+
+                        String url = GankUrl.beautyUrl( 1, index + 1 );
+                        GankCategory gankCategory = ObjectLoader
+                            .loadFromNet( url, GankCategory.class );
+
+                        if( gankCategory != null ) {
+
+                              GankCategoryItem item = gankCategory.getResults()
+                                                                  .get( 0 );
+                              listener.onFinished( GankUrl.BEAUTY, index, item );
+                        }
                   }
             } ).toMain( ( ) -> {
 
@@ -256,13 +272,12 @@ public class GankModel {
 
             PoolExecutor.execute( ( ) -> {
 
+                  sBitmapLoader.download( url );
                   File file = sBitmapLoader.getFile( url );
-                  if( !file.exists() ) {
-                        sBitmapLoader.download( url );
-                        file = sBitmapLoader.getFile( url );
-                  }
 
-                  listener.onFinished( url, file );
+                  if( listener != null ) {
+                        listener.onFinished( url, file );
+                  }
             } );
       }
 
