@@ -41,9 +41,9 @@ dependencies {
     /* loop page */
     implementation 'com.github.threekilogram:ViewPagerExtra:1.6.5'
     /* layout */
-    implementation 'com.github.threekilogram:ViewSkin:1.2.7'
+    implementation 'com.github.threekilogram:ViewSkin:1.2.8'
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:2.1.4'
+    implementation 'com.github.threekilogram:ObjectBus:2.1.7'
     /* message */
     implementation 'com.github.threekilogram:Messengers:1.2'
     /* loading */

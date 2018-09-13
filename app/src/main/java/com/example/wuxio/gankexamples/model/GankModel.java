@@ -3,18 +3,19 @@ package com.example.wuxio.gankexamples.model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.Toast;
 import com.example.wuxio.gankexamples.constant.Constant;
-import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.GankDay;
 import com.example.wuxio.gankexamples.model.bean.GankHistory;
 import com.threekilogram.objectbus.bus.ObjectBus;
+import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
+import com.threekilogram.objectbus.tools.Blocker;
 import java.io.File;
 import java.util.List;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
-import tech.threekilogram.depository.cache.json.ObjectLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.network.state.manager.NetStateValue;
 
@@ -29,18 +30,24 @@ public class GankModel {
       private static final String TAG = GankModel.class.getSimpleName();
 
       /**
-       * 异步任务
-       */
-      private static ObjectBus               sObjectBus;
-      /**
        * 图片加载
        */
-      private static BitmapLoader            sBitmapLoader;
+      private static BitmapLoader sBitmapLoader;
       /**
-       * 加载发布过的历史日期
+       * 所有发布过文章的历史日期bean
+       */
+      private static GankHistory  sGankHistory;
+      /**
+       * 用于{@link #sGankHistory}为null时,制造屏障
+       */
+      private static Blocker sHistoryLoadFinishedBlocker = new Blocker();
+      /**
+       * 加载历史记录bean
        */
       private static JsonLoader<GankHistory> sHistoryLoader;
-      private static GankHistory             sGankHistory;
+      /**
+       * 加载日期gank bean
+       */
       private static JsonLoader<GankDay>     sDayLoader;
 
       /**
@@ -49,10 +56,6 @@ public class GankModel {
        * @param context context
        */
       public static void init ( Context context ) {
-
-            if( sObjectBus == null ) {
-                  sObjectBus = ObjectBus.newList();
-            }
 
             if( sBitmapLoader == null ) {
                   sBitmapLoader = new BitmapLoader(
@@ -71,52 +74,77 @@ public class GankModel {
                   sDayLoader = new JsonLoader<>( 60, dir, GankDay.class );
             }
 
-            initHistory();
+            initHistory( context );
       }
 
       /**
        * 初始化history
        */
-      private static void initHistory ( ) {
-
-            if( sGankHistory != null ) {
-                  cacheHistory();
-                  return;
-            }
+      private static void initHistory ( Context context ) {
 
             PoolExecutor.execute( ( ) -> {
 
                   String url = GankUrl.historyUrl();
-                  /* 先从网络获取最新的数据 */
-                  sHistoryLoader.removeFromFile( url );
-                  sGankHistory = sHistoryLoader.loadFromDownload( url );
 
-                  /* 如果网络获取失败那么从缓存读取 */
+                  /* 先从网络获取最新的数据 */
+                  sGankHistory = sHistoryLoader.loadFromNet( url );
                   if( sGankHistory == null ) {
+
+                        /* 网络获取失败,从本地缓存读取 */
                         sGankHistory = sHistoryLoader.loadFromFile( url );
+                        if( sGankHistory == null ) {
+                              Log.e( TAG, "initHistory : 没有缓存文件" );
+                              sGankHistory = new GankHistory();
+                        }
+                  } else {
+                        /* 缓存网络最新的历史日期数据 */
+                        cacheHistoryBean( url );
                   }
 
-                  /* 缓存读取失败了,检查网络,如果网络没有问题,那么是服务器挂了 */
-                  if( sGankHistory == null ) {
+                  /* 通知所有等待sGankHistory的线程加载好了 */
+                  sHistoryLoadFinishedBlocker.resumeAll();
+                  /* 缓存day数据 */
+                  cacheHistoryCategoryBean();
+
+                  /* 如果历史记录从所有方式都读取失败了,检查网络,如果网络没有问题,那么是服务器挂了 */
+                  if( sGankHistory.getResults() == null ) {
 
                         int currentNetState = NetStateChangeManager.getInstance()
                                                                    .getCurrentNetState();
 
                         if( currentNetState == NetStateValue.WIFI_MOBILE_DISCONNECT ) {
                               Log.e( TAG, "run : 没有网络" );
+                              MainExecutor.execute( ( ) -> Toast.makeText(
+                                  context,
+                                  "没有网络",
+                                  Toast.LENGTH_SHORT
+                              ).show() );
                         } else {
-                              Log.e( TAG, "run : 服务器挂了" );
+                              Log.e( TAG, "run : 获取数据失败" );
+                              MainExecutor.execute( ( ) -> Toast.makeText(
+                                  context,
+                                  "没有网络",
+                                  Toast.LENGTH_SHORT
+                              ).show() );
                         }
-                  } else {
-                        cacheHistory();
                   }
             } );
       }
 
       /**
-       * 缓存history
+       * 后台缓存最新的history
+       *
+       * @param url url
        */
-      private static void cacheHistory ( ) {
+      private static void cacheHistoryBean ( String url ) {
+
+            PoolExecutor.execute( ( ) -> sHistoryLoader.saveToFile( url, sGankHistory ) );
+      }
+
+      /**
+       * 根据history缓存本地没有的{@link GankDay}记录
+       */
+      private static void cacheHistoryCategoryBean ( ) {
 
             /* 没有历史数据 */
             if( sGankHistory == null ) {
@@ -164,7 +192,8 @@ public class GankModel {
           int height,
           OnLoadBitmapFinishedListener listener ) {
 
-            sObjectBus.toPool( ( ) -> {
+            ObjectBus bus = ObjectBus.newList();
+            bus.toPool( ( ) -> {
                   /* 如果已经有该url对应bitmap缓存,那么读取缓存 */
                   if( sBitmapLoader.containsOf( url ) ) {
 
@@ -173,7 +202,7 @@ public class GankModel {
                               sBitmapLoader.configBitmap( width, height );
                               bitmap = sBitmapLoader.loadFromFile( url );
                         }
-                        sObjectBus.setResult( url, bitmap );
+                        bus.setResult( url, bitmap );
                   } else {
 
                         /* 没有该url对应bitmap缓存,从网络读取 */
@@ -183,7 +212,7 @@ public class GankModel {
             } ).toMain( ( ) -> {
 
                   /* 回到主线程回调监听 */
-                  Bitmap result = sObjectBus.getResultOff( url );
+                  Bitmap result = bus.getResultOff( url );
                   listener.onFinished( url, result );
             } ).run();
       }
@@ -202,19 +231,32 @@ public class GankModel {
             void onFinished ( String url, Bitmap bitmap );
       }
 
+      /**
+       * 加载分类数据beauty,并在主线程回调结果
+       *
+       * @param index which
+       * @param listener 回调
+       */
       public static void loadBeautyItem ( int index, OnLoadCategoryItemFinishedListener listener ) {
 
             String key = Constant.BEAUTY + index;
 
-            sObjectBus.toPool( ( ) -> {
+            ObjectBus bus = ObjectBus.newList();
+            bus.toPool( ( ) -> {
 
-                  if( sGankHistory != null ) {
+                  if( sGankHistory == null ) {
+                        sHistoryLoadFinishedBlocker.pause();
+                  }
+
+                  List<String> results = sGankHistory.getResults();
+                  if( results != null ) {
 
                         /* 从day bean 中读取最新的bitmap url */
-                        String date = sGankHistory.getResults().get( index );
+                        String date = results.get( index );
                         String dayUrl = GankUrl.dayUrl( date );
-                        GankDay gankDay = sDayLoader.load( dayUrl );
 
+                        /* 县从本地缓存读取数据,如果没有从网络读取 */
+                        GankDay gankDay = sDayLoader.load( dayUrl );
                         if( gankDay == null ) {
                               gankDay = sDayLoader.loadFromNet( dayUrl );
                         }
@@ -223,26 +265,12 @@ public class GankModel {
 
                               GankCategoryItem gankCategoryItem = gankDay.getResults().get福利()
                                                                          .get( 0 );
-                              sObjectBus.setResult( key, gankCategoryItem );
-                        }
-                  } else {
-
-                        /* 加载最新的图片url */
-
-                        String url = GankUrl.beautyUrl( 1, index + 1 );
-                        GankCategory gankCategory = ObjectLoader
-                            .loadFromNet( url, GankCategory.class );
-
-                        if( gankCategory != null ) {
-
-                              GankCategoryItem item = gankCategory.getResults()
-                                                                  .get( 0 );
-                              listener.onFinished( GankUrl.BEAUTY, index, item );
+                              bus.setResult( key, gankCategoryItem );
                         }
                   }
             } ).toMain( ( ) -> {
 
-                  GankCategoryItem result = sObjectBus.getResultOff( key );
+                  GankCategoryItem result = bus.getResultOff( key );
                   listener.onFinished( Constant.BEAUTY, index, result );
             } ).run();
       }
@@ -293,5 +321,24 @@ public class GankModel {
              * @param file 该url对应文件
              */
             void onFinished ( String url, File file );
+      }
+
+      /**
+       * 加载一组bitmap对象
+       *
+       * @param startIndex 起始索引
+       * @param count 数据总数
+       */
+      public static void loadListBitmaps ( int startIndex, int count ) {
+
+            ObjectBus bus = ObjectBus.newList();
+            bus.toPool( ( ) -> {
+
+                  if( sGankHistory == null ) {
+
+                  }
+            } ).toMain( ( ) -> {
+
+            } ).run();
       }
 }

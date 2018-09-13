@@ -1,164 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <ImageView
-            android:id="@+id/ImageBackground"
-            android:layout_width="match_parent"
-            android:layout_height="173dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:scaleType="fitXY"
-            android:src="@drawable/homepage_header"/>
+      <ImageView
+          android:id="@+id/ImageBackground"
+          android:layout_width="match_parent"
+          android:layout_height="@dimen/main_appbar_height"
+          android:scaleType="centerCrop"
+          android:src="@drawable/homepage_header"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"/>
 
-    <ImageView
-            android:id="@+id/userAvatar"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="2dp"
-            app:layout_constraintStart_toStartOf="@+id/ImageBackground"
-            app:layout_constraintBottom_toTopOf="@+id/userName"
-            android:scaleType="fitCenter"
-            tools:src="@drawable/avatar"/>
+      <com.example.wuxio.gankexamples.widget.CircleImageView
+          android:id="@+id/userAvatar"
+          android:layout_width="@dimen/user_avatar_size"
+          android:layout_height="@dimen/user_avatar_size"
+          android:layout_marginBottom="2dp"
+          android:layout_marginStart="16dp"
+          android:scaleType="fitCenter"
+          app:layout_constraintBottom_toTopOf="@+id/userName"
+          app:layout_constraintStart_toStartOf="@+id/ImageBackground"
+          tools:src="@drawable/avatar"/>
 
-    <TextView
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="@+id/ImageBackground"
-            android:textSize="20sp"
-            android:textColor="@android:color/white"
-            android:text="@string/app_name"/>
+      <TextView
+          android:id="@+id/userName"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="8dp"
+          android:layout_marginStart="16dp"
+          android:text="@string/app_name"
+          android:textColor="@android:color/white"
+          android:textSize="20sp"
+          app:layout_constraintBottom_toBottomOf="@+id/ImageBackground"
+          app:layout_constraintStart_toStartOf="parent"/>
 
-    <!-- custom menu item  -->
+      <!-- custom menu item  -->
 
-    <LinearLayout
-            android:id="@+id/toAbout"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/ImageBackground"
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground">
+      <LinearLayout
+          android:id="@+id/toAbout"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:layout_marginTop="8dp"
+          android:background="?android:attr/selectableItemBackground"
+          android:gravity="center_vertical"
+          app:layout_constraintTop_toBottomOf="@+id/ImageBackground">
 
-        <ImageView
+            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_nav_scan"/>
 
-        <TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:textSize="15sp"
+                android:text="@string/aboutUs"
                 android:textColor="@color/colorContent"
-                android:text="@string/aboutUs"/>
-    </LinearLayout>
+                android:textSize="15sp"/>
+      </LinearLayout>
 
-    <LinearLayout
-            android:id="@+id/toQuestFeedback"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/toAbout"
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground">
+      <LinearLayout
+          android:id="@+id/toQuestFeedback"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:layout_marginTop="8dp"
+          android:background="?android:attr/selectableItemBackground"
+          android:gravity="center_vertical"
+          app:layout_constraintTop_toBottomOf="@+id/toAbout">
 
-        <ImageView
+            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_nav_feedback"/>
 
-        <TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:textSize="15sp"
+                android:text="@string/questionFeedback"
                 android:textColor="@color/colorContent"
-                android:text="@string/questionFeedback"/>
-    </LinearLayout>
+                android:textSize="15sp"/>
+      </LinearLayout>
 
-    <LinearLayout
-            android:id="@+id/toDonate"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/toQuestFeedback"
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground">
+      <LinearLayout
+          android:id="@+id/toDonate"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:layout_marginTop="8dp"
+          android:background="?android:attr/selectableItemBackground"
+          android:gravity="center_vertical"
+          app:layout_constraintTop_toBottomOf="@+id/toQuestFeedback">
 
-        <ImageView
+            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_nav_about"/>
 
-        <TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:textSize="15sp"
+                android:text="@string/donateDeveloper"
                 android:textColor="@color/colorContent"
-                android:text="@string/donateDeveloper"/>
-    </LinearLayout>
+                android:textSize="15sp"/>
+      </LinearLayout>
 
-    <LinearLayout
-            android:id="@+id/toLoginGithub"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/toDonate"
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground">
+      <LinearLayout
+          android:id="@+id/toLoginGithub"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:layout_marginTop="8dp"
+          android:background="?android:attr/selectableItemBackground"
+          android:gravity="center_vertical"
+          app:layout_constraintTop_toBottomOf="@+id/toDonate">
 
-        <ImageView
+            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_nav_login"/>
 
-        <TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:textSize="15sp"
+                android:text="@string/loginGithub"
                 android:textColor="@color/colorContent"
-                android:text="@string/loginGithub"/>
-    </LinearLayout>
+                android:textSize="15sp"/>
+      </LinearLayout>
 
-    <LinearLayout
-            android:id="@+id/exitApp"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/toLoginGithub"
-            android:gravity="center_vertical"
-            android:background="?android:attr/selectableItemBackground">
+      <LinearLayout
+          android:id="@+id/exitApp"
+          android:layout_width="match_parent"
+          android:layout_height="48dp"
+          android:layout_marginTop="8dp"
+          android:background="?android:attr/selectableItemBackground"
+          android:gravity="center_vertical"
+          app:layout_constraintTop_toBottomOf="@+id/toLoginGithub">
 
-        <ImageView
+            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_nav_exit"/>
 
-        <TextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:textSize="15sp"
+                android:text="@string/exitApp"
                 android:textColor="@color/colorContent"
-                android:text="@string/exitApp"/>
-    </LinearLayout>
+                android:textSize="15sp"/>
+      </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -3,7 +3,6 @@ package com.example.wuxio.gankexamples.main;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -32,10 +31,11 @@ import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.banner.BannerView;
 import com.threekilogram.banner.adapter.BasePagerAdapter;
 import com.threekilogram.bitmapreader.BitmapReader;
-import com.threekilogram.bitmapreader.RoundBitmapFactory;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
+import java.util.ArrayList;
 import java.util.List;
+import tech.threekilogram.screen.ScreenSize;
 
 /**
  * @author wuxio
@@ -73,10 +73,19 @@ public class MainActivity extends AppCompatActivity {
             super.onCreate( savedInstanceState );
             super.setContentView( R.layout.activity_main );
 
-            initView();
             setSystemUI();
+            initView();
             postAction();
 
+            MainModel.loadBannerBitmap( this, mBannerAdapter.mBitmaps );
+      }
+
+      /**
+       * 设置状态栏
+       */
+      private void setSystemUI ( ) {
+
+            SystemUi.transparentStatus( MainActivity.this );
       }
 
       /**
@@ -94,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
             mCollapsingToolbar = findViewById( R.id.collapsingToolbar );
             mBannerLoading = findViewById( R.id.bannerLoading );
 
+            /* 设置导航菜单 */
+            initNavigationView( mNavigationView );
+
             /* banner Loading */
             initBannerLoading();
 
@@ -104,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             /* banner */
             mBannerAdapter = new BannerAdapter();
             mBanner.setAdapter( mBannerAdapter );
+            mBanner.stopLoop();
 
             /* view Pager */
             mMainPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
@@ -113,41 +126,6 @@ public class MainActivity extends AppCompatActivity {
             mMainPagerChangeListener = new MainPagerChangeListener();
             mViewPager.addOnPageChangeListener( mMainPagerChangeListener );
             mTabLayout.setupWithViewPager( mViewPager );
-      }
-
-      /**
-       * 创建好 activity 之后执行一些初始化activity的操作
-       */
-      private void postAction ( ) {
-
-            mDrawer.post( ( ) -> {
-
-                  mBanner.stopLoop();
-
-                  /* 设置导航菜单 */
-                  initNavigationView( mNavigationView );
-
-                  /* 设置默认页 */
-                  mViewPager.setCurrentItem( 0 );
-
-                  mMainPagerChangeListener.onPageSelected( 0 );
-            } );
-      }
-
-      /**
-       * 设置状态栏
-       */
-      private void setSystemUI ( ) {
-
-            SystemUi.transparentStatus( MainActivity.this );
-      }
-
-      /**
-       * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
-       */
-      private void closeDrawer ( ) {
-
-            mDrawer.closeDrawer( Gravity.START );
       }
 
       /**
@@ -164,6 +142,33 @@ public class MainActivity extends AppCompatActivity {
             mBiliLoadingDrawable.setPaintColor( getResources().getColor( R.color.blue ) );
             mBannerLoading.setImageDrawable( mBiliLoadingDrawable );
             mBiliLoadingDrawable.start();
+      }
+
+      /**
+       * 创建好 activity 之后执行一些初始化activity的操作
+       */
+      private void postAction ( ) {
+
+            mDrawer.post( ( ) -> {
+
+                  /* 设置默认页 */
+                  mViewPager.setCurrentItem( 0 );
+                  mMainPagerChangeListener.onPageSelected( 0 );
+            } );
+      }
+
+      void setBannerBitmapFinished ( ) {
+
+            hideBannerLoading();
+            mBannerAdapter.notifyDataSetChanged();
+      }
+
+      /**
+       * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
+       */
+      private void closeDrawer ( ) {
+
+            mDrawer.closeDrawer( Gravity.START );
       }
 
       /**
@@ -189,8 +194,6 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText( this, "无法收到电波", Toast.LENGTH_SHORT ).show();
       }
 
-      //============================ 设置导航栏界面 ============================
-
       /**
        * 设置navigation布局,因为需要获得view宽高,使用post runnable 读取
        *
@@ -206,12 +209,10 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapReader.sampledBitmap(
                 this,
                 R.drawable.avatar,
-                avatarImageView.getWidth(),
-                avatarImageView.getHeight()
+                ScreenSize.resToPx( this, R.dimen.user_avatar_size ),
+                ScreenSize.resToPx( this, R.dimen.user_avatar_size )
             );
-
-            Drawable drawable = RoundBitmapFactory.circleBitmap( this, bitmap );
-            avatarImageView.setImageDrawable( drawable );
+            avatarImageView.setImageBitmap( bitmap );
 
             /* 给导航栏条目设置点击事件 */
 
@@ -335,8 +336,8 @@ public class MainActivity extends AppCompatActivity {
        */
       private class BannerAdapter extends BasePagerAdapter<Bitmap, ImageView> {
 
-            private int          mDataStartIndex;
-            private List<Bitmap> mBitmaps;
+            private int mDataStartIndex;
+            private List<Bitmap> mBitmaps = new ArrayList<>();
 
             /**
              * 每个item点击事件
@@ -352,14 +353,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Bitmap getData ( int i ) {
 
-                  try {
-                        Bitmap bitmap = mBitmaps.get( i );
-                        if( bitmap != null ) {
-                              return bitmap;
-                        }
-                  } catch(Exception e) {
-                        Log.e( "MainActivity", "nothing to worry about" );
-                  }
                   return null;
             }
 

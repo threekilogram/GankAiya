@@ -10,6 +10,7 @@ import tech.threekilogram.depository.preference.PreferenceLoader;
  */
 public class SplashModel {
 
+      private static final String TAG                     = SplashModel.class.getSimpleName();
       /**
        * splash preference name
        */
