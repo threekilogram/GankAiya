@@ -77,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
             initView();
             postAction();
 
-            MainModel.loadBannerBitmap( this, mBannerAdapter.mBitmaps );
+            MainModel.bind( this );
+            MainModel.loadBannerBitmap( this );
       }
 
       /**
@@ -157,10 +158,23 @@ public class MainActivity extends AppCompatActivity {
             } );
       }
 
-      void setBannerBitmapFinished ( ) {
+      void setBannerBitmaps ( List<Bitmap> result ) {
 
             hideBannerLoading();
+
+            List<Bitmap> list = mBannerAdapter.mBitmaps;
+            list.clear();
+            list.addAll( result );
             mBannerAdapter.notifyDataSetChanged();
+            mBannerAdapter.reBindData( 0 );
+            mBannerAdapter.reBindData( 1 );
+
+            mBanner.startLoop();
+      }
+
+      void setBannerNoResource ( ) {
+
+            Toast.makeText( this, "无法收到电波", Toast.LENGTH_SHORT ).show();
       }
 
       /**
@@ -187,11 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
             mBannerLoading.setVisibility( View.INVISIBLE );
             mBiliLoadingDrawable.stop();
-      }
-
-      public void notifyWithoutBannerResource ( ) {
-
-            Toast.makeText( this, "无法收到电波", Toast.LENGTH_SHORT ).show();
       }
 
       /**
@@ -352,6 +361,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public Bitmap getData ( int i ) {
+
+                  try {
+                        return mBitmaps.get( i );
+                  } catch(Exception e) {
+                        e.printStackTrace();
+                  }
 
                   return null;
             }

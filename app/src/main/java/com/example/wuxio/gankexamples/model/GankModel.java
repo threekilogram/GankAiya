@@ -13,7 +13,9 @@ import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import com.threekilogram.objectbus.tools.Blocker;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -134,7 +136,7 @@ public class GankModel {
       /**
        * 后台缓存最新的history
        *
-       * @param url url
+       * @param url mUrl
        */
       private static void cacheHistoryBean ( String url ) {
 
@@ -181,7 +183,7 @@ public class GankModel {
       /**
        * 加载指定url对应的图片,并且按照配置读取,读取完毕后通知回调
        *
-       * @param url url
+       * @param url mUrl
        * @param width bitmap宽度
        * @param height bitmap高度
        * @param listener 回调监听
@@ -245,13 +247,13 @@ public class GankModel {
             bus.toPool( ( ) -> {
 
                   if( sGankHistory == null ) {
-                        sHistoryLoadFinishedBlocker.pause();
+                        sHistoryLoadFinishedBlocker.pause( 30000 );
                   }
 
                   List<String> results = sGankHistory.getResults();
                   if( results != null ) {
 
-                        /* 从day bean 中读取最新的bitmap url */
+                        /* 从day bean 中读取最新的bitmap mUrl */
                         String date = results.get( index );
                         String dayUrl = GankUrl.dayUrl( date );
 
@@ -293,7 +295,7 @@ public class GankModel {
       /**
        * 下载url对应的图片
        *
-       * @param url url
+       * @param url mUrl
        * @param listener 回调
        */
       public static void downLoadImage ( String url, OnDownLoadFinishedListener listener ) {
@@ -317,7 +319,7 @@ public class GankModel {
             /**
              * 下载完成后回调
              *
-             * @param url url
+             * @param url mUrl
              * @param file 该url对应文件
              */
             void onFinished ( String url, File file );
@@ -329,16 +331,100 @@ public class GankModel {
        * @param startIndex 起始索引
        * @param count 数据总数
        */
-      public static void loadListBitmaps ( int startIndex, int count ) {
+      public static void loadListBitmaps (
+          int startIndex, int count,
+          int width, int height,
+          OnLoadListFinishedListener<Bitmap> listener ) {
 
+            String key = GankUrl.BEAUTY + "/" + startIndex + "/" + count;
             ObjectBus bus = ObjectBus.newList();
             bus.toPool( ( ) -> {
 
                   if( sGankHistory == null ) {
-
+                        sHistoryLoadFinishedBlocker.pause( 10000 );
                   }
+                  if( sGankHistory == null ) {
+                        return;
+                  }
+                  List<String> results = sGankHistory.getResults();
+                  if( results == null ) {
+                        return;
+                  }
+
+                  int end = startIndex + count;
+                  List<String> urls = new ArrayList<>();
+
+                  flag:
+                  for( int i = startIndex; i < end; i++ ) {
+                        String date = results.get( i );
+                        String dayUrl = GankUrl.dayUrl( date );
+                        GankDay gankDay = sDayLoader.load( dayUrl );
+                        if( gankDay == null ) {
+                              gankDay = sDayLoader.loadFromNet( dayUrl );
+                        }
+                        List<GankCategoryItem> beautyItems = gankDay.getResults().get福利();
+                        for( GankCategoryItem beautyItem : beautyItems ) {
+                              String url = beautyItem.getUrl();
+                              urls.add( url );
+                              if( urls.size() >= count ) {
+                                    break flag;
+                              }
+                        }
+                  }
+
+                  List<LoadBitmapCallable> callables = new ArrayList<>();
+                  for( String url : urls ) {
+                        LoadBitmapCallable callable = new LoadBitmapCallable( url, width, height );
+                        callables.add( callable );
+                  }
+
+                  List<Bitmap> bitmaps = PoolExecutor.submitAndGet( callables );
+                  bus.setResult( key, bitmaps );
             } ).toMain( ( ) -> {
 
+                  List<Bitmap> result = bus.getResultOff( key );
+                  listener.onLoadFinished( result );
             } ).run();
+      }
+
+      /**
+       * 异步执行加载图片
+       */
+      private static class LoadBitmapCallable implements Callable<Bitmap> {
+
+            private String mUrl;
+            private int    mWidth;
+            private int    mHeight;
+
+            LoadBitmapCallable ( String url, int width, int height ) {
+
+                  mUrl = url;
+                  mWidth = width;
+                  mHeight = height;
+            }
+
+            @Override
+            public Bitmap call ( ) throws Exception {
+
+                  sBitmapLoader.configBitmap( mWidth, mHeight );
+                  Bitmap bitmap = sBitmapLoader.load( mUrl );
+                  if( bitmap == null ) {
+                        bitmap = sBitmapLoader.loadFromNet( mUrl );
+                  }
+                  return bitmap;
+            }
+      }
+
+      /**
+       * 用于加载完成一组数据的回调
+       */
+      public interface OnLoadListFinishedListener<V> {
+
+            /**
+             * 加载一组数据完成的回调
+             *
+             * @param result 结果
+             */
+            void onLoadFinished ( List<V> result );
       }
 }
