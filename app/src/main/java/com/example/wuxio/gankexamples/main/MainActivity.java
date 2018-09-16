@@ -28,14 +28,14 @@ import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
-import com.threekilogram.banner.BannerView;
-import com.threekilogram.banner.adapter.BasePagerAdapter;
 import com.threekilogram.bitmapreader.BitmapReader;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
 import java.util.ArrayList;
 import java.util.List;
 import tech.threekilogram.screen.ScreenSize;
+import tech.threekilogram.viewpager.BannerView;
+import tech.threekilogram.viewpager.adapter.BasePagerAdapter;
 
 /**
  * @author wuxio
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
             /* banner */
             mBannerAdapter = new BannerAdapter();
-            mBanner.setAdapter( mBannerAdapter );
+            mBanner.setPagerAdapter( mBannerAdapter );
             mBanner.stopLoop();
 
             /* view Pager */

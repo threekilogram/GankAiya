@@ -39,7 +39,7 @@ dependencies {
     /* status Bar */
     implementation 'com.github.threekilogram:SystemUI:1.2.2'
     /* loop page */
-    implementation 'com.github.threekilogram:ViewPagerExtra:1.6.5'
+    implementation 'com.github.threekilogram:ViewPagerExtend:1.0.1'
     /* layout */
     implementation 'com.github.threekilogram:ViewSkin:1.2.8'
     /* async */
@@ -54,5 +54,7 @@ dependencies {
     implementation 'com.github.threekilogram:AndroidModel:1.9.6'
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
+    /* gesture imageView */
+    implementation 'com.github.threekilogram:ScaleGestureImageView:1.0.1'
 }
 
