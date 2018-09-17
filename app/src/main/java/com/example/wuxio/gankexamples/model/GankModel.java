@@ -3,22 +3,23 @@ package com.example.wuxio.gankexamples.model;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.Toast;
+import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.GankDay;
 import com.example.wuxio.gankexamples.model.bean.GankHistory;
 import com.threekilogram.objectbus.bus.ObjectBus;
-import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import tech.threekilogram.blocker.Condition;
 import tech.threekilogram.depository.cache.bitmap.BitmapConverter.ScaleMode;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
+import tech.threekilogram.network.state.manager.NetStateUtils;
 import tech.threekilogram.network.state.manager.NetStateValue;
 
 /**
@@ -30,6 +31,11 @@ import tech.threekilogram.network.state.manager.NetStateValue;
 public class GankModel {
 
       private static final String TAG = GankModel.class.getSimpleName();
+
+      /**
+       * 用于制造屏障,当{@link #sGankHistory}为null时,其他线程等待加载完成
+       */
+      private static final String HISTORY_LOADED = "HistoryLoaded";
 
       /**
        * 图片加载
@@ -72,59 +78,66 @@ public class GankModel {
                   sDayLoader = new JsonLoader<>( 60, dir, GankDay.class );
             }
 
-            initHistory( context );
+            initHistory();
       }
 
       /**
        * 初始化history
        */
-      private static void initHistory ( Context context ) {
+      private static void initHistory ( ) {
+
+            /* 创建一个屏障,当sGankHistory为null时等待加载完成 */
+            Condition.create( HISTORY_LOADED );
 
             PoolExecutor.execute( ( ) -> {
 
                   String url = GankUrl.historyUrl();
 
-                  /* 先从网络获取最新的数据 */
-                  sGankHistory = sHistoryLoader.loadFromNet( url );
-                  if( sGankHistory == null ) {
-
-                        /* 网络获取失败,从本地缓存读取 */
-                        sGankHistory = sHistoryLoader.loadFromFile( url );
-                        if( sGankHistory == null ) {
-                              Log.e( TAG, "initHistory : 没有缓存文件" );
-                              sGankHistory = new GankHistory();
-                        }
-                  } else {
-                        /* 缓存网络最新的历史日期数据 */
+                  /* 先从网络加载 */
+                  if( hasNet() ) {
+                        sGankHistory = sHistoryLoader.loadFromNet( url );
+                  }
+                  /* 如果网络加载成功了,缓存一下 */
+                  if( sGankHistory != null ) {
+                        Condition.resume( HISTORY_LOADED );
+                        Log.e( TAG, "initHistory : " + sGankHistory.getResults().size() );
                         cacheHistoryBean( url );
+                        cacheGankDayByHistory();
+                        return;
                   }
 
-                  /* 缓存day数据 */
-                  cacheHistoryCategoryBean();
-
-                  /* 如果历史记录从所有方式都读取失败了,检查网络,如果网络没有问题,那么是服务器挂了 */
-                  if( sGankHistory.getResults() == null ) {
-
-                        int currentNetState = NetStateChangeManager.getInstance()
-                                                                   .getCurrentNetState();
-
-                        if( currentNetState == NetStateValue.WIFI_MOBILE_DISCONNECT ) {
-                              Log.e( TAG, "run : 没有网络" );
-                              MainExecutor.execute( ( ) -> Toast.makeText(
-                                  context,
-                                  "没有网络",
-                                  Toast.LENGTH_SHORT
-                              ).show() );
-                        } else {
-                              Log.e( TAG, "run : 获取数据失败" );
-                              MainExecutor.execute( ( ) -> Toast.makeText(
-                                  context,
-                                  "没有网络",
-                                  Toast.LENGTH_SHORT
-                              ).show() );
-                        }
+                  /* 网络加载失败从本地文件加载一下 */
+                  sGankHistory = sHistoryLoader.loadFromFile( url );
+                  /* 本地加载成功 */
+                  if( sGankHistory != null ) {
+                        Condition.resume( HISTORY_LOADED );
+                        Log.e( TAG, "initHistory : " + sGankHistory.getResults().size() );
+                        cacheGankDayByHistory();
+                        return;
                   }
+
+                  /* 网络和本地都没有加载成功 */
+                  sGankHistory = new GankHistory();
+                  Condition.resume( HISTORY_LOADED );
+                  Log.e( TAG, "initHistory : 没有历史记录" );
             } );
+      }
+
+      /**
+       * 测试是否有网络
+       *
+       * @return true : 有网络
+       */
+      private static boolean hasNet ( ) {
+
+            int netState = NetStateChangeManager.getCurrentNetState();
+            if( netState > NetStateValue.WIFI_MOBILE_DISCONNECT ) {
+                  return true;
+            }
+
+            return netState == NetStateValue.WIFI_MOBILE_DISCONNECT &&
+                ( NetStateUtils.isWifiConnected( App.INSTANCE )
+                    || NetStateUtils.isMobileConnected( App.INSTANCE ) );
       }
 
       /**
@@ -140,18 +153,11 @@ public class GankModel {
       /**
        * 根据history缓存本地没有的{@link GankDay}记录
        */
-      private static void cacheHistoryCategoryBean ( ) {
-
-            /* 没有历史数据 */
-            if( sGankHistory == null ) {
-                  return;
-            }
+      private static void cacheGankDayByHistory ( ) {
 
             /* 就绪,开始缓存 */
             PoolExecutor.execute( ( ) -> {
 
-                  /* 判断是否处于wifi状态 */
-                  NetStateChangeManager netState = NetStateChangeManager.getInstance();
                   /* 所有日期 */
                   List<String> results = sGankHistory.getResults();
                   for( String result : results ) {
@@ -160,8 +166,8 @@ public class GankModel {
                         if( !sDayLoader.containsOfFile( url ) ) {
 
                               /* 缓存时判断网络状态 */
-                              if( netState.getCurrentNetState()
-                                  <= NetStateValue.ONLY_MOBILE_CONNECT ) {
+                              if( NetStateChangeManager.getCurrentNetState()
+                                  <= NetStateValue.WIFI_MOBILE_DISCONNECT ) {
 
                                     /* app 退出时会停止,因为解注册了网络监听 */
                                     return;
@@ -169,8 +175,10 @@ public class GankModel {
 
                               /* wifi状态,缓存数据 */
                               sDayLoader.download( url );
+                              Log.e( TAG, "cacheGankDayByHistory : " + sDayLoader.getFile( url ) );
                         }
                   }
+                  Log.e(TAG, "cacheGankDayByHistory : cache gank day by history done");
             } );
       }
 
@@ -178,9 +186,9 @@ public class GankModel {
        * 加载指定url对应的图片,并且按照配置读取,读取完毕后通知回调
        *
        * @param url mUrl
+       * @param listener 回调监听
        * @param width bitmap宽度
        * @param height bitmap高度
-       * @param listener 回调监听
        */
       public static void loadBitmap (
           String url,

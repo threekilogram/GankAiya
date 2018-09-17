@@ -34,4 +34,8 @@ public class GankHistory {
 
             this.results = results;
       }
+      public boolean isEmpty(){
+
+            return results == null;
+      }
 }

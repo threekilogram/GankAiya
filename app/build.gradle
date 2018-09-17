@@ -51,7 +51,7 @@ dependencies {
     /* loading */
     implementation 'com.github.threekilogram:AnimateDrawable:1.1.8'
     /* net state */
-    implementation 'com.github.threekilogram:NetWorkStateChangeListener:1.2.4'
+    implementation 'com.github.threekilogram:NetStateChangeManager:1.2.5'
     /* cache */
     implementation 'com.github.threekilogram:AndroidModel:1.9.7'
     /* screen size */

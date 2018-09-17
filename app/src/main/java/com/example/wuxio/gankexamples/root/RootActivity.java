@@ -2,8 +2,10 @@ package com.example.wuxio.gankexamples.root;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.GankModel;
 import com.threekilogram.objectbus.executor.PoolExecutor;
@@ -28,6 +30,11 @@ public class RootActivity extends AppCompatActivity {
       protected void onCreate ( Bundle savedInstanceState ) {
 
             super.onCreate( savedInstanceState );
+
+            TextView textView = new TextView( this );
+            textView.setBackgroundColor( Color.RED );
+            setContentView( textView );
+
             /* 立即启动splash */
             //SplashActivity.start( this );
             /* 状态栏透明 */
@@ -54,6 +61,9 @@ public class RootActivity extends AppCompatActivity {
 
             /* 应用退出之后,不再需要监视网络状态 */
             NetStateChangeManager.unRegisterReceiver( this );
+            NetStateChangeManager.clearListener();
+            /* 释放资源 */
+            OnAppExitManager.onExitApp();
             super.finish();
       }
 }
