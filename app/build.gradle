@@ -43,7 +43,9 @@ dependencies {
     /* layout */
     implementation 'com.github.threekilogram:ViewSkin:1.2.8'
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:2.1.7'
+    implementation 'com.github.threekilogram:ObjectBus:2.1.8'
+    /* thread pause */
+    implementation 'com.github.threekilogram:ThreadBlocker:1.0.1'
     /* message */
     implementation 'com.github.threekilogram:Messengers:1.2'
     /* loading */

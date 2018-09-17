@@ -11,7 +11,6 @@ import com.example.wuxio.gankexamples.model.bean.GankHistory;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
-import com.threekilogram.objectbus.tools.Blocker;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,15 +34,11 @@ public class GankModel {
       /**
        * 图片加载
        */
-      private static BitmapLoader sBitmapLoader;
+      private static BitmapLoader            sBitmapLoader;
       /**
        * 所有发布过文章的历史日期bean
        */
-      private static GankHistory  sGankHistory;
-      /**
-       * 用于{@link #sGankHistory}为null时,制造屏障
-       */
-      private static Blocker sHistoryLoadFinishedBlocker = new Blocker();
+      private static GankHistory             sGankHistory;
       /**
        * 加载历史记录bean
        */
@@ -104,8 +99,6 @@ public class GankModel {
                         cacheHistoryBean( url );
                   }
 
-                  /* 通知所有等待sGankHistory的线程加载好了 */
-                  sHistoryLoadFinishedBlocker.resumeAll();
                   /* 缓存day数据 */
                   cacheHistoryCategoryBean();
 
@@ -247,10 +240,6 @@ public class GankModel {
             ObjectBus bus = ObjectBus.newList();
             bus.toPool( ( ) -> {
 
-                  if( sGankHistory == null ) {
-                        sHistoryLoadFinishedBlocker.pause( 30000 );
-                  }
-
                   List<String> results = sGankHistory.getResults();
                   if( results != null ) {
 
@@ -343,9 +332,6 @@ public class GankModel {
             ObjectBus bus = ObjectBus.newList();
             bus.toPool( ( ) -> {
 
-                  if( sGankHistory == null ) {
-                        sHistoryLoadFinishedBlocker.pause( 10000 );
-                  }
                   if( sGankHistory == null ) {
                         return;
                   }
