@@ -16,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import tech.threekilogram.depository.cache.bitmap.BitmapConverter.ScaleMode;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -333,7 +334,9 @@ public class GankModel {
        */
       public static void loadListBitmaps (
           int startIndex, int count,
-          int width, int height,
+          int width,
+          int height,
+          @ScaleMode int scaleMode,
           OnLoadListFinishedListener<Bitmap> listener ) {
 
             String key = GankUrl.BEAUTY + "/" + startIndex + "/" + count;
@@ -374,10 +377,14 @@ public class GankModel {
 
                   List<LoadBitmapCallable> callables = new ArrayList<>();
                   for( String url : urls ) {
-                        LoadBitmapCallable callable = new LoadBitmapCallable( url, width, height );
+                        LoadBitmapCallable callable = new LoadBitmapCallable(
+                            url,
+                            width,
+                            height,
+                            scaleMode
+                        );
                         callables.add( callable );
                   }
-
                   List<Bitmap> bitmaps = PoolExecutor.submitAndGet( callables );
                   bus.setResult( key, bitmaps );
             } ).toMain( ( ) -> {
@@ -395,18 +402,20 @@ public class GankModel {
             private String mUrl;
             private int    mWidth;
             private int    mHeight;
+            private int    mScaleMode;
 
-            LoadBitmapCallable ( String url, int width, int height ) {
+            LoadBitmapCallable ( String url, int width, int height, int scaleMode ) {
 
                   mUrl = url;
                   mWidth = width;
                   mHeight = height;
+                  mScaleMode = scaleMode;
             }
 
             @Override
             public Bitmap call ( ) throws Exception {
 
-                  sBitmapLoader.configBitmap( mWidth, mHeight );
+                  sBitmapLoader.configBitmap( mWidth, mHeight, mScaleMode );
                   Bitmap bitmap = sBitmapLoader.load( mUrl );
                   if( bitmap == null ) {
                         bitmap = sBitmapLoader.loadFromNet( mUrl );

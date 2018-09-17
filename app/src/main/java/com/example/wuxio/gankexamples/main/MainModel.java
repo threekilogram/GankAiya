@@ -1,10 +1,10 @@
 package com.example.wuxio.gankexamples.main;
 
 import android.content.Context;
-import android.util.Log;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.GankModel;
 import java.lang.ref.WeakReference;
+import tech.threekilogram.depository.cache.bitmap.BitmapConverter;
 import tech.threekilogram.screen.ScreenSize;
 
 /**
@@ -28,9 +28,8 @@ public class MainModel {
             GankModel.loadListBitmaps(
                 0, 5,
                 width, height,
+                BitmapConverter.SRC_RGB,
                 result -> {
-
-                      Log.e( TAG, "loadBannerBitmap : " + result );
 
                       MainActivity mainActivity = sHost.get();
 

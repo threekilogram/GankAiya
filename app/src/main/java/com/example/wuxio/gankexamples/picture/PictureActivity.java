@@ -4,189 +4,101 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
-import com.threekilogram.banner.adapter.BaseTypePagerAdapter;
+import tech.threekilogram.viewpager.adapter.BasePagerAdapter;
 
 /**
  * @author wuxio
  */
 public class PictureActivity extends AppCompatActivity {
 
+      protected ViewPager           mViewPager;
+      private   PicturePagerAdapter mPicturePagerAdapter;
 
-    protected ViewPager           mViewPager;
-    private   PicturePagerAdapter mPicturePagerAdapter;
+      public static void start ( Context context ) {
 
+            Intent starter = new Intent( context, PictureActivity.class );
+            context.startActivity( starter );
+      }
 
-    public static void start(Context context, int dataIndex, int position) {
+      @Override
+      protected void onCreate ( Bundle savedInstanceState ) {
 
-        Intent starter = new Intent(context, PictureActivity.class);
-        context.startActivity(starter);
+            super.onCreate( savedInstanceState );
+            super.setContentView( R.layout.activity_picture );
 
-        PictureManager.getInstance().set(dataIndex, position);
-    }
+            initView();
+      }
 
+      private void initView ( ) {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+            mViewPager = findViewById( R.id.viewPager );
+      }
 
-        super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_picture);
-        PictureManager.getInstance().register(this);
+      public void notifyBitmapsChanged ( int position ) {
 
-        initView();
-        postAction();
-    }
+            if( mPicturePagerAdapter == null ) {
 
-
-    private void initView() {
-
-        mViewPager = findViewById(R.id.viewPager);
-    }
-
-
-    private void postAction() {
-
-        mViewPager.post(() -> {
-
-            PictureManager instance = PictureManager.getInstance();
-            instance.onStart();
-        });
-    }
-
-
-    public int getBitmapWidth() {
-
-        return mViewPager.getWidth();
-    }
-
-
-    public int getBitmapHeight() {
-
-        return mViewPager.getHeight();
-    }
-
-
-    public void nofityBitmapsChanged(int position) {
-
-        if (mPicturePagerAdapter == null) {
-
-            mPicturePagerAdapter = new PicturePagerAdapter();
-            mViewPager.setAdapter(mPicturePagerAdapter);
-            mViewPager.addOnPageChangeListener(new PicturePagerOnPageChangeListener());
-        }
-
-        mPicturePagerAdapter.notifyDataSetChanged();
-        if (position > 0) {
-            mViewPager.setCurrentItem(position);
-        }
-    }
-
-
-    @Override
-    protected void onDestroy() {
-
-        PictureManager.getInstance().unRegister();
-        PictureManager.getInstance().clear();
-        super.onDestroy();
-    }
-
-    //============================ ViewPagerAdapter ============================
-
-    private class PicturePagerAdapter extends BaseTypePagerAdapter {
-
-        private final int NORMAL = 12;
-        private final int MORE   = 13;
-
-
-        @Override
-        public int getCount() {
-
-            return PictureManager.getInstance().getItemCount() + 1;
-        }
-
-
-        @Override
-        public int getViewType(int position) {
-
-            if (position == getCount() - 1) {
-
-                return MORE;
-            } else {
-                return NORMAL;
-            }
-        }
-
-
-        @Override
-        public Object getData(int position, int type) {
-
-            if (type == NORMAL) {
-                return PictureManager.getInstance().loadBitmap(position);
-            }
-            return null;
-        }
-
-
-        @Override
-        public View getView(ViewGroup container, int position, int type) {
-
-            if (type == NORMAL) {
-                ImageView imageView = new ImageView(PictureActivity.this);
-                imageView.setScaleType(ImageView.ScaleType.CENTER);
-                return imageView;
+                  mPicturePagerAdapter = new PicturePagerAdapter();
+                  mViewPager.setAdapter( mPicturePagerAdapter );
+                  mViewPager.addOnPageChangeListener( new PicturePagerOnPageChangeListener() );
             }
 
-            if (type == MORE) {
-                return LayoutInflater.from(PictureActivity.this)
-                        .inflate(
-                                R.layout.activity_picture_process,
-                                mViewPager,
-                                false
-                        );
+            mPicturePagerAdapter.notifyDataSetChanged();
+            if( position > 0 ) {
+                  mViewPager.setCurrentItem( position );
+            }
+      }
+
+      @Override
+      protected void onDestroy ( ) {
+
+            super.onDestroy();
+      }
+
+      //============================ ViewPagerAdapter ============================
+
+      private class PicturePagerAdapter extends BasePagerAdapter<Bitmap, ImageView> {
+
+            @Override
+            public int getCount ( ) {
+
+                  return 5;
             }
 
-            return null;
-        }
+            @Override
+            protected Bitmap getData ( int i ) {
 
-
-        @Override
-        public void bindData(int position, Object data, View view, int type) {
-
-            if (data instanceof Bitmap) {
-                ((ImageView) view).setImageBitmap((Bitmap) data);
+                  return null;
             }
-        }
 
+            @Override
+            protected ImageView getView ( ViewGroup viewGroup, int i ) {
 
-        @Override
-        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-
-            super.destroyItem(container, position, object);
-
-            PictureManager.getInstance().releaseBitmap(position);
-        }
-    }
-
-    //============================ pager scroll Listener ============================
-
-    private class PicturePagerOnPageChangeListener extends ViewPager.SimpleOnPageChangeListener {
-
-        private static final String TAG = "PicturePagerOnPageChang";
-
-
-        @Override
-        public void onPageSelected(int position) {
-
-            if (position == mPicturePagerAdapter.getCount() - 1) {
-                PictureManager.getInstance().loadMore();
+                  ImageView imageView = new ImageView( PictureActivity.this );
+                  imageView.setScaleType( ScaleType.CENTER_INSIDE );
+                  return imageView;
             }
-        }
-    }
+
+            @Override
+            protected void bindData ( int i, Bitmap bitmap, ImageView view ) {
+
+                  view.setImageResource( R.drawable.a42 );
+            }
+      }
+
+      //============================ pager scroll Listener ============================
+
+      private class PicturePagerOnPageChangeListener extends ViewPager.SimpleOnPageChangeListener {
+
+            @Override
+            public void onPageSelected ( int position ) {
+
+            }
+      }
 }

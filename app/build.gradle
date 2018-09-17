@@ -47,14 +47,13 @@ dependencies {
     /* message */
     implementation 'com.github.threekilogram:Messengers:1.2'
     /* loading */
-    implementation 'com.github.threekilogram:animateDrawable:1.1.8'
+    implementation 'com.github.threekilogram:AnimateDrawable:1.1.8'
     /* net state */
     implementation 'com.github.threekilogram:NetWorkStateChangeListener:1.2.4'
     /* cache */
-    implementation 'com.github.threekilogram:AndroidModel:1.9.6'
+    implementation 'com.github.threekilogram:AndroidModel:1.9.7'
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
     /* gesture imageView */
     implementation 'com.github.threekilogram:ScaleGestureImageView:1.0.1'
 }
-

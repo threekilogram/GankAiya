@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
             /* banner */
             mBannerAdapter = new BannerAdapter();
             mBanner.setPagerAdapter( mBannerAdapter );
+            mBanner.addScrollDuration( 500 );
             mBanner.stopLoop();
 
             /* view Pager */
@@ -408,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
                   public void onClick ( View v ) {
 
                         int position = (Integer) v.getTag( R.id.main_banner_item_tag );
-                        PictureActivity.start( MainActivity.this, mDataStartIndex, position );
+                        PictureActivity.start( MainActivity.this );
                   }
             }
       }
@@ -464,9 +465,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageSelected ( int position ) {
 
-                  ShowFragment fragment = mMainPagerAdapter.getCurrentFragment( position );
-                  String category = Constant.All_CATEGORY[ position ];
-                  fragment.loadData( category );
+//                  ShowFragment fragment = mMainPagerAdapter.getCurrentFragment( position );
+//                  String category = Constant.All_CATEGORY[ position ];
+//                  fragment.loadData( category );
             }
       }
 }
