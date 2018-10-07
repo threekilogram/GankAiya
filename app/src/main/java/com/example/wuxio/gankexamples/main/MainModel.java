@@ -14,11 +14,11 @@ public class MainModel {
 
       private static final String TAG = MainModel.class.getSimpleName();
 
-      private static WeakReference<MainActivity> sHost;
+      private static WeakReference<MainActivity> sRef;
 
       public static void bind ( MainActivity activity ) {
 
-            sHost = new WeakReference<>( activity );
+            sRef = new WeakReference<>( activity );
       }
 
       public static void loadBannerBitmap ( Context context ) {
@@ -28,7 +28,8 @@ public class MainModel {
 
             GankModel.loadListBitmaps(
                 0, 5,
-                width, height,
+                width,
+                height,
                 BitmapConverter.SRC_RGB,
                 result -> {
 

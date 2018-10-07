@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
-import tech.threekilogram.depository.cache.bitmap.BitmapConverter.ScaleMode;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.JsonLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -376,20 +375,30 @@ public class GankModel {
        * @param count 数据总数
        */
       public static void loadListBitmaps (
-          int startIndex, int count,
+          int startIndex,
+          int count,
           int width,
           int height,
-          @ScaleMode int scaleMode,
           OnLoadListFinishedListener<Bitmap> listener ) {
 
             String key = GankUrl.BEAUTY + "/" + startIndex + "/" + count;
+
             ObjectBus bus = ObjectBus.newList();
             bus.toPool( ( ) -> {
 
+                  GankHistory history = null;
                   if( sGankHistory == null ) {
+                        history = getHistory();
                         return;
                   }
+
+                  if( history != null ) {
+
+                        history.getResults();
+                  }
+
                   List<String> results = sGankHistory.getResults();
+
                   if( results == null ) {
                         return;
                   }
