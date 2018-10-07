@@ -2,8 +2,6 @@ package com.example.wuxio.gankexamples.splash;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.ImageView;
-import com.example.wuxio.gankexamples.model.GankModel;
 import java.lang.ref.WeakReference;
 import tech.threekilogram.depository.preference.PreferenceLoader;
 
@@ -12,7 +10,8 @@ import tech.threekilogram.depository.preference.PreferenceLoader;
  */
 public class SplashModel {
 
-      private static final String TAG                     = SplashModel.class.getSimpleName();
+      private static final String TAG = SplashModel.class.getSimpleName();
+
       /**
        * splash preference name
        */
@@ -67,28 +66,6 @@ public class SplashModel {
                   return;
             }
 
-            GankModel.loadBitmap(
-                sSplashImageUrl,
-                bitmapWidth,
-                bitmapHeight,
-                ( url, bitmap ) -> {
-
-                      Log.e( TAG, "setSplashImage : " + url + " " + bitmap );
-
-                      if( bitmap != null ) {
-                            SplashActivity splashActivity = sRef.get();
-                            if( splashActivity != null ) {
-
-                                  ImageView imageView = splashActivity.mLogoImage;
-                                  if( imageView == null ) {
-                                        return;
-                                  }
-                                  imageView.setImageBitmap( bitmap );
-                            }
-                      }
-                }
-            );
-
             /* 更新一下splashUrl配置,用于下次操作时读取 */
             updateSplashImageUrlForNextTime();
       }
@@ -98,14 +75,5 @@ public class SplashModel {
        */
       private static void updateSplashImageUrlForNextTime ( ) {
 
-            GankModel.loadBeautyItem( 0, ( category, index, item ) -> {
-
-                  if( item != null ) {
-                        String url = item.getUrl();
-                        Log.e( TAG, "updateSplashImageUrlForNextTime : next splash url " + url );
-                        sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url );
-                        GankModel.downLoadImage( url, null );
-                  }
-            } );
       }
 }

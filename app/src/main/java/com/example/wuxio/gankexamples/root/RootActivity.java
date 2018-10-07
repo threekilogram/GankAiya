@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import com.example.wuxio.gankexamples.App;
-import com.example.wuxio.gankexamples.model.GankModel;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.threekilogram.systemui.SystemUi;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -34,8 +33,6 @@ public class RootActivity extends AppCompatActivity {
             /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
             NetStateChangeManager.registerReceiver( App.INSTANCE );
             ScreenSize.init( App.INSTANCE );
-            GankModel.init( App.INSTANCE );
-            GankModel.initHistory();
 
             /* 立即启动splash */
             SplashActivity.start( this );
