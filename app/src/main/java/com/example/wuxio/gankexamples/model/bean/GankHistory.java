@@ -38,4 +38,13 @@ public class GankHistory {
 
             return results == null;
       }
+
+      @Override
+      public String toString ( ) {
+
+            return "GankHistory{" +
+                "error=" + error +
+                ", results=" + results +
+                '}';
+      }
 }

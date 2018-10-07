@@ -2,13 +2,11 @@ package com.example.wuxio.gankexamples.root;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.GankModel;
-import com.threekilogram.objectbus.executor.PoolExecutor;
+import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.threekilogram.systemui.SystemUi;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.screen.ScreenSize;
@@ -31,22 +29,16 @@ public class RootActivity extends AppCompatActivity {
 
             super.onCreate( savedInstanceState );
 
-            TextView textView = new TextView( this );
-            textView.setBackgroundColor( Color.RED );
-            setContentView( textView );
-
-            /* 立即启动splash */
-            //SplashActivity.start( this );
             /* 状态栏透明 */
             SystemUi.transparentStatus( RootActivity.this );
             /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
             NetStateChangeManager.registerReceiver( App.INSTANCE );
+            ScreenSize.init( App.INSTANCE );
+            GankModel.init( App.INSTANCE );
+            GankModel.initHistory();
 
-            PoolExecutor.execute( ( ) -> {
-
-                  ScreenSize.init( App.INSTANCE );
-                  GankModel.init( App.INSTANCE );
-            } );
+            /* 立即启动splash */
+            SplashActivity.start( this );
       }
 
       @Override

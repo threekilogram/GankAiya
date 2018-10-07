@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
-import tech.threekilogram.viewpager.adapter.BasePagerAdapter;
+import tech.threekilogram.pager.adapter.BasePagerAdapter;
 
 /**
  * @author wuxio

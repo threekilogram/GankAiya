@@ -13,6 +13,7 @@ import tech.threekilogram.screen.ScreenSize;
 public class MainModel {
 
       private static final String TAG = MainModel.class.getSimpleName();
+
       private static WeakReference<MainActivity> sHost;
 
       public static void bind ( MainActivity activity ) {
@@ -31,13 +32,6 @@ public class MainModel {
                 BitmapConverter.SRC_RGB,
                 result -> {
 
-                      MainActivity mainActivity = sHost.get();
-
-                      if( result == null || result.size() == 0 ) {
-                            mainActivity.setBannerNoResource();
-                      } else {
-                            mainActivity.setBannerBitmaps( result );
-                      }
                 }
             );
       }

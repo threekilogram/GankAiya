@@ -52,8 +52,9 @@ public class SplashActivity extends AppCompatActivity {
             initView();
             postAction();
 
+            SplashModel.bind( this );
             SplashModel.setSplashImage(
-                mLogoImage,
+                this,
                 ScreenSize.getWidth(),
                 ScreenSize.getHeight()
             );
@@ -110,7 +111,7 @@ public class SplashActivity extends AppCompatActivity {
        */
       public void toMainActivity ( View view ) {
 
-            MainActivity.start( this );
+            MainActivity.start( SplashActivity.this );
             finish();
             overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
       }

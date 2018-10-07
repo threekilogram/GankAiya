@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -14,28 +15,31 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
-import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
-import java.util.ArrayList;
-import java.util.List;
+import tech.threekilogram.pager.banner.RecyclerPagerBanner;
+import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
+import tech.threekilogram.pager.indicator.DotView;
+import tech.threekilogram.pager.scroll.recycler.OnRecyclerPagerScrollListener;
+import tech.threekilogram.pager.scroll.recycler.RecyclerPagerScroll;
 import tech.threekilogram.screen.ScreenSize;
-import tech.threekilogram.viewpager.BannerView;
-import tech.threekilogram.viewpager.adapter.BasePagerAdapter;
 
 /**
  * @author wuxio
@@ -46,17 +50,18 @@ public class MainActivity extends AppCompatActivity {
 
       protected DrawerLayout            mDrawer;
       protected NavigationView          mNavigationView;
-      protected BannerView              mBanner;
+      protected RecyclerPagerBanner     mBanner;
+      private   RecyclerBannerAdapter   mAdapter;
       protected AppBarLayout            mAppBar;
       protected CoordinatorLayout       mCoordinator;
       protected ViewPager               mViewPager;
       protected TabLayout               mTabLayout;
       protected CollapsingToolbarLayout mCollapsingToolbar;
       protected ImageView               mBannerLoading;
-      private   BannerAdapter           mBannerAdapter;
       private   MainPagerAdapter        mMainPagerAdapter;
       private   MainPagerChangeListener mMainPagerChangeListener;
       private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
+      private   DotView                 mDotView;
 
       /**
        * 静态启动方法
@@ -110,15 +115,20 @@ public class MainActivity extends AppCompatActivity {
             /* banner Loading */
             initBannerLoading();
 
+            /* banner indicator */
+            mDotView = findViewById( R.id.dotView );
+            mDotView.setDotCount( 5 );
+            mDotView.setSelected( 0 );
+
+            /* banner */
+            mAdapter = new RecyclerBannerAdapter();
+            mBanner.setBannerAdapter( mAdapter );
+            RecyclerPagerScroll scroll = new RecyclerPagerScroll( mBanner.getRecyclerPager() );
+            scroll.setOnRecyclerPagerScrollListener( new BannerScrollListener() );
+
             /* 防止tabLayout 进入statusBar */
             int height = SystemUi.getStatusBarHeight( MainActivity.this );
             mCollapsingToolbar.setMinimumHeight( height );
-
-            /* banner */
-            mBannerAdapter = new BannerAdapter();
-            mBanner.setPagerAdapter( mBannerAdapter );
-            mBanner.addScrollDuration( 500 );
-            mBanner.stopLoop();
 
             /* view Pager */
             mMainPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
@@ -139,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 getResources().getDimensionPixelSize( R.dimen.banner_loading_size ) );
             mBiliLoadingDrawable.setStrokeWidth( 5 );
             mBiliLoadingDrawable.setDuration( 2400 );
-            mBiliLoadingDrawable.setRepeat( 300000 );
+            mBiliLoadingDrawable.setRepeat( Integer.MAX_VALUE / 2400 );
             mBiliLoadingDrawable.setRadius( 7 );
             mBiliLoadingDrawable.setPaintColor( getResources().getColor( R.color.blue ) );
             mBannerLoading.setImageDrawable( mBiliLoadingDrawable );
@@ -157,25 +167,6 @@ public class MainActivity extends AppCompatActivity {
                   mViewPager.setCurrentItem( 0 );
                   mMainPagerChangeListener.onPageSelected( 0 );
             } );
-      }
-
-      void setBannerBitmaps ( List<Bitmap> result ) {
-
-            hideBannerLoading();
-
-            List<Bitmap> list = mBannerAdapter.mBitmaps;
-            list.clear();
-            list.addAll( result );
-            mBannerAdapter.notifyDataSetChanged();
-            mBannerAdapter.reBindData( 0 );
-            mBannerAdapter.reBindData( 1 );
-
-            mBanner.startLoop();
-      }
-
-      void setBannerNoResource ( ) {
-
-            Toast.makeText( this, "无法收到电波", Toast.LENGTH_SHORT ).show();
       }
 
       /**
@@ -239,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
       /**
        * 导航栏item点击事件
        */
-      private class NavigationItemClickListener implements View.OnClickListener {
+      private class NavigationItemClickListener implements OnClickListener {
 
             @Override
             public void onClick ( View v ) {
@@ -314,8 +305,6 @@ public class MainActivity extends AppCompatActivity {
             }
       }
 
-      //============================ 返回按键 ============================
-
       /**
        * 添加点击两次退出activity
        */
@@ -334,88 +323,53 @@ public class MainActivity extends AppCompatActivity {
             super.onDestroy();
       }
 
-      //============================ banner adapter ============================
-
-      public BannerView getBanner ( ) {
-
-            return mBanner;
-      }
-
       /**
-       * 轮播图适配器
+       * banner adapter
        */
-      private class BannerAdapter extends BasePagerAdapter<Bitmap, ImageView> {
-
-            private int mDataStartIndex;
-            private List<Bitmap> mBitmaps = new ArrayList<>();
-
-            /**
-             * 每个item点击事件
-             */
-            private BannerItemClickListener mBannerItemClickListener;
+      private class RecyclerBannerAdapter extends BannerAdapter<BannerHolder> {
 
             @Override
-            public int getCount ( ) {
+            public int getActualCount ( ) {
 
                   return 5;
             }
 
             @Override
-            public Bitmap getData ( int i ) {
+            public int getActualPosition ( int position ) {
 
-                  try {
-                        return mBitmaps.get( i );
-                  } catch(Exception e) {
-                        e.printStackTrace();
-                  }
+                  return super.getActualPosition( position );
+            }
 
-                  return null;
+            @NonNull
+            @Override
+            public BannerHolder onCreateViewHolder ( @NonNull ViewGroup parent, int viewType ) {
+
+                  View view = LayoutInflater.from( parent.getContext() )
+                                            .inflate( R.layout.main_banner_item, parent, false );
+                  return new BannerHolder( view );
             }
 
             @Override
-            public ImageView getView ( ViewGroup container, int position ) {
+            public void onBindViewHolder ( @NonNull BannerHolder holder, int position ) {
 
-                  ImageView imageView = new ImageView( MainActivity.this );
-                  imageView.setScaleType( ImageView.ScaleType.CENTER_CROP );
-                  return imageView;
-            }
-
-            @Override
-            public void bindData ( int i, Bitmap o, ImageView imageView ) {
-
-                  if( o != null ) {
-                        imageView.setImageBitmap( o );
-                        if( mBannerItemClickListener == null ) {
-                              mBannerItemClickListener = new BannerItemClickListener();
-                        }
-                        imageView.setTag( R.id.main_banner_item_tag, i );
-                        imageView.setOnClickListener( mBannerItemClickListener );
-                  }
-            }
-
-            public void reBindData ( int position ) {
-
-                  ImageView view = getItemView( position );
-                  Bitmap bitmap = getData( position );
-                  view.setImageBitmap( bitmap );
-            }
-
-            /**
-             * banner item 点击事件,跳转到{@link PictureActivity}
-             */
-            private class BannerItemClickListener implements View.OnClickListener {
-
-                  @Override
-                  public void onClick ( View v ) {
-
-                        int position = (Integer) v.getTag( R.id.main_banner_item_tag );
-                        PictureActivity.start( MainActivity.this );
-                  }
+                  int actualPosition = getActualPosition( position );
             }
       }
 
-      //============================ pager adapter ============================
+      /**
+       * banner item view holder
+       */
+      private class BannerHolder extends ViewHolder {
 
+            public BannerHolder ( View itemView ) {
+
+                  super( itemView );
+            }
+      }
+
+      /**
+       * main content fragment adapter
+       */
       private class MainPagerAdapter extends FragmentStatePagerAdapter {
 
             private ShowFragment[] mShowFragments = new ShowFragment[ Constant.All_CATEGORY.length ];
@@ -458,9 +412,7 @@ public class MainActivity extends AppCompatActivity {
             }
       }
 
-      //============================ pager scroll ============================
-
-      private class MainPagerChangeListener extends ViewPager.SimpleOnPageChangeListener {
+      private class MainPagerChangeListener extends SimpleOnPageChangeListener {
 
             @Override
             public void onPageSelected ( int position ) {
@@ -468,6 +420,21 @@ public class MainActivity extends AppCompatActivity {
 //                  ShowFragment fragment = mMainPagerAdapter.getCurrentFragment( position );
 //                  String category = Constant.All_CATEGORY[ position ];
 //                  fragment.loadData( category );
+            }
+      }
+
+      private class BannerScrollListener implements OnRecyclerPagerScrollListener {
+
+            @Override
+            public void onScroll (
+                int state, int currentPosition, int nextPosition, int offsetX, int offsetY ) {
+
+                  mDotView.setSelected( mAdapter.getActualPosition( currentPosition ) );
+            }
+
+            @Override
+            public void onPageSelected ( int prevSelected, int newSelected ) {
+
             }
       }
 }
