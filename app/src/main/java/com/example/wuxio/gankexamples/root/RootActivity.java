@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.threekilogram.systemui.SystemUi;
@@ -25,6 +26,10 @@ public class RootActivity extends AppCompatActivity {
             context.startActivity( starter );
       }
 
+      /**
+       *
+       * @param savedInstanceState
+       */
       @Override
       protected void onCreate ( Bundle savedInstanceState ) {
 
@@ -34,9 +39,14 @@ public class RootActivity extends AppCompatActivity {
             SystemUi.transparentStatus( RootActivity.this );
             /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
             NetStateChangeManager.registerReceiver( App.INSTANCE );
+            /* 计算屏幕尺寸 */
             ScreenSize.init( App.INSTANCE );
+            /* 创建app文件夹 */
             FileManager.init();
+            /* 初始化变量 */
             BeanLoader.init();
+            /* 初始化缓存的福利数据 */
+            BeautyModel.init();
 
             /* 立即启动splash */
             SplashActivity.start( this );

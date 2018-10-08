@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
             initView();
             postAction();
 
-            PictureModel.bind( this );
-            PictureModel.loadBannerBitmap( this );
+            BeautyModel.bind( this );
+            BeautyModel.loadBannerBitmap();
       }
 
       /**

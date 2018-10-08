@@ -43,7 +43,7 @@ dependencies {
     /* layout */
     implementation 'com.github.threekilogram:ViewSkin:1.2.8'
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:2.1.8'
+    implementation 'com.github.threekilogram:ObjectBus:2.1.9'
     /* message */
     implementation 'com.github.threekilogram:Messengers:1.2'
     /* loading */
@@ -55,5 +55,5 @@ dependencies {
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
     /* json parser */
-    implementation 'com.github.threekilogram:JsonParser:3.0'
+    implementation 'com.github.threekilogram:JsonParser:3.0.1'
 }
