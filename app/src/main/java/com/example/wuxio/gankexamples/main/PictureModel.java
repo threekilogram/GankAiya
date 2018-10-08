@@ -8,9 +8,9 @@ import tech.threekilogram.screen.ScreenSize;
 /**
  * @author Liujin 2018-09-12:14:54
  */
-public class MainModel {
+public class PictureModel {
 
-      private static final String TAG = MainModel.class.getSimpleName();
+      private static final String TAG = PictureModel.class.getSimpleName();
 
       private static WeakReference<MainActivity> sRef;
 

@@ -108,9 +108,9 @@ public class SplashActivity extends AppCompatActivity {
        */
       public void toMainActivity ( View view ) {
 
-//            MainActivity.start( SplashActivity.this );
-//            finish();
-//            overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
+            MainActivity.start( SplashActivity.this );
+            finish();
+            overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
       }
 
       // ========================= 倒计时 =========================
