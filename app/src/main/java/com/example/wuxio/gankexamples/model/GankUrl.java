@@ -55,9 +55,14 @@ public class GankUrl {
             return category( encode, count, page );
       }
 
-      public static String historyUrl ( ) {
+      public static String beautyAllUrl ( ) {
 
-            return "https://gank.io/api/day/history";
+            return beautyUrl( Integer.MAX_VALUE, 1 );
+      }
+
+      public static String beautyLatestUrl ( ) {
+
+            return beautyUrl( 1, 1 );
       }
 
       public static String dayUrl ( String date ) {

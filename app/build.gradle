@@ -51,7 +51,9 @@ dependencies {
     /* net state */
     implementation 'com.github.threekilogram:NetStateChangeManager:1.2.5'
     /* cache */
-    implementation 'com.github.threekilogram:AndroidModel:1.9.7'
+    implementation 'com.github.threekilogram:AndroidModel:2.0.0'
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
+    /* json parser */
+    implementation 'com.github.threekilogram:JsonParser:3.0'
 }

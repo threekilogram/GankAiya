@@ -12,7 +12,6 @@ import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import tech.threekilogram.messengers.Messengers;
 import tech.threekilogram.messengers.OnMessageReceiveListener;
-import tech.threekilogram.screen.ScreenSize;
 
 /**
  * show splash ,than goto mainActivity
@@ -20,6 +19,8 @@ import tech.threekilogram.screen.ScreenSize;
  * @author wuxio
  */
 public class SplashActivity extends AppCompatActivity {
+
+      private static final String TAG = SplashActivity.class.getSimpleName();
 
       /**
        * logo
@@ -53,11 +54,7 @@ public class SplashActivity extends AppCompatActivity {
             postAction();
 
             SplashModel.bind( this );
-            SplashModel.setSplashImage(
-                this,
-                ScreenSize.getWidth(),
-                ScreenSize.getHeight()
-            );
+            SplashModel.setSplashImage();
       }
 
       private void initView ( ) {
@@ -111,9 +108,9 @@ public class SplashActivity extends AppCompatActivity {
        */
       public void toMainActivity ( View view ) {
 
-            MainActivity.start( SplashActivity.this );
-            finish();
-            overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
+//            MainActivity.start( SplashActivity.this );
+//            finish();
+//            overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
       }
 
       // ========================= 倒计时 =========================

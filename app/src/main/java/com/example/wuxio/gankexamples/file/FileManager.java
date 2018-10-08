@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.file;
 
-import android.os.Environment;
 import com.example.wuxio.gankexamples.App;
 import java.io.File;
 
@@ -9,38 +8,64 @@ import java.io.File;
  */
 public class FileManager {
 
-    //============================ file ============================
+      private static File sAppFile;
+      private static File sBeanStringFile;
+      private static File sPictureFile;
 
-    private static File appFile;
-    private static File appPicFile;
+      public static final String GANK        = "gank";
+      public static final String BEAN_STRING = "beanString";
+      public static final String PICTURE     = "picture";
 
-    static {
-        getAppFile();
-    }
+      public static void init ( ) {
 
-    public static File getAppFile() {
-
-        if (appFile == null) {
             App app = App.INSTANCE;
-
-            String storageState = Environment.getExternalStorageState();
-            if (Environment.MEDIA_MOUNTED.equals(storageState)) {
-                appFile = app.getExternalFilesDir(null);
-            } else {
-                appFile = app.getFilesDir();
+            File dir = app.getExternalFilesDir( GANK );
+            if( dir == null ) {
+                  File filesDir = app.getFilesDir();
+                  dir = new File( filesDir, GANK );
             }
-        }
 
-        return appFile;
-    }
+            if( !dir.exists() ) {
+                  dir.mkdirs();
+            }
 
+            sAppFile = dir;
+      }
 
-    public static File getAppPicFile() {
+      /**
+       * @return app 目录,位于外存储或者内存储的gank目录下
+       */
+      public static File getAppFile ( ) {
 
-        if (appPicFile == null) {
+            return sAppFile;
+      }
 
-            appPicFile = new File(appFile, "pic");
-        }
-        return appPicFile;
-    }
+      /**
+       * @return 缓存从网络获取的历史bean的目录
+       */
+      public static File getBeanStringFile ( ) {
+
+            if( sBeanStringFile == null ) {
+                  sBeanStringFile = new File( sAppFile, BEAN_STRING );
+                  if( !sBeanStringFile.exists() ) {
+                        sBeanStringFile.mkdirs();
+                  }
+            }
+
+            return sBeanStringFile;
+      }
+
+      /**
+       * @return 保存图片的文件夹
+       */
+      public static File getPictureFile ( ) {
+
+            if( sPictureFile == null ) {
+                  sPictureFile = new File( sAppFile, PICTURE );
+                  if( !sPictureFile.exists() ) {
+                        sPictureFile.mkdirs();
+                  }
+            }
+            return sPictureFile;
+      }
 }
