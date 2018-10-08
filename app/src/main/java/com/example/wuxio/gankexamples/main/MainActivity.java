@@ -34,6 +34,7 @@ import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
 import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
+import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
 import tech.threekilogram.pager.indicator.DotView;
@@ -178,24 +179,6 @@ public class MainActivity extends AppCompatActivity {
       }
 
       /**
-       * 显示loading
-       */
-      private void showBannerLoading ( ) {
-
-            mBannerLoading.setVisibility( View.VISIBLE );
-            mBiliLoadingDrawable.start();
-      }
-
-      /**
-       * 隐藏loading
-       */
-      private void hideBannerLoading ( ) {
-
-            mBannerLoading.setVisibility( View.INVISIBLE );
-            mBiliLoadingDrawable.stop();
-      }
-
-      /**
        * 设置navigation布局,因为需要获得view宽高,使用post runnable 读取
        *
        * @param navigationView 导航view
@@ -225,7 +208,32 @@ public class MainActivity extends AppCompatActivity {
             headerView.findViewById( R.id.exitApp ).setOnClickListener( clickListener );
       }
 
-      //============================ 导航栏功能 ============================
+      public void setBannerBitmaps ( List<Bitmap> bitmaps ) {
+
+            mAdapter.mBitmaps = bitmaps;
+            mAdapter.notifyDataSetChanged();
+            hideBannerLoading();
+            Log.e( TAG, "setBannerBitmaps : 更新banner图片" );
+            mBanner.startLoop( 4000 );
+      }
+
+      /**
+       * 显示loading
+       */
+      private void showBannerLoading ( ) {
+
+            mBannerLoading.setVisibility( View.VISIBLE );
+            mBiliLoadingDrawable.start();
+      }
+
+      /**
+       * 隐藏loading
+       */
+      private void hideBannerLoading ( ) {
+
+            mBannerLoading.setVisibility( View.INVISIBLE );
+            mBiliLoadingDrawable.stop();
+      }
 
       /**
        * 导航栏item点击事件
@@ -328,6 +336,8 @@ public class MainActivity extends AppCompatActivity {
        */
       private class RecyclerBannerAdapter extends BannerAdapter<BannerHolder> {
 
+            private List<Bitmap> mBitmaps;
+
             @Override
             public int getActualCount ( ) {
 
@@ -352,7 +362,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onBindViewHolder ( @NonNull BannerHolder holder, int position ) {
 
-                  int actualPosition = getActualPosition( position );
+                  if( mBitmaps != null ) {
+                        int actualPosition = getActualPosition( position );
+                        Bitmap bitmap = mBitmaps.get( actualPosition );
+                        holder.bind( actualPosition, bitmap );
+                  }
             }
       }
 
@@ -364,6 +378,11 @@ public class MainActivity extends AppCompatActivity {
             public BannerHolder ( View itemView ) {
 
                   super( itemView );
+            }
+
+            private void bind ( int position, Bitmap bitmap ) {
+
+                  ( (ImageView) itemView ).setImageBitmap( bitmap );
             }
       }
 

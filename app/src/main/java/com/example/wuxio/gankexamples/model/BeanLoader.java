@@ -22,6 +22,7 @@ import java.util.List;
 import tech.threekilogram.depository.cache.bitmap.BitmapLoader;
 import tech.threekilogram.depository.cache.json.ObjectLoader;
 import tech.threekilogram.depository.stream.StreamLoader;
+import tech.threekilogram.screen.ScreenSize;
 
 /**
  * @author Liujin 2018-10-07:19:24
@@ -58,7 +59,7 @@ public class BeanLoader {
             /**
              * 加载完成{@link SplashModel#setSplashImage()}
              *
-             * @param url new url
+             * @param url new mUrl
              */
             void onLoaded ( String url );
       }
@@ -111,7 +112,7 @@ public class BeanLoader {
       /**
        * 测试是否有url对应的图片的缓存,{@link SplashModel#setSplashImage()}
        *
-       * @param url url
+       * @param url mUrl
        *
        * @return true : 由对应的缓存
        */
@@ -128,7 +129,7 @@ public class BeanLoader {
             /**
              * 加载完成
              *
-             * @param url url
+             * @param url mUrl
              * @param bitmap url对应图片,可能为null
              */
             void onLoaded ( String url, Bitmap bitmap );
@@ -182,7 +183,9 @@ public class BeanLoader {
                             .loadFromFile( beanFile, BeautiesBean.class );
                         beautiesBean.setStartDate( bean.getStartDate() );
                         beautiesBean.setBeautyUrls( bean.getBeautyUrls() );
+
                         /* 唤醒等待beautiesBean创建的线程启动 */
+                        BeautyModel.sIsBeanBuild.set( true );
                         synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
                               BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.notifyAll();
                         }
@@ -211,7 +214,9 @@ public class BeanLoader {
                               List<String> result = new ArrayList<>();
                               beautiesBean.setBeautyUrls( result );
                               parseBeautyJson( beautyJsonFile, result, beautiesBean );
+
                               /* 唤醒等待beautiesBean创建的线程启动 */
+                              BeautyModel.sIsBeanBuild.set( true );
                               synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
                                     BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.notifyAll();
                               }
@@ -222,7 +227,9 @@ public class BeanLoader {
 
                               /* 3.如果无法从网络构建 */
                               beautiesBean.setBeautyUrls( new ArrayList<>() );
+
                               /* 唤醒等待beautiesBean创建的线程启动 */
+                              BeautyModel.sIsBeanBuild.set( true );
                               synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
                                     BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.notifyAll();
                               }
@@ -282,8 +289,8 @@ public class BeanLoader {
                         return;
                   } else {
                         beautiesBean.setStartDate( publishedAt );
-                        jsonParser.skipToString( "url" );
-                        String url = jsonParser.readString( "url" );
+                        jsonParser.skipToString( "mUrl" );
+                        String url = jsonParser.readString( "mUrl" );
                         if( url != null ) {
                               newData.add( url );
                         }
@@ -299,8 +306,8 @@ public class BeanLoader {
                         if( publishedAt != null ) {
                               Date date1 = DateUtil.getDate( publishedAt );
                               if( DateUtil.isLater( date, date1 ) ) {
-                                    jsonParser.skipToString( "url" );
-                                    String url = jsonParser.readString( "url" );
+                                    jsonParser.skipToString( "mUrl" );
+                                    String url = jsonParser.readString( "mUrl" );
                                     if( url != null ) {
                                           newData.add( url );
                                     }
@@ -363,8 +370,8 @@ public class BeanLoader {
                   jsonParser.start( reader );
 
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
-                        jsonParser.skipToString( "url" );
-                        String url = jsonParser.readString( "url" );
+                        jsonParser.skipToString( "mUrl" );
+                        String url = jsonParser.readString( "mUrl" );
                         if( url != null ) {
                               result.add( url );
                               Log.e( TAG, "parseBeautyJson : 解析福利json: " + url );
@@ -393,6 +400,111 @@ public class BeanLoader {
             }
       }
 
+      /**
+       * {@link #loadListBitmaps(BeautiesBean, int, int, OnListBitmapsLoadedListener)}回调
+       */
+      public interface OnListBitmapsLoadedListener {
 
+            /**
+             * 加载完成
+             *
+             * @param index 起始
+             * @param count 数量
+             * @param result bitmaps
+             */
+            void onLoaded ( int index, int count, List<Bitmap> result );
+      }
 
+      public static void loadListBitmaps (
+          BeautiesBean beautiesBean, int index, int count, OnListBitmapsLoadedListener listener ) {
+
+            String key = GankUrl.BEAUTY + "_" + index + "_" + count;
+
+            ObjectBus bus = ObjectBus.newList();
+            bus.toPool( ( ) -> {
+
+                  List<String> beautiesUrl = getBeautiesUrl( beautiesBean );
+                  int size = beautiesUrl.size();
+                  if( size == 0 ) {
+                        /* 构建完成后还是没有数据 */
+                        return;
+                  }
+                  if( index + count < size ) {
+
+                        /* 1.找出没有缓存的图片 */
+                        ArrayList<String> notCacheUrl = new ArrayList<>();
+                        for( int i = index; i < index + count; i++ ) {
+                              String url = beautiesUrl.get( i );
+                              if( !sBitmapLoader.containsOfFile( url ) ) {
+                                    notCacheUrl.add( url );
+                              }
+                              Log.e( TAG, "loadListBitmaps : 加载一组图片: " + url );
+                        }
+
+                        /* 2.缓存没有缓存的图片 */
+                        int size1 = notCacheUrl.size();
+                        if( size1 > 0 ) {
+                              ArrayList<DownLoadBitmapRunnable> runnableList = new ArrayList<>(
+                                  size1 );
+                              for( String s : notCacheUrl ) {
+                                    Log.e( TAG, "loadListBitmaps : 加载一组图片:没有缓存的图片 " + s );
+                                    runnableList.add( new DownLoadBitmapRunnable( s ) );
+                              }
+
+                              PoolExecutor.execute( runnableList );
+                              Log.e( TAG, "loadListBitmaps : 加载一组图片:缓存没有缓存的图片完成" );
+                        }
+
+                        /* 3.加载成bitmap */
+                        ArrayList<Bitmap> result = new ArrayList<>( count );
+                        int width = ScreenSize.getWidth();
+                        int height = ScreenSize.getHeight();
+                        for( int i = index; i < index + count; i++ ) {
+                              String url = beautiesUrl.get( i );
+                              Bitmap bitmap = sBitmapLoader.load( url, width, height );
+                              result.add( bitmap );
+                        }
+
+                        Log.e( TAG, "loadListBitmaps : 加载一组图片完成" );
+                        bus.setResult( key, result );
+                  }
+            } ).toMain( ( ) -> {
+
+                  List<Bitmap> result = bus.getResultOff( key );
+                  listener.onLoaded( index, count, result );
+            } ).run();
+      }
+
+      private static List<String> getBeautiesUrl ( BeautiesBean beautiesBean ) {
+
+            if( !BeautyModel.sIsBeanBuild.get() ) {
+                  synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
+                        try {
+                              BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.wait();
+                        } catch(InterruptedException e) {
+                              e.printStackTrace();
+                        }
+                  }
+            }
+            return beautiesBean.getBeautyUrls();
+      }
+
+      /**
+       * 下载图片的runnable
+       */
+      private static class DownLoadBitmapRunnable implements Runnable {
+
+            private String mUrl;
+
+            public DownLoadBitmapRunnable ( String url ) {
+
+                  this.mUrl = url;
+            }
+
+            @Override
+            public void run ( ) {
+
+                  sBitmapLoader.download( mUrl );
+            }
+      }
 }
