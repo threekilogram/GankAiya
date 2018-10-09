@@ -336,7 +336,8 @@ public class MainActivity extends AppCompatActivity {
        */
       private class RecyclerBannerAdapter extends BannerAdapter<BannerHolder> {
 
-            private List<Bitmap> mBitmaps;
+            private List<Bitmap>            mBitmaps;
+            private BannerItemClickListener mClickListener = new BannerItemClickListener();
 
             @Override
             public int getActualCount ( ) {
@@ -356,7 +357,9 @@ public class MainActivity extends AppCompatActivity {
 
                   View view = LayoutInflater.from( parent.getContext() )
                                             .inflate( R.layout.main_banner_item, parent, false );
-                  return new BannerHolder( view );
+                  BannerHolder bannerHolder = new BannerHolder( view );
+                  bannerHolder.setClickListener( mClickListener );
+                  return bannerHolder;
             }
 
             @Override
@@ -383,6 +386,22 @@ public class MainActivity extends AppCompatActivity {
             private void bind ( int position, Bitmap bitmap ) {
 
                   ( (ImageView) itemView ).setImageBitmap( bitmap );
+            }
+
+            private void setClickListener ( BannerItemClickListener listener ) {
+
+                  itemView.setOnClickListener( listener );
+            }
+      }
+
+      /**
+       * banner item click
+       */
+      private class BannerItemClickListener implements OnClickListener {
+
+            @Override
+            public void onClick ( View v ) {
+
             }
       }
 
@@ -448,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
             public void onScroll (
                 int state, int currentPosition, int nextPosition, int offsetX, int offsetY ) {
 
-                  mDotView.setSelected( mAdapter.getActualPosition( currentPosition ) );
+                  mDotView.setSelected( mAdapter.getActualPosition( nextPosition ) );
             }
 
             @Override
