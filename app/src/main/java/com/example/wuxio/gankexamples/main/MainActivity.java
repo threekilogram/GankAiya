@@ -21,14 +21,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
       private static final String TAG = "MainActivity";
 
+      public static final String BANNER_ITEM_TRANSITION_NAME = "transition";
+
       protected DrawerLayout            mDrawer;
       protected NavigationView          mNavigationView;
       protected RecyclerPagerBanner     mBanner;
@@ -63,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
       private   MainPagerChangeListener mMainPagerChangeListener;
       private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
       private   DotView                 mDotView;
+
+      private int mCurrentBannerIndex;
 
       /**
        * 静态启动方法
@@ -355,9 +360,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public BannerHolder onCreateViewHolder ( @NonNull ViewGroup parent, int viewType ) {
 
-                  View view = LayoutInflater.from( parent.getContext() )
-                                            .inflate( R.layout.main_banner_item, parent, false );
-                  BannerHolder bannerHolder = new BannerHolder( view );
+                  ImageView imageView = new ImageView( parent.getContext() );
+                  imageView.setScaleType( ScaleType.CENTER_CROP );
+                  BannerHolder bannerHolder = new BannerHolder( imageView );
                   bannerHolder.setClickListener( mClickListener );
                   return bannerHolder;
             }
@@ -402,6 +407,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick ( View v ) {
 
+                  if( mAdapter.mBitmaps != null ) {
+                        PictureActivity.start( MainActivity.this, mBanner, 0, mAdapter.mBitmaps );
+                  }
             }
       }
 
@@ -467,7 +475,9 @@ public class MainActivity extends AppCompatActivity {
             public void onScroll (
                 int state, int currentPosition, int nextPosition, int offsetX, int offsetY ) {
 
-                  mDotView.setSelected( mAdapter.getActualPosition( nextPosition ) );
+                  int actualPosition = mAdapter.getActualPosition( nextPosition );
+                  mCurrentBannerIndex = actualPosition;
+                  mDotView.setSelected( actualPosition );
             }
 
             @Override
