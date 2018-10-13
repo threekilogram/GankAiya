@@ -222,6 +222,16 @@ public class MainActivity extends AppCompatActivity {
             mBanner.startLoop( 4000 );
       }
 
+      private void startLoop ( ) {
+
+            mBanner.startLoop( 4000 );
+      }
+
+      private void stopLoop ( ) {
+
+            mBanner.stopLoop();
+      }
+
       /**
        * 显示loading
        */
@@ -238,6 +248,32 @@ public class MainActivity extends AppCompatActivity {
 
             mBannerLoading.setVisibility( View.INVISIBLE );
             mBiliLoadingDrawable.stop();
+      }
+
+      /**
+       * 添加点击两次退出activity
+       */
+      @Override
+      public void onBackPressed ( ) {
+
+            if( BackPressUtil.showInfo( this ) ) {
+                  RootActivity.start( this );
+                  super.onBackPressed();
+            }
+      }
+
+      @Override
+      protected void onResume ( ) {
+
+            super.onResume();
+            startLoop();
+      }
+
+      @Override
+      protected void onPause ( ) {
+
+            super.onPause();
+            stopLoop();
       }
 
       /**
@@ -319,24 +355,6 @@ public class MainActivity extends AppCompatActivity {
       }
 
       /**
-       * 添加点击两次退出activity
-       */
-      @Override
-      public void onBackPressed ( ) {
-
-            if( BackPressUtil.showInfo( this ) ) {
-                  RootActivity.start( this );
-                  super.onBackPressed();
-            }
-      }
-
-      @Override
-      protected void onDestroy ( ) {
-
-            super.onDestroy();
-      }
-
-      /**
        * banner adapter
        */
       private class RecyclerBannerAdapter extends BannerAdapter<BannerHolder> {
@@ -408,7 +426,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick ( View v ) {
 
                   if( mAdapter.mBitmaps != null ) {
-                        PictureActivity.start( MainActivity.this, mBanner, 0, mAdapter.mBitmaps );
+                        PictureActivity.start(
+                            MainActivity.this,
+                            mBanner,
+                            mCurrentBannerIndex,
+                            mAdapter.mBitmaps
+                        );
                   }
             }
       }

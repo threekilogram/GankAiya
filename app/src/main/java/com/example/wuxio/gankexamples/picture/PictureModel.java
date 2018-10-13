@@ -24,4 +24,20 @@ public class PictureModel {
             sStartIndex = startIndex;
             sBitmaps = bitmaps;
       }
+
+      public static int getStartIndex ( ) {
+
+            return sStartIndex;
+      }
+
+      public static List<Bitmap> getBitmaps ( ) {
+
+            return sBitmaps;
+      }
+
+      static void onHostDestroy ( ) {
+
+            sStartIndex = 0;
+            sBitmaps = null;
+      }
 }
