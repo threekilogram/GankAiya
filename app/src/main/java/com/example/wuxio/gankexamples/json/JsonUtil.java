@@ -3,6 +3,7 @@ package com.example.wuxio.gankexamples.json;
 import android.util.JsonToken;
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
 import com.threekilogram.jsonparser.JsonParser;
@@ -11,6 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import tech.threekilogram.depository.cache.json.JsonLoader;
 import tech.threekilogram.depository.cache.json.ObjectLoader;
 
 /**
@@ -174,6 +177,81 @@ public class JsonUtil {
                   File beanFile = FileManager.getLocalBeautyBeanFile();
                   ObjectLoader.toFile( beanFile, beautiesBean, LocalCategoryBean.class );
                   Log.e( TAG, "parserLatestBeautyJson : 添加最新福利数据到BeautiesBean缓存--> 完成" );
+            } catch(IOException e) {
+                  e.printStackTrace();
+            }
+      }
+
+      public static void parserCategoryJsonToLocalBean ( File jsonFile, LocalCategoryBean bean ) {
+
+            try {
+                  Log.e( TAG, "parserCategoryJsonToLocalBean : 解析分类数据 " + jsonFile );
+                  JsonParser jsonParser = new JsonParser( new FileReader( jsonFile ) );
+
+                  ArrayList<String> urls = new ArrayList<>();
+
+                  jsonParser.start();
+                  while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
+
+                        if( bean.getStartDate() == null ) {
+                              jsonParser.skipToString( "publishedAt" );
+                              String publishedAt = jsonParser.readString( "publishedAt" );
+                              bean.setStartDate( publishedAt );
+                        }
+
+                        jsonParser.skipToString( "url" );
+                        String url = jsonParser.readString( "url" );
+                        if( url != null ) {
+                              urls.add( url );
+                        }
+                  }
+                  jsonParser.finish();
+
+                  Log.e( TAG, "parserCategoryJsonToLocalBean : 解析数据数量: " + urls.size() );
+                  bean.setUrls( urls );
+            } catch(IOException e) {
+                  e.printStackTrace();
+            }
+      }
+
+      public static void parserBeanToFile ( File jsonFile, JsonLoader<GankCategoryItem> loader ) {
+
+            try {
+                  JsonParser jsonParser = new JsonParser( new FileReader( jsonFile ) );
+                  jsonParser.start();
+                  int count = 0;
+                  while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
+
+                        jsonParser.skipToString( "_id" );
+                        String id = jsonParser.readString( "_id" );
+                        if( id != null ) {
+                              GankCategoryItem item = new GankCategoryItem();
+                              item.set_id( id );
+                              String createdAt = jsonParser.readString( "createdAt" );
+                              item.setCreatedAt( createdAt );
+                              String desc = jsonParser.readString( "desc" );
+                              item.setDesc( desc );
+                              List<String> images = jsonParser.readStringArray( "images" );
+                              item.setImages( images );
+                              String publishedAt = jsonParser.readString( "publishedAt" );
+                              item.setPublishedAt( publishedAt );
+                              String source = jsonParser.readString( "source" );
+                              item.setSource( source );
+                              String type = jsonParser.readString( "type" );
+                              item.setType( type );
+                              String url = jsonParser.readString( "url" );
+                              item.setUrl( url );
+                              boolean used = jsonParser.readBoolean( "used" );
+                              item.setUsed( used );
+                              String who = jsonParser.readString( "who" );
+                              item.setWho( who );
+                              count++;
+                              loader.saveToFile( url, item );
+                        }
+                  }
+                  jsonParser.finish();
+
+                  Log.e( TAG, "parserBeanToFile : 从网络解析保存所有分类bean完成 " + count );
             } catch(IOException e) {
                   e.printStackTrace();
             }

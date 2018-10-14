@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.example.wuxio.gankexamples.R;
  * @author wuxio 2018-04-29:9:23
  */
 public class ShowFragment extends Fragment {
+
+      private static final String TAG = ShowFragment.class.getSimpleName();
 
       protected View               rootView;
       protected RecyclerView       mRecycler;
@@ -54,13 +57,16 @@ public class ShowFragment extends Fragment {
 
       public void onSelected ( ) {
 
+            Log.e( TAG, "onSelected : " + mCategory );
       }
 
       public void onUnSelected ( ) {
 
+            Log.e( TAG, "onUnSelected : " + mCategory );
       }
 
       public void onReselected ( ) {
 
+            Log.e( TAG, "onReselected : " + mCategory );
       }
 }

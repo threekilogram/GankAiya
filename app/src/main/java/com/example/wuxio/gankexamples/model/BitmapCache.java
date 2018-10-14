@@ -49,12 +49,12 @@ public class BitmapCache {
 
             if( !contains ) {
                   sBitmapLoader.download( url );
-                  File file = sBitmapLoader.getFile( url );
-                  if( file.exists() ) {
-                        Log.e( TAG, "downLoadPicture : 缓存图片完成 :" + url + " " + file );
-                  } else {
-                        Log.e( TAG, "downLoadPicture : 缓存图片失败 :" + url + " " + file );
-                  }
+                  //File file = sBitmapLoader.getFile( url );
+                  //if( file.exists() ) {
+                  //Log.e( TAG, "downLoadPicture : 缓存图片完成 :" + url + " " + file );
+                  //} else {
+                  //Log.e( TAG, "downLoadPicture : 缓存图片失败 :" + url + " " + file );
+                  //}
             }
       }
 

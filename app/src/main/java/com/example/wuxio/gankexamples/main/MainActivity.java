@@ -219,10 +219,9 @@ public class MainActivity extends AppCompatActivity {
             mBannerAdapter.mBitmaps = bitmaps;
             mBannerAdapter.notifyDataSetChanged();
 
-            startLoop();
             hideBannerLoading();
 
-            Log.e( TAG, "onBannerBitmapsPrepared : banner 开始轮播" );
+            Log.e( TAG, "onBannerBitmapsPrepared : banner设置好数据" );
       }
 
       /**
@@ -247,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
       protected void onRestart ( ) {
 
             super.onRestart();
-            startLoop();
+            //startLoop();
       }
 
       /**
@@ -429,7 +428,7 @@ public class MainActivity extends AppCompatActivity {
                             childViewHolder.mCurrentPosition,
                             mBannerAdapter.mBitmaps
                         );
-                        stopLoop();
+                        //stopLoop();
                   }
             }
       }

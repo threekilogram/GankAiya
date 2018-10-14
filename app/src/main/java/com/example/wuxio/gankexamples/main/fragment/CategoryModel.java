@@ -2,12 +2,14 @@ package com.example.wuxio.gankexamples.main.fragment;
 
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import tech.threekilogram.depository.cache.json.JsonLoader;
+import tech.threekilogram.depository.cache.json.ObjectLoader;
 import tech.threekilogram.depository.stream.StreamLoader;
 
 /**
@@ -38,33 +40,41 @@ public class CategoryModel {
 
             if( type.equals( GankUrl.ANDROID ) ) {
 
-                  final File localBean = FileManager.getLocalAndroidBeanFile();
+                  final File localFile = FileManager.getLocalAndroidBeanFile();
                   final File jsonFile = FileManager.getAndroidJsonFile();
                   final File latestFile = FileManager.getLatestAndroidJsonFile();
 
                   PoolExecutor.execute( ( ) -> {
-                        if( localBean.exists() ) {
+                        if( localFile.exists() ) {
 
+                              buildLocalBeanFromFile( localFile );
                         } else {
                               buildLocalBeanFromNet(
                                   sAndroidBean,
                                   jsonFile,
-                                  GankUrl.androidAllUrl()
+                                  GankUrl.androidAllUrl(),
+                                  localFile
                               );
                         }
                   } );
             }
       }
 
+      private static void buildLocalBeanFromFile ( File localFile ) {
+
+            Log.e( TAG, "buildLocalBeanFromFile : 从本地文件构建本地bean " + localFile );
+            sAndroidBean = ObjectLoader
+                .loadFromFile( localFile, LocalCategoryBean.class );
+            Log.e(
+                TAG, "buildLocalBeanFromFile : 从本地文件构建本地bean完成 " + sAndroidBean.getUrls().size() );
+      }
+
       /**
        * 从网络构建BeautiesBean
        */
       private static void buildLocalBeanFromNet (
-          LocalCategoryBean localBean, File jsonFile, String url ) {
+          LocalCategoryBean localBean, File jsonFile, String url, File localFile ) {
 
-            if( jsonFile.exists() ) {
-                  boolean delete = jsonFile.delete();
-            }
             Log.e(
                 TAG,
                 "buildLocalBean : 从网络下载分类数据.json中: " + url
@@ -74,5 +84,13 @@ public class CategoryModel {
                 TAG,
                 "buildLocalBean : 从网络下载分类数据.json完成: " + jsonFile
             );
+
+            JsonUtil.parserCategoryJsonToLocalBean( jsonFile, localBean );
+            Log.e( TAG, "buildLocalBeanFromNet : 网络构建本地数据完成 " + localBean.getStartDate() );
+            ObjectLoader.toFile( localFile, localBean, LocalCategoryBean.class );
+            Log.e(
+                TAG, "buildLocalBeanFromNet : 缓存本地数据完成 " + localFile.exists() + " " + localFile );
+
+            JsonUtil.parserBeanToFile( jsonFile, sAndroidLoader );
       }
 }
