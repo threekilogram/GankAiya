@@ -8,12 +8,4 @@
     android:transitionName="transition"
     tools:context=".picture.PictureActivity">
 
-      <TextView
-          android:id="@+id/currentTotal"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="16dp"
-          android:layout_gravity="center_horizontal"
-          android:text="1/5"/>
-
 </tech.threekilogram.watcher.ImageWatcherView>
