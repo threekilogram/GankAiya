@@ -83,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
             setSystemUI();
             initView();
             postAction();
-
-            BeautyModel.bind( this );
-            BeautyModel.loadBannerBitmap();
       }
 
       /**

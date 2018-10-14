@@ -4,6 +4,7 @@ import android.util.Log;
 import android.widget.Toast;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.BeanLoader;
+import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.utils.NetWork;
 import com.threekilogram.objectbus.executor.MainExecutor;
 import java.lang.ref.WeakReference;
@@ -62,12 +63,12 @@ public class SplashModel {
             Log.e( TAG, "setSplashImage : 配置的splash图片地址: " + sSplashImageUrl );
 
             if( sSplashImageUrl != null ) {
-                  if( BeanLoader.hasPictureCache( sSplashImageUrl ) ) {
+                  if( BitmapCache.hasPictureCache( sSplashImageUrl ) ) {
 
                         /* 设置图片 */
                         int width = ScreenSize.getWidth();
                         int height = ScreenSize.getHeight();
-                        BeanLoader.loadBitmap(
+                        BitmapCache.loadBitmap(
                             sSplashImageUrl,
                             width,
                             height,
@@ -82,7 +83,7 @@ public class SplashModel {
                         );
                   } else {
                         Log.e( TAG, "setSplashImage : splash图片缓存失效,重新下载" );
-                        BeanLoader.downLoadPicture( sSplashImageUrl );
+                        BitmapCache.downLoadPicture( sSplashImageUrl );
                   }
             }
 
@@ -99,7 +100,7 @@ public class SplashModel {
                 url -> {
                       if( url != null ) {
                             sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url );
-                            BeanLoader.downLoadPicture( url );
+                            BitmapCache.downLoadPicture( url );
                       } else {
                             notifySplashImageUrlForNextTimeIsNull();
                       }
