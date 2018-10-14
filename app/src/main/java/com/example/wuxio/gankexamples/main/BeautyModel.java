@@ -35,6 +35,11 @@ public class BeautyModel {
             }
       }
 
+      public static BeautiesBean getBeautiesBean ( ) {
+
+            return sBeautiesBean;
+      }
+
       public static void bind ( MainActivity activity ) {
 
             sRef = new WeakReference<>( activity );

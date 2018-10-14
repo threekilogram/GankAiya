@@ -18,6 +18,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,8 +41,6 @@ import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
 import tech.threekilogram.pager.indicator.DotView;
-import tech.threekilogram.pager.scroll.recycler.OnRecyclerPagerScrollListener;
-import tech.threekilogram.pager.scroll.recycler.RecyclerPagerScroll;
 import tech.threekilogram.screen.ScreenSize;
 
 /**
@@ -49,8 +49,6 @@ import tech.threekilogram.screen.ScreenSize;
 public class MainActivity extends AppCompatActivity {
 
       private static final String TAG = "MainActivity";
-
-      public static final String BANNER_ITEM_TRANSITION_NAME = "transition";
 
       protected DrawerLayout            mDrawer;
       protected NavigationView          mNavigationView;
@@ -66,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
       private   MainPagerChangeListener mMainPagerChangeListener;
       private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
       private   DotView                 mDotView;
-
-      private int mCurrentBannerIndex;
 
       /**
        * 静态启动方法
@@ -129,8 +125,7 @@ public class MainActivity extends AppCompatActivity {
             /* banner */
             mAdapter = new RecyclerBannerAdapter();
             mBanner.setBannerAdapter( mAdapter );
-            RecyclerPagerScroll scroll = new RecyclerPagerScroll( mBanner.getRecyclerPager() );
-            scroll.setOnRecyclerPagerScrollListener( new BannerScrollListener() );
+            mBanner.addOnScrollListener( new MainBannerScrollListener() );
 
             /* 防止tabLayout 进入statusBar */
             int height = SystemUi.getStatusBarHeight( MainActivity.this );
@@ -176,11 +171,15 @@ public class MainActivity extends AppCompatActivity {
       }
 
       /**
-       * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
+       * 添加点击两次退出activity
        */
-      private void closeDrawer ( ) {
+      @Override
+      public void onBackPressed ( ) {
 
-            mDrawer.closeDrawer( Gravity.START );
+            if( BackPressUtil.showInfo( this ) ) {
+                  RootActivity.start( this );
+                  super.onBackPressed();
+            }
       }
 
       /**
@@ -211,6 +210,40 @@ public class MainActivity extends AppCompatActivity {
             headerView.findViewById( R.id.toDonate ).setOnClickListener( clickListener );
             headerView.findViewById( R.id.toLoginGithub ).setOnClickListener( clickListener );
             headerView.findViewById( R.id.exitApp ).setOnClickListener( clickListener );
+      }
+
+      @Override
+      protected void onResume ( ) {
+
+            super.onResume();
+            startLoop();
+      }
+
+      @Override
+      protected void onPause ( ) {
+
+            super.onPause();
+            stopLoop();
+      }
+
+      public void onBackFromPictureActivity ( int index ) {
+
+            mBanner.getRecyclerPager().scrollToPosition( index );
+            mDotView.setSelected( index );
+      }
+
+      private int getCurrentBannerPosition ( ) {
+
+            int position = mBanner.getRecyclerPager().getCurrentPosition();
+            return mAdapter.getActualPosition( position );
+      }
+
+      /**
+       * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
+       */
+      private void closeDrawer ( ) {
+
+            mDrawer.closeDrawer( Gravity.START );
       }
 
       public void setBannerBitmaps ( List<Bitmap> bitmaps ) {
@@ -248,32 +281,6 @@ public class MainActivity extends AppCompatActivity {
 
             mBannerLoading.setVisibility( View.INVISIBLE );
             mBiliLoadingDrawable.stop();
-      }
-
-      /**
-       * 添加点击两次退出activity
-       */
-      @Override
-      public void onBackPressed ( ) {
-
-            if( BackPressUtil.showInfo( this ) ) {
-                  RootActivity.start( this );
-                  super.onBackPressed();
-            }
-      }
-
-      @Override
-      protected void onResume ( ) {
-
-            super.onResume();
-            startLoop();
-      }
-
-      @Override
-      protected void onPause ( ) {
-
-            super.onPause();
-            stopLoop();
       }
 
       /**
@@ -429,7 +436,6 @@ public class MainActivity extends AppCompatActivity {
                         PictureActivity.start(
                             MainActivity.this,
                             mBanner,
-                            mCurrentBannerIndex,
                             mAdapter.mBitmaps
                         );
                   }
@@ -492,20 +498,20 @@ public class MainActivity extends AppCompatActivity {
             }
       }
 
-      private class BannerScrollListener implements OnRecyclerPagerScrollListener {
+      /**
+       * banner 滚动时更新指示器
+       */
+      private class MainBannerScrollListener extends OnScrollListener {
 
             @Override
-            public void onScroll (
-                int state, int currentPosition, int nextPosition, int offsetX, int offsetY ) {
+            public void onScrollStateChanged (
+                RecyclerView recyclerView, int newState ) {
 
-                  int actualPosition = mAdapter.getActualPosition( nextPosition );
-                  mCurrentBannerIndex = actualPosition;
-                  mDotView.setSelected( actualPosition );
-            }
-
-            @Override
-            public void onPageSelected ( int prevSelected, int newSelected ) {
-
+                  if( newState == RecyclerView.SCROLL_STATE_SETTLING ) {
+                        int position = mBanner.getRecyclerPager().getCurrentPosition() + 1;
+                        int actualPosition = mAdapter.getActualPosition( position );
+                        mDotView.setSelected( actualPosition );
+                  }
             }
       }
 }

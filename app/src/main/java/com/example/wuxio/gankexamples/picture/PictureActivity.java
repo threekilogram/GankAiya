@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.picture;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -8,29 +7,36 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.main.MainActivity;
+import com.threekilogram.systemui.SystemUi;
 import java.util.List;
 import tech.threekilogram.scalegesture.ImageWatcherView;
 import tech.threekilogram.scalegesture.ImageWatcherView.ImageWatcherAdapter;
+import tech.threekilogram.scalegesture.ImageWatcherView.ScaleImageViewHolder;
+import tech.threekilogram.scalegesture.ScaleImageView;
 
 /**
  * @author wuxio
  */
 public class PictureActivity extends AppCompatActivity {
 
+      private static final String TAG = PictureActivity.class.getSimpleName();
+
+      private static List<Bitmap> sBitmaps;
+
       private ImageWatcherView mImageWatcher;
 
       public static void start (
-          Activity context, View view, int startIndex, List<Bitmap> bitmaps ) {
+          MainActivity activity, View view, List<Bitmap> data ) {
 
-            /* set data */
-            PictureModel.setStartData( startIndex, bitmaps );
+            sBitmaps = data;
 
             /* start activity */
-            Intent starter = new Intent( context, PictureActivity.class );
-            context.startActivity(
+            Intent starter = new Intent( activity, PictureActivity.class );
+            activity.startActivity(
                 starter,
                 ActivityOptionsCompat
-                    .makeSceneTransitionAnimation( context, view, view.getTransitionName() )
+                    .makeSceneTransitionAnimation( activity, view, view.getTransitionName() )
                     .toBundle()
             );
       }
@@ -41,22 +47,25 @@ public class PictureActivity extends AppCompatActivity {
             super.onCreate( savedInstanceState );
             super.setContentView( R.layout.activity_picture );
 
-            PictureModel.bind( this );
             initView();
+            SystemUi.immersive( this );
       }
 
       private void initView ( ) {
 
             mImageWatcher = findViewById( R.id.imageWatcher );
             mImageWatcher.setImageWatcherAdapter( new WatcherAdapter() );
-            mImageWatcher.getRecyclerView().scrollToPosition( PictureModel.getStartIndex() );
+      }
+
+      private void setCurrentIndexState ( ) {
+
       }
 
       @Override
       protected void onDestroy ( ) {
 
             super.onDestroy();
-            PictureModel.onHostDestroy();
+            sBitmaps = null;
       }
 
       /**
@@ -64,22 +73,30 @@ public class PictureActivity extends AppCompatActivity {
        */
       private class WatcherAdapter extends ImageWatcherAdapter {
 
-            private List<Bitmap> mBitmaps = PictureModel.getBitmaps();
-
             @Override
-            protected Bitmap getImage ( int position ) {
+            protected Bitmap getBitmapForScaleImageItem ( int position ) {
 
-                  if( mBitmaps == null ) {
-                        mBitmaps = PictureModel.getBitmaps();
-                  }
-
-                  return mBitmaps.get( position );
+                  return null;
             }
 
             @Override
             public int getItemCount ( ) {
 
-                  return mBitmaps == null ? 0 : mBitmaps.size();
+                  return 0;
+            }
+      }
+
+      private class ScaleHolder extends ScaleImageViewHolder {
+
+            public ScaleHolder ( View itemView ) {
+
+                  super( itemView );
+            }
+
+            @Override
+            protected void onBitmapNull (
+                int position, ScaleImageView imageView ) {
+
             }
       }
 }

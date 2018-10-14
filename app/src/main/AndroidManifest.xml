@@ -22,7 +22,6 @@
           tools:ignore="GoogleAppIndexingWarning">
 
             <!-- used for exit app singleTask mode -->
-
             <activity
                 android:launchMode="singleTask"
                 android:name=".root.RootActivity"
@@ -35,23 +34,24 @@
             </activity>
 
             <!-- splash init something -->
-
             <activity
                 android:name=".splash.SplashActivity"
                 android:theme="@style/FullScreenTheme">
             </activity>
 
             <!-- main page -->
-
             <activity
                 android:launchMode="singleTop"
                 android:name=".main.MainActivity"
                 android:screenOrientation="portrait"/>
-            <activity android:name=".picture.PictureActivity">
+
+            <!-- picture watcher -->
+            <activity
+                android:launchMode="singleTop"
+                android:name=".picture.PictureActivity">
             </activity>
 
             <!-- webView -->
-
             <activity
                 android:launchMode="singleTop"
                 android:name=".web.WebActivity">

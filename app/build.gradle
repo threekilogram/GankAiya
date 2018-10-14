@@ -39,9 +39,9 @@ dependencies {
     /* status Bar */
     implementation 'com.github.threekilogram:SystemUI:1.2.2'
     /* banner and image watcher */
-    implementation 'com.github.threekilogram:PagerExtend:1.2.6'
+    implementation 'com.github.threekilogram:PagerExtend:1.2.7'
     /* imageWatcher */
-    implementation 'com.github.threekilogram:ScaleImageView:1.2.0'
+    implementation 'com.github.threekilogram:ScaleImageView:1.2.3'
     /* layout */
     implementation 'com.github.threekilogram:ViewSkin:1.2.8'
     /* async */
