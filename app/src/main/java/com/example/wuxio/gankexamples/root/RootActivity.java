@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
 import com.example.wuxio.gankexamples.App;
-import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
@@ -37,9 +35,9 @@ public class RootActivity extends AppCompatActivity {
 
             super.onCreate( savedInstanceState );
 
-            TextView textView = new TextView( this );
-            textView.setBackgroundResource( R.drawable.a42 );
-            setContentView( textView );
+//            TextView textView = new TextView( this );
+//            textView.setBackgroundResource( R.drawable.a42 );
+//            setContentView( textView );
 
             /* 状态栏透明 */
             SystemUi.transparentStatus( RootActivity.this );
@@ -67,13 +65,12 @@ public class RootActivity extends AppCompatActivity {
       }
 
       @Override
-      public void finish ( ) {
-
+      protected void onDestroy ( ) {
             /* 应用退出之后,不再需要监视网络状态 */
             NetStateChangeManager.unRegisterReceiver( this );
             NetStateChangeManager.clearListener();
             /* 释放资源 */
             OnAppExitManager.onExitApp();
-            super.finish();
+            super.onDestroy();
       }
 }

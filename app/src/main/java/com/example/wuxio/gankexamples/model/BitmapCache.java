@@ -5,6 +5,7 @@ import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.model.bean.BeautiesBean;
+import com.example.wuxio.gankexamples.root.OnAppExitManager;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
@@ -38,6 +39,8 @@ public class BitmapCache {
                       pictureFile
                   );
             }
+
+            OnAppExitManager.addListener( ( ) -> sBitmapLoader.clearMemory() );
       }
 
       /**
@@ -135,45 +138,10 @@ public class BitmapCache {
             } ).run();
       }
 
-      public static void loadBitmap (
-          String url, int width, int height, OnBitmapLoadedListener listener ) {
+      public static Bitmap loadBitmap (
+          String url, int width, int height ) {
 
-            Bitmap bitmap = sBitmapLoader.loadFromMemory( url );
-            if( bitmap != null ) {
-                  listener.onLoaded( url, bitmap );
-                  return;
-            }
-
-            ObjectBus bus = ObjectBus.newList();
-            bus.toPool( ( ) -> {
-
-                  if( !sBitmapLoader.containsOfFile( url ) ) {
-                        sBitmapLoader.download( url );
-                  }
-
-                  Bitmap result = sBitmapLoader.loadFromFile( url, width, height );
-                  bus.setResult( url, result );
-            } ).toMain( ( ) -> {
-
-                  if( listener != null ) {
-                        Bitmap bitmap1 = bus.getResultOff( url );
-                        listener.onLoaded( url, bitmap1 );
-                  }
-            } ).run();
-      }
-
-      /**
-       * 加载图片完成的回调,{@link #loadBitmap(String, int, int, OnBitmapLoadedListener)}
-       */
-      public interface OnBitmapLoadedListener {
-
-            /**
-             * 加载完成
-             *
-             * @param url mUrl
-             * @param bitmap url对应图片,可能为null
-             */
-            void onLoaded ( String url, Bitmap bitmap );
+            return sBitmapLoader.load( url, width, height );
       }
 
       /**

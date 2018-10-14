@@ -1,12 +1,13 @@
 package com.example.wuxio.gankexamples.splash;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.Toast;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.utils.NetWork;
-import com.threekilogram.objectbus.executor.MainExecutor;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.lang.ref.WeakReference;
 import tech.threekilogram.depository.preference.PreferenceLoader;
 import tech.threekilogram.screen.ScreenSize;
@@ -66,24 +67,20 @@ public class SplashModel {
                   if( BitmapCache.hasPictureCache( sSplashImageUrl ) ) {
 
                         /* 设置图片 */
-                        int width = ScreenSize.getWidth();
-                        int height = ScreenSize.getHeight();
-                        BitmapCache.loadBitmap(
+                        Bitmap bitmap = BitmapCache.loadBitmap(
                             sSplashImageUrl,
-                            width,
-                            height,
-                            ( url, bitmap ) -> {
-                                  try {
-                                        sRef.get().mLogoImage.setImageBitmap( bitmap );
-                                        Log.e( TAG, "setSplashImage : 设置splash图片成功" );
-                                  } catch(Exception e) {
-                                        /* nothing to worry */
-                                  }
-                            }
+                            ScreenSize.getWidth(),
+                            ScreenSize.getHeight()
                         );
+
+                        if( bitmap != null ) {
+                              sRef.get().mLogoImage.setImageBitmap( bitmap );
+                        } else {
+                              cachePicture();
+                        }
                   } else {
                         Log.e( TAG, "setSplashImage : splash图片缓存失效,重新下载" );
-                        BitmapCache.downLoadPicture( sSplashImageUrl );
+                        cachePicture();
                   }
             }
 
@@ -91,34 +88,35 @@ public class SplashModel {
             updateSplashImageUrlForNextTime();
       }
 
+      private static void cachePicture ( ) {
+
+            PoolExecutor.execute(
+                ( ) -> BitmapCache.downLoadPicture( sSplashImageUrl ) );
+      }
+
       /**
        * 更新新的 splash 图片
        */
       private static void updateSplashImageUrlForNextTime ( ) {
 
-            BeanLoader.loadLatestBeautyUrl(
-                url -> {
-                      if( url != null ) {
-                            sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url );
-                            BitmapCache.downLoadPicture( url );
-                      } else {
-                            notifySplashImageUrlForNextTimeIsNull();
-                      }
-                }
-            );
-      }
+            if( !NetWork.hasNetwork() ) {
+                  Toast.makeText( App.INSTANCE, "没有网络", Toast.LENGTH_SHORT ).show();
+            }
 
-      /**
-       * 没有获取到url的处理
-       */
-      private static void notifySplashImageUrlForNextTimeIsNull ( ) {
+            PoolExecutor.execute( ( ) -> {
 
-            MainExecutor.execute( ( ) -> {
-
-                  if( !NetWork.hasNetwork() ) {
-                        Toast.makeText( App.INSTANCE, "没有网络", Toast.LENGTH_SHORT ).show();
-                  } else {
-                        Toast.makeText( App.INSTANCE, "无法获取数据", Toast.LENGTH_SHORT ).show();
+                  try {
+                        String beautyUrl = BeanLoader.loadLatestBeautyUrl();
+                        if( !beautyUrl.equals( sSplashImageUrl ) ) {
+                              sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, beautyUrl );
+                              BitmapCache.downLoadPicture( beautyUrl );
+                              Log.e(
+                                  TAG,
+                                  "updateSplashImageUrlForNextTime : 配置最新的splash地址 " + beautyUrl
+                              );
+                        }
+                  } catch(Exception e) {
+                        Log.e( TAG, "updateSplashImageUrlForNextTime : 配置最新的splash地址异常" );
                   }
             } );
       }

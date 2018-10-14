@@ -5,8 +5,6 @@ import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.splash.SplashModel;
-import com.example.wuxio.gankexamples.utils.NetWork;
-import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.Date;
 import tech.threekilogram.depository.stream.StreamLoader;
@@ -24,44 +22,21 @@ public class BeanLoader {
       public static void init ( ) { }
 
       /**
-       * 用于和数据层通信,加载完新的splash回调{@link #loadLatestBeautyUrl(OnLatestBeautyLoadedListener)}
-       */
-      public interface OnLatestBeautyLoadedListener {
-
-            /**
-             * 加载完成{@link SplashModel#setSplashImage()}
-             *
-             * @param url new mUrl
-             */
-            void onLoaded ( String url );
-      }
-
-      /**
        * 获取最新的beauty分类的最新的一条数据,{@link SplashModel#setSplashImage()}
        */
-      public static void loadLatestBeautyUrl ( OnLatestBeautyLoadedListener listener ) {
+      public static String loadLatestBeautyUrl ( ) {
 
-            PoolExecutor.execute( ( ) -> {
+            /* 从网络加载最新的数据 */
+            String latestUrl = GankUrl.beautyLatestUrl();
+            GankCategory gankCategory = StreamLoader
+                .loadJsonFromNet( latestUrl, GankCategory.class );
 
-                  /* 没有网络 */
-                  if( !NetWork.hasNetwork() ) {
-                        listener.onLoaded( null );
-                        return;
-                  }
-
-                  /* 从网络加载最新的数据 */
-                  String latestUrl = GankUrl.beautyLatestUrl();
-                  GankCategory gankCategory = StreamLoader
-                      .loadJsonFromNet( latestUrl, GankCategory.class );
-
-                  Log.e( TAG, "loadLatestBeautyUrl : 获取到的最新beauty: " + gankCategory );
-                  if( gankCategory != null ) {
-                        String url = gankCategory.getResults().get( 0 ).getUrl();
-                        listener.onLoaded( url );
-                  } else {
-                        listener.onLoaded( null );
-                  }
-            } );
+            String result = gankCategory.getResults().get( 0 ).getUrl();
+            Log.e(
+                TAG,
+                "loadLatestBeautyUrl : 获取到的最新福利url: " + result
+            );
+            return result;
       }
 
       /**

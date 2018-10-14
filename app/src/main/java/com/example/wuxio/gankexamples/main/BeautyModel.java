@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import tech.threekilogram.depository.cache.json.ObjectLoader;
 import tech.threekilogram.depository.stream.StreamLoader;
+import tech.threekilogram.network.state.manager.NetStateChangeManager;
+import tech.threekilogram.network.state.manager.NetStateValue;
 
 /**
  * @author Liujin 2018-09-12:14:54
@@ -100,8 +102,12 @@ public class BeautyModel {
 
             PoolExecutor.execute( ( ) -> {
                   for( int i = 0; i < beautyUrls.size(); i++ ) {
-                        String url = beautyUrls.get( i );
-                        BitmapCache.downLoadPicture( url );
+                        if( NetStateChangeManager.getCurrentNetState()
+                            == NetStateValue.ONLY_WIFI_CONNECT ) {
+
+                              String url = beautyUrls.get( i );
+                              BitmapCache.downLoadPicture( url );
+                        }
                   }
             } );
       }
