@@ -7,7 +7,7 @@ import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.GankUrl;
-import com.example.wuxio.gankexamples.model.bean.BeautiesBean;
+import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
 import com.example.wuxio.gankexamples.utils.NetWork;
 import com.example.wuxio.gankexamples.utils.ToastMessage;
@@ -33,8 +33,8 @@ public class BeautyModel {
 
       private static WeakReference<MainActivity> sRef;
 
-      private static       BeautiesBean  sBeautiesBean = new BeautiesBean();
-      private static final AtomicBoolean IS_BEAN_BUILD = new AtomicBoolean();
+      private static       LocalCategoryBean sBeautiesBean = new LocalCategoryBean();
+      private static final AtomicBoolean     IS_BEAN_BUILD = new AtomicBoolean();
 
       /**
        * 正在构建bean时的锁
@@ -46,7 +46,7 @@ public class BeautyModel {
        */
       public static void init ( ) {
 
-            if( sBeautiesBean.getBeautyUrls() == null ) {
+            if( sBeautiesBean.getUrls() == null ) {
                   IS_BEAN_BUILD.set( false );
                   buildBeautiesBean();
             }
@@ -59,7 +59,7 @@ public class BeautyModel {
 
             PoolExecutor.execute( ( ) -> {
 
-                  /* 1.读取本地 BeautiesBean 缓存*/
+                  /* 1.读取本地 LocalCategoryBean 缓存*/
                   File beautiesBeanFile = FileManager.getBeautiesBeanFile();
                   if( beautiesBeanFile.exists() ) {
 
@@ -75,7 +75,7 @@ public class BeautyModel {
                         } else {
 
                               /* 3.如果无法从网络构建 */
-                              sBeautiesBean.setBeautyUrls( new ArrayList<>() );
+                              sBeautiesBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
                               notifyAllWait();
                               Log.e( TAG, "buildBeautiesBean : 没有网络,无法获取历史福利数据" );
@@ -120,9 +120,9 @@ public class BeautyModel {
 
             Log.e( TAG, "buildBeautiesBean : 从本地缓存构建福利bean中" );
             /* 从缓存加载数据 */
-            BeautiesBean bean = ObjectLoader.loadFromFile( beanFile, BeautiesBean.class );
+            LocalCategoryBean bean = ObjectLoader.loadFromFile( beanFile, LocalCategoryBean.class );
             sBeautiesBean.setStartDate( bean.getStartDate() );
-            sBeautiesBean.setBeautyUrls( bean.getBeautyUrls() );
+            sBeautiesBean.setUrls( bean.getUrls() );
             Log.e( TAG, "buildBeautiesBeanFromFile : 从本地缓存构建福利bean完成" );
 
             /* 唤醒等待beautiesBean创建的线程启动 */
@@ -169,14 +169,14 @@ public class BeautyModel {
             );
 
             List<String> result = new ArrayList<>();
-            sBeautiesBean.setBeautyUrls( result );
+            sBeautiesBean.setUrls( result );
             JsonUtil.parseDownLoadAllBeautyJson( beautyJsonFile, sBeautiesBean );
 
             /* 唤醒等待beautiesBean创建的线程启动 */
             notifyAllWait();
 
             /* 缓存最新数据 */
-            ObjectLoader.toFile( beautiesBeanFile, sBeautiesBean, BeautiesBean.class );
+            ObjectLoader.toFile( beautiesBeanFile, sBeautiesBean, LocalCategoryBean.class );
             Log.e( TAG, "buildBeautiesBean : 缓存网络构建beautyBean到文件完成: " + beautiesBeanFile.exists()
                 + " " + beautiesBeanFile );
       }
@@ -184,7 +184,7 @@ public class BeautyModel {
       /**
        * 获取构建好的bean
        */
-      public static BeautiesBean getBeautiesBean ( ) {
+      public static LocalCategoryBean getBeautiesBean ( ) {
 
             if( !IS_BEAN_BUILD.get() ) {
                   synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
@@ -212,7 +212,7 @@ public class BeautyModel {
                         }
                   }
             }
-            return sBeautiesBean.getBeautyUrls();
+            return sBeautiesBean.getUrls();
       }
 
       /**

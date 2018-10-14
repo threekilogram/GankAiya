@@ -16,14 +16,15 @@ public class FileManager {
       private static File sBeautyFile;
       private static File sBeautiesBeanFile;
       private static File sBeautyJsonFile;
+      private static File sAndroidJsonFile;
       private static File sLatestBeautyJsonFile;
 
-      public static final String GANK        = "gank";
-      public static final String BEAN_STRING = "beanString";
-      public static final String PICTURE     = "picture";
-      public static final String BEAUTY      = "beauty";
+      private static final String GANK        = "gank";
+      private static final String BEAN_STRING = "beanString";
+      private static final String PICTURE     = "picture";
+      private static final String BEAUTY      = "beauty";
 
-      public static final String BEAUTY_ALL_URL_HASH = StringHash.hash( GankUrl.beautyAllUrl() );
+      private static final String BEAUTY_ALL_URL_HASH = StringHash.hash( GankUrl.beautyAllUrl() );
 
       public static void init ( ) {
 
@@ -52,7 +53,7 @@ public class FileManager {
       /**
        * @return 缓存从网络获取的历史bean的目录
        */
-      public static File getBeanStringFile ( ) {
+      private static File getBeanStringFile ( ) {
 
             if( sBeanStringFile == null ) {
                   sBeanStringFile = new File( sAppFile, BEAN_STRING );
@@ -123,5 +124,16 @@ public class FileManager {
                   sLatestBeautyJsonFile = new File( beanStringFile, "beautyLatest.json" );
             }
             return sLatestBeautyJsonFile;
+      }
+
+      /**
+       * @return 保存分类beauty的文件夹
+       */
+      public static File getAndroidJsonFile ( ) {
+
+            if( sAndroidJsonFile == null ) {
+                  sAndroidJsonFile = new File( getBeanStringFile(), GankUrl.ANDROID + "_all.json" );
+            }
+            return sAndroidJsonFile;
       }
 }

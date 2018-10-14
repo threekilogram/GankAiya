@@ -3,21 +3,23 @@ package com.example.wuxio.gankexamples.model.bean;
 import java.util.List;
 
 /**
+ * 本地缓存bean,用作索引
+ *
  * @author Liujin 2018-10-08:11:20
  */
-public class BeautiesBean {
+public class LocalCategoryBean {
 
       private String       mStartDate;
-      private List<String> mBeautyUrls;
+      private List<String> mUrls;
 
-      public List<String> getBeautyUrls ( ) {
+      public List<String> getUrls ( ) {
 
-            return mBeautyUrls;
+            return mUrls;
       }
 
-      public void setBeautyUrls ( List<String> beautyUrls ) {
+      public void setUrls ( List<String> urls ) {
 
-            this.mBeautyUrls = beautyUrls;
+            this.mUrls = urls;
       }
 
       public String getStartDate ( ) {
@@ -33,9 +35,9 @@ public class BeautiesBean {
       @Override
       public String toString ( ) {
 
-            return "BeautiesBean{" +
+            return "LocalCategoryBean{" +
                 "mStartDate='" + mStartDate + '\'' +
-                ", mBeautyUrls=" + mBeautyUrls +
+                ", mUrls=" + mUrls +
                 '}';
       }
 }

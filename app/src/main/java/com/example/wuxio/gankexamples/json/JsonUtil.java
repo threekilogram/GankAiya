@@ -3,7 +3,7 @@ package com.example.wuxio.gankexamples.json;
 import android.util.JsonToken;
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.model.bean.BeautiesBean;
+import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
 import com.threekilogram.jsonparser.JsonParser;
 import java.io.File;
@@ -25,26 +25,26 @@ public class JsonUtil {
        * @param jsonFile
        * @param bean
        */
-      public static void parseDownLoadAllBeautyJson ( File jsonFile, BeautiesBean bean ) {
+      public static void parseDownLoadAllBeautyJson ( File jsonFile, LocalCategoryBean bean ) {
 
             /* 只读取url */
             try {
                   FileReader reader = new FileReader( jsonFile );
-                  JsonParser jsonParser = new JsonParser();
-                  jsonParser.start( reader );
+                  JsonParser jsonParser = new JsonParser( reader );
+                  jsonParser.start();
 
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
                         jsonParser.skipToString( "url" );
                         String url = jsonParser.readString( "url" );
                         if( url != null ) {
-                              bean.getBeautyUrls().add( url );
+                              bean.getUrls().add( url );
                               Log.e(
                                   TAG, "parseDownLoadAllBeautyJson : 从网络构建BeautiesBean中: " + url );
                         }
                   }
                   jsonParser.finish();
                   Log.e(
-                      TAG, "parseDownLoadAllBeautyJson : 从网络构建完成: " + bean.getBeautyUrls()
+                      TAG, "parseDownLoadAllBeautyJson : 从网络构建完成: " + bean.getUrls()
                                                                           .size() );
             } catch(IOException e) {
                   e.printStackTrace();
@@ -53,8 +53,8 @@ public class JsonUtil {
             /* 只读取起始日期 */
             try {
                   FileReader reader = new FileReader( jsonFile );
-                  JsonParser jsonParser = new JsonParser();
-                  jsonParser.start( reader );
+                  JsonParser jsonParser = new JsonParser( reader );
+                  jsonParser.start();
 
                   jsonParser.skipToString( "publishedAt" );
                   String publishedAt = jsonParser.readString( "publishedAt" );
@@ -79,9 +79,9 @@ public class JsonUtil {
 
             boolean result = true;
             try {
-                  JsonParser jsonParser = new JsonParser();
                   FileReader reader = new FileReader( jsonFile );
-                  jsonParser.start( reader );
+                  JsonParser jsonParser = new JsonParser( reader );
+                  jsonParser.start();
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
                         jsonParser.skipToString( "publishedAt" );
                         String publishedAt = jsonParser.readString( "publishedAt" );
@@ -106,15 +106,15 @@ public class JsonUtil {
        * 将最新的福利数据添加到BeautiesBean缓存
        */
       public static void parserLatestBeautyJson (
-          File jsonFile, Date date, BeautiesBean beautiesBean ) {
+          File jsonFile, Date date, LocalCategoryBean beautiesBean ) {
 
             try {
                   Log.e( TAG, "parserLatestBeautyJson :添加最新福利数据到BeautiesBean缓存 --> 解析最新的福利数据" );
                   ArrayList<String> newData = new ArrayList<>();
 
-                  JsonParser jsonParser = new JsonParser();
                   FileReader reader = new FileReader( jsonFile );
-                  jsonParser.start( reader );
+                  JsonParser jsonParser = new JsonParser( reader );
+                  jsonParser.start();
 
                   /* 先读取第一条数据 */
                   jsonParser.skipToString( "publishedAt" );
@@ -168,11 +168,11 @@ public class JsonUtil {
                         }
                   }
                   jsonParser.finish();
-                  beautiesBean.getBeautyUrls().addAll( 0, newData );
+                  beautiesBean.getUrls().addAll( 0, newData );
 
                   /* 缓存最新数据到本地 */
                   File beanFile = FileManager.getBeautiesBeanFile();
-                  ObjectLoader.toFile( beanFile, beautiesBean, BeautiesBean.class );
+                  ObjectLoader.toFile( beanFile, beautiesBean, LocalCategoryBean.class );
                   Log.e( TAG, "parserLatestBeautyJson : 添加最新福利数据到BeautiesBean缓存--> 完成" );
             } catch(IOException e) {
                   e.printStackTrace();

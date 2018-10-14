@@ -3,7 +3,7 @@ package com.example.wuxio.gankexamples.model;
 import android.graphics.Bitmap;
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.model.bean.BeautiesBean;
+import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
@@ -61,7 +61,7 @@ public class BitmapCache {
       }
 
       /**
-       * {@link #loadListBitmaps(BeautiesBean, int, int, OnListBitmapsLoadedListener)}回调
+       * {@link #loadListBitmaps(LocalCategoryBean, int, int, OnListBitmapsLoadedListener)}回调
        */
       public interface OnListBitmapsLoadedListener {
 

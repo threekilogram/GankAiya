@@ -57,5 +57,5 @@ dependencies {
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
     /* json parser */
-    implementation 'com.github.threekilogram:JsonParser:3.0.1'
+    implementation 'com.github.threekilogram:JsonParser:3.0.2'
 }
