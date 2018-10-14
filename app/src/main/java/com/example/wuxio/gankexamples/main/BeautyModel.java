@@ -60,7 +60,7 @@ public class BeautyModel {
             PoolExecutor.execute( ( ) -> {
 
                   /* 1.读取本地 LocalCategoryBean 缓存*/
-                  File beautiesBeanFile = FileManager.getBeautiesBeanFile();
+                  File beautiesBeanFile = FileManager.getLocalBeautyBeanFile();
                   if( beautiesBeanFile.exists() ) {
 
                         buildBeautiesBeanFromFile( beautiesBeanFile );

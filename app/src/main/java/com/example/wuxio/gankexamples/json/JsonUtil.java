@@ -171,7 +171,7 @@ public class JsonUtil {
                   beautiesBean.getUrls().addAll( 0, newData );
 
                   /* 缓存最新数据到本地 */
-                  File beanFile = FileManager.getBeautiesBeanFile();
+                  File beanFile = FileManager.getLocalBeautyBeanFile();
                   ObjectLoader.toFile( beanFile, beautiesBean, LocalCategoryBean.class );
                   Log.e( TAG, "parserLatestBeautyJson : 添加最新福利数据到BeautiesBean缓存--> 完成" );
             } catch(IOException e) {

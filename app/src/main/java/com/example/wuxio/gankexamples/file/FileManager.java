@@ -3,28 +3,17 @@ package com.example.wuxio.gankexamples.file;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import java.io.File;
-import tech.threekilogram.depository.function.encode.StringHash;
 
 /**
  * @author wuxio 2018-05-05:19:13
  */
 public class FileManager {
 
+      private static final String GANK    = "gank";
+      private static final String PICTURE = "picture";
+      private static final String BEAUTY  = "beauty";
+
       private static File sAppFile;
-      private static File sBeanStringFile;
-      private static File sPictureFile;
-      private static File sBeautyFile;
-      private static File sBeautiesBeanFile;
-      private static File sBeautyJsonFile;
-      private static File sAndroidJsonFile;
-      private static File sLatestBeautyJsonFile;
-
-      private static final String GANK        = "gank";
-      private static final String BEAN_STRING = "beanString";
-      private static final String PICTURE     = "picture";
-      private static final String BEAUTY      = "beauty";
-
-      private static final String BEAUTY_ALL_URL_HASH = StringHash.hash( GankUrl.beautyAllUrl() );
 
       public static void init ( ) {
 
@@ -36,7 +25,7 @@ public class FileManager {
             }
 
             if( !dir.exists() ) {
-                  dir.mkdirs();
+                  boolean mkdirs = dir.mkdirs();
             }
 
             sAppFile = dir;
@@ -51,89 +40,86 @@ public class FileManager {
       }
 
       /**
-       * @return 缓存从网络获取的历史bean的目录
-       */
-      private static File getBeanStringFile ( ) {
-
-            if( sBeanStringFile == null ) {
-                  sBeanStringFile = new File( sAppFile, BEAN_STRING );
-                  if( !sBeanStringFile.exists() ) {
-                        sBeanStringFile.mkdirs();
-                  }
-            }
-
-            return sBeanStringFile;
-      }
-
-      /**
        * @return 保存图片的文件夹
        */
       public static File getPictureFile ( ) {
 
-            if( sPictureFile == null ) {
-                  sPictureFile = new File( sAppFile, PICTURE );
-                  if( !sPictureFile.exists() ) {
-                        sPictureFile.mkdirs();
-                  }
+            File file = new File( getAppFile(), PICTURE );
+            if( !file.exists() ) {
+                  boolean mkdirs = file.mkdirs();
             }
-            return sPictureFile;
+            return file;
       }
 
       /**
        * @return 保存分类beauty的文件夹
        */
-      public static File getBeautyFile ( ) {
+      private static File getBeautyFile ( ) {
 
-            if( sBeautyFile == null ) {
-                  sBeautyFile = new File( sAppFile, BEAUTY );
-                  if( !sBeautyFile.exists() ) {
-                        sBeautyFile.mkdirs();
-                  }
+            File file = new File( getAppFile(), BEAUTY );
+            if( !file.exists() ) {
+                  boolean mkdirs = file.mkdirs();
             }
-            return sBeautyFile;
+            return file;
       }
 
       /**
-       * @return 保存分类beauty的文件夹
+       * 本地创建的beauty分类数据索引
        */
-      public static File getBeautiesBeanFile ( ) {
+      public static File getLocalBeautyBeanFile ( ) {
 
-            if( sBeautiesBeanFile == null ) {
-                  File beautyFile = getBeautyFile();
-                  sBeautiesBeanFile = new File( beautyFile, BEAUTY_ALL_URL_HASH );
-            }
-            return sBeautiesBeanFile;
+            return new File( getBeautyFile(), BEAUTY + "_all" );
       }
 
       /**
-       * @return 保存分类beauty的文件夹
+       * 网络下载的beauty分类历史数据
        */
       public static File getBeautyJsonFile ( ) {
 
-            if( sBeautyJsonFile == null ) {
-                  File beanStringFile = getBeanStringFile();
-                  sBeautyJsonFile = new File( beanStringFile, BEAUTY_ALL_URL_HASH + ".json" );
-            }
-            return sBeautyJsonFile;
-      }
-
-      public static File getLatestBeautyJsonFile ( ) {
-
-            if( sLatestBeautyJsonFile == null ) {
-                  File beanStringFile = getBeanStringFile();
-                  sLatestBeautyJsonFile = new File( beanStringFile, "beautyLatest.json" );
-            }
-            return sLatestBeautyJsonFile;
+            return new File( getBeautyFile(), BEAUTY + ".json" );
       }
 
       /**
-       * @return 保存分类beauty的文件夹
+       * 最新的20条beauty分类数据
+       */
+      public static File getLatestBeautyJsonFile ( ) {
+
+            return new File( getBeautyFile(), BEAUTY + "_latest.json" );
+      }
+
+      /**
+       * @return 保存分类android的文件夹
+       */
+      private static File getAndroidFile ( ) {
+
+            File file = new File( getAppFile(), GankUrl.ANDROID );
+            if( !file.exists() ) {
+                  boolean mkdirs = file.mkdirs();
+            }
+            return file;
+      }
+
+      /**
+       * 本地创建的android分类数据索引
+       */
+      public static File getLocalAndroidBeanFile ( ) {
+
+            return new File( getAndroidFile(), GankUrl.ANDROID + "_all" );
+      }
+
+      /**
+       * 网络下载的android分类历史数据
        */
       public static File getAndroidJsonFile ( ) {
 
-            if( sAndroidJsonFile == null ) {
-                  sAndroidJsonFile = new File( getBeanStringFile(), GankUrl.ANDROID + "_all.json" );
-            }
-            return sAndroidJsonFile;
+            return new File( getAndroidFile(), GankUrl.ANDROID + ".json" );
+      }
+
+      /**
+       * 最新的20条android分类数据
+       */
+      public static File getLatestAndroidJsonFile ( ) {
+
+            return new File( getAndroidFile(), GankUrl.ANDROID + "_latest.json" );
       }
 }
