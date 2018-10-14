@@ -116,6 +116,16 @@ public class BitmapCache {
             return sBitmapLoader.load( url, width, height );
       }
 
+      public static Bitmap loadBitmapFromMemory ( String url ) {
+
+            return sBitmapLoader.loadFromMemory( url );
+      }
+
+      public static Bitmap loadBitmapFromFile ( String url, int width, int height ) {
+
+            return sBitmapLoader.loadFromFile( url, width, height );
+      }
+
       /**
        * 下载图片的runnable
        */

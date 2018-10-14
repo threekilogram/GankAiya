@@ -480,7 +480,7 @@ public class ShowFragment extends Fragment implements OnMessageReceiveListener {
             @Override
             public void onClick ( View v ) {
 
-                  String url = (String) v.getTag( R.id.show_item_url );
+                  String url = (String) v.getTag( R.id.item_url );
                   String title = (String) v.getTag( R.id.show_item_desc );
                   WebActivity.start( getContext(), url, title );
             }

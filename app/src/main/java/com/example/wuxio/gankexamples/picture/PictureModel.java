@@ -2,8 +2,11 @@ package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
 import android.util.Log;
+import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import tech.threekilogram.screen.ScreenSize;
 
 /**
  * @author Liujin 2018-10-14:15:40
@@ -41,6 +44,34 @@ public class PictureModel {
             if( sStartIndex <= position && position < sStartIndex + sBitmaps.size() ) {
                   return sBitmaps.get( position - sStartIndex );
             }
-            return null;
+            return BitmapCache.loadBitmapFromMemory( url );
+      }
+
+      static void loadBitmapFromCache ( int position, String url ) {
+
+            PoolExecutor.execute( ( ) -> {
+
+                  if( BitmapCache.hasPictureCache( url ) ) {
+                        loadFromFile( position, url );
+                  } else {
+                        /* 缓存失效 */
+                        BitmapCache.downLoadPicture( url );
+                        loadFromFile( position, url );
+                  }
+            } );
+      }
+
+      private static void loadFromFile ( int position, String url ) {
+
+            BitmapCache.loadBitmapFromFile(
+                url,
+                ScreenSize.getWidth(),
+                ScreenSize.getHeight()
+            );
+            try {
+                  sRef.get().notifyItemChanged( position );
+            } catch(Exception e) {
+                  /* nothing worry about */
+            }
       }
 }

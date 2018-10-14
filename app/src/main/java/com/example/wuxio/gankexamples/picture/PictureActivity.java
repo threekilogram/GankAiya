@@ -28,6 +28,7 @@ public class PictureActivity extends AppCompatActivity {
       private static final String TAG = PictureActivity.class.getSimpleName();
 
       private ImageWatcherView mImageWatcher;
+      private WatcherAdapter   mAdapter;
 
       /**
        * @param startIndex 图片数据起始索引
@@ -63,12 +64,18 @@ public class PictureActivity extends AppCompatActivity {
       private void initView ( ) {
 
             mImageWatcher = findViewById( R.id.imageWatcher );
-            mImageWatcher.setImageWatcherAdapter( new WatcherAdapter() );
+            mAdapter = new WatcherAdapter();
+            mImageWatcher.setImageWatcherAdapter( mAdapter );
             mImageWatcher.scrollToPosition( PictureModel.getCurrentIndex() );
       }
 
       private void setCurrentIndexState ( ) {
 
+      }
+
+      public void notifyItemChanged ( int position ) {
+
+            mAdapter.notifyItemChanged( position );
       }
 
       private View createHolderView ( ViewGroup parent ) {
@@ -119,6 +126,7 @@ public class PictureActivity extends AppCompatActivity {
                   super( itemView );
                   mScaleImageView = itemView.findViewById( R.id.scale );
                   mProgressBar = itemView.findViewById( R.id.progress );
+                  itemView.setTag( R.id.item_holder, this );
             }
 
             @Override
@@ -126,6 +134,7 @@ public class PictureActivity extends AppCompatActivity {
                 int position, ScaleImageView imageView, Bitmap bitmap ) {
 
                   mProgressBar.setVisibility( View.GONE );
+                  imageView.reset();
                   super.onBitmapNotNull( position, imageView, bitmap );
             }
 
@@ -135,7 +144,9 @@ public class PictureActivity extends AppCompatActivity {
 
                   imageView.setImageBitmap( null );
                   imageView.reset();
-                  mProgressBar.setVisibility( View.VISIBLE );
+                  mProgressBar.setVisibility( android.view.View.VISIBLE );
+
+                  PictureModel.loadBitmapFromCache( position, mAdapter.mUrls.get( position ) );
             }
 
             @NonNull
