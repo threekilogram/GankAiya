@@ -31,7 +31,6 @@ import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
-import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
       protected DrawerLayout            mDrawer;
       protected NavigationView          mNavigationView;
       protected RecyclerPagerBanner     mBanner;
-      private   RecyclerBannerAdapter   mAdapter;
+      private   RecyclerBannerAdapter   mBannerAdapter;
       protected AppBarLayout            mAppBar;
       protected CoordinatorLayout       mCoordinator;
       protected ViewPager               mViewPager;
@@ -83,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
             setSystemUI();
             initView();
             postAction();
+
+            BeautyModel.bind( this );
+            BeautyModel.loadBannerBitmap();
       }
 
       /**
@@ -120,8 +122,8 @@ public class MainActivity extends AppCompatActivity {
             mDotView.setSelected( 0 );
 
             /* banner */
-            mAdapter = new RecyclerBannerAdapter();
-            mBanner.setBannerAdapter( mAdapter );
+            mBannerAdapter = new RecyclerBannerAdapter();
+            mBanner.setBannerAdapter( mBannerAdapter );
             mBanner.addOnScrollListener( new MainBannerScrollListener() );
 
             /* 防止tabLayout 进入statusBar */
@@ -209,18 +211,16 @@ public class MainActivity extends AppCompatActivity {
             headerView.findViewById( R.id.exitApp ).setOnClickListener( clickListener );
       }
 
-      @Override
-      protected void onResume ( ) {
+      public void onBannerBitmapsPrepared ( int startIndex, List<Bitmap> bitmaps ) {
 
-            super.onResume();
+            mBannerAdapter.mStartIndex = startIndex;
+            mBannerAdapter.mBitmaps = bitmaps;
+            mBannerAdapter.notifyDataSetChanged();
+
             startLoop();
-      }
+            hideBannerLoading();
 
-      @Override
-      protected void onPause ( ) {
-
-            super.onPause();
-            stopLoop();
+            Log.e( TAG, "onBannerBitmapsPrepared : banner 开始轮播" );
       }
 
       public void onBackFromPictureActivity ( int index ) {
@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
       private int getCurrentBannerPosition ( ) {
 
             int position = mBanner.getRecyclerPager().getCurrentPosition();
-            return mAdapter.getActualPosition( position );
+            return mBannerAdapter.getActualPosition( position );
       }
 
       /**
@@ -241,15 +241,6 @@ public class MainActivity extends AppCompatActivity {
       private void closeDrawer ( ) {
 
             mDrawer.closeDrawer( Gravity.START );
-      }
-
-      public void setBannerBitmaps ( List<Bitmap> bitmaps ) {
-
-            mAdapter.mBitmaps = bitmaps;
-            mAdapter.notifyDataSetChanged();
-            hideBannerLoading();
-            Log.e( TAG, "setBannerBitmaps : 更新banner图片" );
-            mBanner.startLoop( 4000 );
       }
 
       private void startLoop ( ) {
@@ -364,18 +355,13 @@ public class MainActivity extends AppCompatActivity {
       private class RecyclerBannerAdapter extends BannerAdapter<BannerHolder> {
 
             private List<Bitmap>            mBitmaps;
+            private int                     mStartIndex;
             private BannerItemClickListener mClickListener = new BannerItemClickListener();
 
             @Override
             public int getActualCount ( ) {
 
                   return 5;
-            }
-
-            @Override
-            public int getActualPosition ( int position ) {
-
-                  return super.getActualPosition( position );
             }
 
             @NonNull
@@ -405,6 +391,8 @@ public class MainActivity extends AppCompatActivity {
        */
       private class BannerHolder extends ViewHolder {
 
+            private int mCurrentPosition;
+
             public BannerHolder ( View itemView ) {
 
                   super( itemView );
@@ -412,6 +400,7 @@ public class MainActivity extends AppCompatActivity {
 
             private void bind ( int position, Bitmap bitmap ) {
 
+                  mCurrentPosition = position;
                   ( (ImageView) itemView ).setImageBitmap( bitmap );
             }
 
@@ -429,13 +418,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick ( View v ) {
 
-                  if( mAdapter.mBitmaps != null ) {
-                        PictureActivity.start(
-                            MainActivity.this,
-                            mBanner,
-                            mAdapter.mBitmaps
-                        );
-                  }
+//                  if( mBannerAdapter.mBitmaps != null ) {
+//                        PictureActivity.start(
+//                            MainActivity.this,
+//                            mBanner,
+//                            mBannerAdapter.mBitmaps
+//                        );
+//                  }
+                  BannerHolder childViewHolder = (BannerHolder) mBanner.getRecyclerPager()
+                                                                       .getChildViewHolder( v );
+
+                  Log.e( TAG, "onClick : " + childViewHolder.mCurrentPosition );
             }
       }
 
@@ -506,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
 
                   if( newState == RecyclerView.SCROLL_STATE_SETTLING ) {
                         int position = mBanner.getRecyclerPager().getCurrentPosition() + 1;
-                        int actualPosition = mAdapter.getActualPosition( position );
+                        int actualPosition = mBannerAdapter.getActualPosition( position );
                         mDotView.setSelected( actualPosition );
                   }
             }

@@ -3,10 +3,8 @@ package com.example.wuxio.gankexamples.model;
 import android.graphics.Bitmap;
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.model.bean.BeautiesBean;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
-import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.ArrayList;
@@ -77,65 +75,39 @@ public class BitmapCache {
             void onLoaded ( int index, int count, List<Bitmap> result );
       }
 
-      public static void loadListBitmaps (
-          BeautiesBean beautiesBean, int index, int count, OnListBitmapsLoadedListener listener ) {
+      public static List<Bitmap> loadListBitmaps ( List<String> urls ) {
 
-            String key = GankUrl.BEAUTY + "_" + index + "_" + count;
-
-            ObjectBus bus = ObjectBus.newList();
-            bus.toPool( ( ) -> {
-
-                  List<String> beautiesUrl = BeautyModel.getBeautiesUrl();
-                  Log.e( TAG, "loadListBitmaps : 从构建的BeautiesBean中获取Url数量 " + beautiesUrl.size() );
-                  int size = beautiesUrl.size();
-                  if( size == 0 ) {
-                        /* 构建完成后还是没有数据 */
-                        return;
+            /* 1.找出没有缓存的图片 */
+            ArrayList<String> notCacheUrl = new ArrayList<>();
+            for( String url : urls ) {
+                  if( !sBitmapLoader.containsOfFile( url ) ) {
+                        notCacheUrl.add( url );
                   }
-                  if( index + count < size ) {
+            }
 
-                        /* 1.找出没有缓存的图片 */
-                        ArrayList<String> notCacheUrl = new ArrayList<>();
-                        for( int i = index; i < index + count; i++ ) {
-                              String url = beautiesUrl.get( i );
-                              if( !sBitmapLoader.containsOfFile( url ) ) {
-                                    notCacheUrl.add( url );
-                              }
-                              Log.e( TAG, "loadListBitmaps : 加载一组图片: " + url );
-                        }
+            int size = notCacheUrl.size();
+            if( size > 0 ) {
 
-                        /* 2.缓存没有缓存的图片 */
-                        int size1 = notCacheUrl.size();
-                        if( size1 > 0 ) {
-                              ArrayList<DownLoadBitmapRunnable> runnableList = new ArrayList<>(
-                                  size1 );
-                              for( String s : notCacheUrl ) {
-                                    Log.e( TAG, "loadListBitmaps : 加载一组图片:没有缓存的图片 " + s );
-                                    runnableList.add( new DownLoadBitmapRunnable( s ) );
-                              }
-
-                              PoolExecutor.execute( runnableList );
-                              Log.e( TAG, "loadListBitmaps : 加载一组图片:缓存没有缓存的图片完成" );
-                        }
-
-                        /* 3.加载成bitmap */
-                        ArrayList<Bitmap> result = new ArrayList<>( count );
-                        int width = ScreenSize.getWidth();
-                        int height = ScreenSize.getHeight();
-                        for( int i = index; i < index + count; i++ ) {
-                              String url = beautiesUrl.get( i );
-                              Bitmap bitmap = sBitmapLoader.load( url, width, height );
-                              result.add( bitmap );
-                        }
-
-                        Log.e( TAG, "loadListBitmaps : 加载一组图片完成" );
-                        bus.setResult( key, result );
+                  ArrayList<DownLoadBitmapRunnable> runnableList = new ArrayList<>( size );
+                  for( String s : notCacheUrl ) {
+                        Log.e( TAG, "loadListBitmaps : 加载一组图片:没有缓存的图片 " + s );
+                        runnableList.add( new DownLoadBitmapRunnable( s ) );
                   }
-            } ).toMain( ( ) -> {
+                  PoolExecutor.execute( runnableList );
+            }
 
-                  List<Bitmap> result = bus.getResultOff( key );
-                  listener.onLoaded( index, count, result );
-            } ).run();
+            /* 3.加载成bitmap */
+            int urlSize = urls.size();
+            int width = ScreenSize.getWidth();
+            int height = ScreenSize.getHeight();
+            ArrayList<Bitmap> result = new ArrayList<>( urlSize );
+            for( String url : urls ) {
+                  Bitmap bitmap = sBitmapLoader.load( url, width, height );
+                  result.add( bitmap );
+            }
+
+            Log.e( TAG, "loadListBitmaps : 加载一组图片完成" );
+            return result;
       }
 
       public static Bitmap loadBitmap (

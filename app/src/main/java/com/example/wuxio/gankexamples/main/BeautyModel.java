@@ -1,8 +1,7 @@
 package com.example.wuxio.gankexamples.main;
 
+import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.Toast;
-import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.BeanLoader;
@@ -11,6 +10,8 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.BeautiesBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
 import com.example.wuxio.gankexamples.utils.NetWork;
+import com.example.wuxio.gankexamples.utils.ToastMessage;
+import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -180,11 +181,26 @@ public class BeautyModel {
                 + " " + beautiesBeanFile );
       }
 
+      /**
+       * 获取构建好的bean
+       */
       public static BeautiesBean getBeautiesBean ( ) {
 
+            if( !IS_BEAN_BUILD.get() ) {
+                  synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
+                        try {
+                              BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.wait();
+                        } catch(InterruptedException e) {
+                              e.printStackTrace();
+                        }
+                  }
+            }
             return sBeautiesBean;
       }
 
+      /**
+       * 获取构建好的bean中的image Urls
+       */
       public static List<String> getBeautiesUrl ( ) {
 
             if( !IS_BEAN_BUILD.get() ) {
@@ -199,35 +215,56 @@ public class BeautyModel {
             return sBeautiesBean.getBeautyUrls();
       }
 
+      /**
+       * 绑定宿主
+       */
       public static void bind ( MainActivity activity ) {
 
             sRef = new WeakReference<>( activity );
       }
 
+      /**
+       * 为{@link MainActivity}获取banner图片
+       */
       public static void loadBannerBitmap ( ) {
 
-            BitmapCache.loadListBitmaps(
-                sBeautiesBean,
-                0,
-                5,
-                ( index, count, result ) -> {
+            PoolExecutor.execute( ( ) -> {
 
-                      if( result == null ) {
-                            if( NetWork.hasNetwork() ) {
-                                  Toast.makeText(
-                                      App.INSTANCE,
-                                      "无法获取banner图片",
-                                      Toast.LENGTH_SHORT
-                                  ).show();
-                            }
-                      } else {
+                  List<String> beautiesUrl = getBeautiesUrl();
 
-                            MainActivity mainActivity = sRef.get();
-                            if( mainActivity != null ) {
-                                  mainActivity.setBannerBitmaps( result );
-                            }
-                      }
-                }
-            );
+                  int startIndex = 0;
+                  int count = 5;
+                  ArrayList<String> needUrls = new ArrayList<>( count );
+                  for( int i = startIndex; i < startIndex + count; i++ ) {
+
+                        needUrls.add( beautiesUrl.get( i ) );
+                  }
+                  List<Bitmap> bitmaps = BitmapCache.loadListBitmaps( needUrls );
+
+                  for( Bitmap bitmap : bitmaps ) {
+                        if( bitmap == null ) {
+                              if( NetWork.hasNetwork() ) {
+                                    ToastMessage.toast( "没有网络" );
+                                    Log.e( TAG, "loadBannerBitmap : 没有网络" );
+                              } else {
+                                    ToastMessage.toast( "无法获取banner图片数据" );
+                                    Log.e( TAG, "loadBannerBitmap : 无法获取banner图片数据" );
+                              }
+                        }
+                  }
+
+                  setMainActivityBannerData( 0, bitmaps );
+            } );
+      }
+
+      private static void setMainActivityBannerData ( int startIndex, List<Bitmap> bitmaps ) {
+
+            MainExecutor.execute( ( ) -> {
+                  try {
+                        sRef.get().onBannerBitmapsPrepared( startIndex, bitmaps );
+                  } catch(Exception e) {
+                        /* nothing to worry about */
+                  }
+            } );
       }
 }
