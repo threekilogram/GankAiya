@@ -20,16 +20,15 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class RootActivity extends AppCompatActivity {
 
+      /**
+       * 启动
+       */
       public static void start ( Context context ) {
 
             Intent starter = new Intent( context, RootActivity.class );
             context.startActivity( starter );
       }
 
-      /**
-       *
-       * @param savedInstanceState
-       */
       @Override
       protected void onCreate ( Bundle savedInstanceState ) {
 

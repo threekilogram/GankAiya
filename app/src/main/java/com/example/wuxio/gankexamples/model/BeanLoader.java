@@ -247,25 +247,30 @@ public class BeanLoader {
 
             int count = 20;
             final int page = 1;
-            String beautyUrl = GankUrl.beautyUrl( count, page );
+            final String beautyUrl = GankUrl.beautyUrl( count, page );
 
             File jsonFile = FileManager.getLatestBeautyJsonFile();
             if( jsonFile.exists() ) {
                   jsonFile.delete();
             }
 
-            /* 下载最新的数据 */
-            StreamLoader.downLoad( beautyUrl, jsonFile );
-            /* 如果最新的数据不够,那么增加数量,继续下载 */
-            Date date = DateUtil.getDate( beautiesBean.getStartDate() );
-            while( needMoreJson( jsonFile, date ) ) {
-                  jsonFile.delete();
-                  count += count;
-                  beautyUrl = GankUrl.beautyUrl( count, page );
+            PoolExecutor.execute( ( ) -> {
+
+                  int count1 = 20;
+                  final int page1 = 1;
+                  /* 下载最新的数据 */
                   StreamLoader.downLoad( beautyUrl, jsonFile );
-            }
-            addLatestJsonToBeautiesBean( jsonFile, date, beautiesBean );
-            jsonFile.delete();
+                  /* 如果最新的数据不够,那么增加数量,继续下载 */
+                  Date date = DateUtil.getDate( beautiesBean.getStartDate() );
+                  while( needMoreJson( jsonFile, date ) ) {
+                        jsonFile.delete();
+                        count1 += count1;
+                        String beautyUrl1 = GankUrl.beautyUrl( count1, page1 );
+                        StreamLoader.downLoad( beautyUrl1, jsonFile );
+                  }
+                  addLatestJsonToBeautiesBean( jsonFile, date, beautiesBean );
+                  jsonFile.delete();
+            } );
       }
 
       /**
