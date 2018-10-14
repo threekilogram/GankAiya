@@ -11,11 +11,12 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.design.widget.TabLayout.OnTabSelectedListener;
+import android.support.design.widget.TabLayout.Tab;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -29,8 +30,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
@@ -48,7 +49,7 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class MainActivity extends AppCompatActivity {
 
-      private static final String TAG = "MainActivity";
+      private static final String TAG = MainActivity.class.getName();
 
       protected DrawerLayout            mDrawer;
       protected NavigationView          mNavigationView;
@@ -60,10 +61,10 @@ public class MainActivity extends AppCompatActivity {
       protected TabLayout               mTabLayout;
       protected CollapsingToolbarLayout mCollapsingToolbar;
       protected ImageView               mBannerLoading;
-      private   MainPagerAdapter        mMainPagerAdapter;
-      private   MainPagerChangeListener mMainPagerChangeListener;
+      private   MainPagerAdapter        mPagerAdapter;
       private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
       private   DotView                 mDotView;
+      private   MainTabSelectListener   mTabSelectListener;
 
       /**
        * 静态启动方法
@@ -132,13 +133,13 @@ public class MainActivity extends AppCompatActivity {
             mCollapsingToolbar.setMinimumHeight( height );
 
             /* view Pager */
-            mMainPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
-            mViewPager.setAdapter( mMainPagerAdapter );
+            mPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
+            mViewPager.setAdapter( mPagerAdapter );
 
             /* tabLayout */
-            mMainPagerChangeListener = new MainPagerChangeListener();
-            mViewPager.addOnPageChangeListener( mMainPagerChangeListener );
             mTabLayout.setupWithViewPager( mViewPager );
+            mTabSelectListener = new MainTabSelectListener();
+            mTabLayout.addOnTabSelectedListener( mTabSelectListener );
       }
 
       /**
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
-                  mMainPagerChangeListener.onPageSelected( 0 );
+                  mTabSelectListener.onTabReselected( mTabLayout.getTabAt( 0 ) );
             } );
       }
 
@@ -224,18 +225,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e( TAG, "onBannerBitmapsPrepared : banner 开始轮播" );
       }
 
-      public void onBackFromPictureActivity ( int index ) {
-
-            mBanner.getRecyclerPager().scrollToPosition( index );
-            mDotView.setSelected( index );
-      }
-
-      private int getCurrentBannerPosition ( ) {
-
-            int position = mBanner.getRecyclerPager().getCurrentPosition();
-            return mBannerAdapter.getActualPosition( position );
-      }
-
       /**
        * 关闭菜单,{@link NavigationItemClickListener#onClick(View)}
        */
@@ -252,6 +241,13 @@ public class MainActivity extends AppCompatActivity {
       private void stopLoop ( ) {
 
             mBanner.stopLoop();
+      }
+
+      @Override
+      protected void onRestart ( ) {
+
+            super.onRestart();
+            startLoop();
       }
 
       /**
@@ -394,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
 
             private int mCurrentPosition;
 
-            public BannerHolder ( View itemView ) {
+            private BannerHolder ( View itemView ) {
 
                   super( itemView );
             }
@@ -439,62 +435,6 @@ public class MainActivity extends AppCompatActivity {
       }
 
       /**
-       * main content fragment adapter
-       */
-      private class MainPagerAdapter extends FragmentStatePagerAdapter {
-
-            private ShowFragment[] mShowFragments = new ShowFragment[ Constant.All_CATEGORY.length ];
-
-            MainPagerAdapter ( FragmentManager fm ) {
-
-                  super( fm );
-            }
-
-            @Override
-            public Fragment getItem ( int position ) {
-
-                  ShowFragment fragment = ShowFragment.newInstance();
-                  mShowFragments[ position ] = fragment;
-                  return fragment;
-            }
-
-            public ShowFragment getCurrentFragment ( int position ) {
-
-                  return mShowFragments[ position ];
-            }
-
-            @Override
-            public int getCount ( ) {
-
-                  return Constant.All_CATEGORY.length;
-            }
-
-            @Nullable
-            @Override
-            public CharSequence getPageTitle ( int position ) {
-
-                  return Constant.All_CATEGORY[ position ];
-            }
-
-            @Override
-            public void destroyItem ( ViewGroup container, int position, Object object ) {
-
-                  super.destroyItem( container, position, object );
-            }
-      }
-
-      private class MainPagerChangeListener extends SimpleOnPageChangeListener {
-
-            @Override
-            public void onPageSelected ( int position ) {
-
-//                  ShowFragment fragment = mMainPagerAdapter.getCurrentFragment( position );
-//                  String category = Constant.All_CATEGORY[ position ];
-//                  fragment.loadData( category );
-            }
-      }
-
-      /**
        * banner 滚动时更新指示器
        */
       private class MainBannerScrollListener extends OnScrollListener {
@@ -508,6 +448,70 @@ public class MainActivity extends AppCompatActivity {
                         int actualPosition = mBannerAdapter.getActualPosition( position );
                         mDotView.setSelected( actualPosition );
                   }
+            }
+      }
+
+      /**
+       * main content fragment adapter
+       */
+      private class MainPagerAdapter extends FragmentStatePagerAdapter {
+
+            private ShowFragment[] mShowFragments = new ShowFragment[ GankUrl.CATEGORY.length ];
+
+            MainPagerAdapter ( FragmentManager fm ) {
+
+                  super( fm );
+            }
+
+            @Override
+            public Fragment getItem ( int position ) {
+
+                  ShowFragment fragment = ShowFragment
+                      .newInstance( GankUrl.CATEGORY[ position ] );
+                  mShowFragments[ position ] = fragment;
+                  return fragment;
+            }
+
+            public ShowFragment getCurrentFragment ( int position ) {
+
+                  return mShowFragments[ position ];
+            }
+
+            @Override
+            public int getCount ( ) {
+
+                  return GankUrl.CATEGORY.length;
+            }
+
+            @Nullable
+            @Override
+            public CharSequence getPageTitle ( int position ) {
+
+                  return GankUrl.CATEGORY[ position ];
+            }
+      }
+
+      /**
+       * pager selected
+       */
+      private class MainTabSelectListener implements OnTabSelectedListener {
+
+            @Override
+            public void onTabSelected ( Tab tab ) {
+
+                  mPagerAdapter.mShowFragments[ tab.getPosition() ].onSelected();
+            }
+
+            @Override
+            public void onTabUnselected ( Tab tab ) {
+
+                  mPagerAdapter.mShowFragments[ tab.getPosition() ].onUnSelected();
+            }
+
+            @Override
+            public void onTabReselected ( Tab tab ) {
+
+                  mPagerAdapter.mShowFragments[ tab.getPosition() ].onReselected();
             }
       }
 }
