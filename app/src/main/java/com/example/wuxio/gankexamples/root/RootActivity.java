@@ -7,9 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.main.BeautyModel;
+import com.example.wuxio.gankexamples.main.fragment.CategoryModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import com.threekilogram.systemui.SystemUi;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.screen.ScreenSize;
@@ -35,10 +37,6 @@ public class RootActivity extends AppCompatActivity {
 
             super.onCreate( savedInstanceState );
 
-//            TextView textView = new TextView( this );
-//            textView.setBackgroundResource( R.drawable.a42 );
-//            setContentView( textView );
-
             /* 状态栏透明 */
             SystemUi.transparentStatus( RootActivity.this );
             /* 注册一个网络状态监听器,因为之后的界面都需要网络,所以越早注册越好 */
@@ -50,8 +48,14 @@ public class RootActivity extends AppCompatActivity {
             /* 初始化变量 */
             BeanLoader.init();
             BitmapCache.init();
-            /* 初始化福利数据 */
-            BeautyModel.init();
+            /* 开线程初始化 */
+            PoolExecutor.execute( ( ) -> {
+
+                  /* 初始化福利数据 */
+                  BeautyModel.init();
+                  /* 初始化分类数据 */
+                  CategoryModel.init();
+            } );
 
             /* 立即启动splash */
             SplashActivity.start( this );

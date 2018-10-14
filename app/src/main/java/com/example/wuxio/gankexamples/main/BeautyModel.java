@@ -40,37 +40,37 @@ public class BeautyModel {
       public static void init ( ) {
 
             if( sLocalBean.getUrls() == null ) {
-                  buildBeautiesBean();
+                  buildLocalBean();
             }
       }
 
       /**
        * 从文件或者从网络构建bean
        */
-      private static void buildBeautiesBean ( ) {
+      private static void buildLocalBean ( ) {
 
             PoolExecutor.execute( ( ) -> {
 
                   /* 1.读取本地 LocalCategoryBean 缓存*/
-                  File beautiesBeanFile = FileManager.getLocalBeautyBeanFile();
-                  if( beautiesBeanFile.exists() ) {
+                  File localBean = FileManager.getLocalBeautyBeanFile();
+                  if( localBean.exists() ) {
 
-                        buildBeautiesBeanFromFile( beautiesBeanFile );
+                        buildLocalBeanFromFile( localBean );
                   } else {
 
                         /* 2.没有beauty历史记录缓存 */
-                        Log.e( TAG, "buildBeautiesBean : 从网络构建福利bean" );
+                        Log.e( TAG, "buildLocalBean : 从网络构建本地bean" );
                         if( NetWork.hasNetwork() ) {
 
                               /* 3.从网络下载,并构建bean*/
-                              buildBeautiesBeanFromNet( beautiesBeanFile );
+                              buildLocalBeanFromNet( localBean );
                         } else {
 
                               /* 3.如果无法从网络构建 */
                               sLocalBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
                               notifyAllWait();
-                              Log.e( TAG, "buildBeautiesBean : 没有网络,无法获取历史福利数据" );
+                              Log.e( TAG, "buildLocalBean : 没有网络,无法获取历史福利数据" );
                         }
                   }
 
@@ -90,7 +90,7 @@ public class BeautyModel {
        */
       private static void cacheBeautyPicture ( ) {
 
-            List<String> beautyUrls = getBeautiesUrl();
+            List<String> beautyUrls = getUrls();
 
             PoolExecutor.execute( ( ) -> {
                   for( int i = 0; i < beautyUrls.size(); i++ ) {
@@ -107,14 +107,14 @@ public class BeautyModel {
       /**
        * 从本地文件构建BeautiesBean
        */
-      private static void buildBeautiesBeanFromFile ( File beanFile ) {
+      private static void buildLocalBeanFromFile ( File beanFile ) {
 
-            Log.e( TAG, "buildBeautiesBean : 从本地缓存构建福利bean中" );
+            Log.e( TAG, "buildLocalBean : 从本地缓存构建福利bean中" );
             /* 从缓存加载数据 */
             LocalCategoryBean bean = ObjectLoader.loadFromFile( beanFile, LocalCategoryBean.class );
             sLocalBean.setStartDate( bean.getStartDate() );
             sLocalBean.setUrls( bean.getUrls() );
-            Log.e( TAG, "buildBeautiesBeanFromFile : 从本地缓存构建福利bean完成" );
+            Log.e( TAG, "buildLocalBeanFromFile : 从本地缓存构建福利bean完成" );
 
             /* 唤醒等待beautiesBean创建的线程启动 */
             notifyAllWait();
@@ -142,7 +142,7 @@ public class BeautyModel {
       /**
        * 从网络构建BeautiesBean
        */
-      private static void buildBeautiesBeanFromNet ( File beautiesBeanFile ) {
+      private static void buildLocalBeanFromNet ( File beautiesBeanFile ) {
 
             File beautyJsonFile = FileManager.getBeautyJsonFile();
             if( beautyJsonFile.exists() ) {
@@ -151,12 +151,12 @@ public class BeautyModel {
             String url = GankUrl.beautyAllUrl();
             Log.e(
                 TAG,
-                "buildBeautiesBean : 从网络下载所有福利数据.json中: " + url
+                "buildLocalBean : 从网络下载所有福利数据.json中: " + url
             );
             StreamLoader.downLoad( url, beautyJsonFile );
             Log.e(
                 TAG,
-                "buildBeautiesBean : 从网络下载所有福利数据.json完成: " + beautyJsonFile
+                "buildLocalBean : 从网络下载所有福利数据.json完成: " + beautyJsonFile
             );
 
             List<String> result = new ArrayList<>();
@@ -168,7 +168,7 @@ public class BeautyModel {
 
             /* 缓存最新数据 */
             ObjectLoader.toFile( beautiesBeanFile, sLocalBean, LocalCategoryBean.class );
-            Log.e( TAG, "buildBeautiesBean : 缓存网络构建beautyBean到文件完成: " + beautiesBeanFile.exists()
+            Log.e( TAG, "buildLocalBean : 缓存网络构建beautyBean到文件完成: " + beautiesBeanFile.exists()
                 + " " + beautiesBeanFile );
       }
 
@@ -194,7 +194,7 @@ public class BeautyModel {
       /**
        * 获取构建好的bean中的image Urls
        */
-      public static List<String> getBeautiesUrl ( ) {
+      public static List<String> getUrls ( ) {
 
             if( sLocalBean.getUrls() == null ) {
                   synchronized(GankUrl.BEAUTY) {
@@ -225,7 +225,7 @@ public class BeautyModel {
 
             PoolExecutor.execute( ( ) -> {
 
-                  List<String> beautiesUrl = getBeautiesUrl();
+                  List<String> beautiesUrl = getUrls();
 
                   int startIndex = 0;
                   int count = 5;

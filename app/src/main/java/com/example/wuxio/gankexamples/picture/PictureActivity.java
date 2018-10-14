@@ -93,7 +93,7 @@ public class PictureActivity extends AppCompatActivity {
        */
       private class WatcherAdapter extends ImageWatcherAdapter {
 
-            private List<String> mUrls = BeautyModel.getBeautiesUrl();
+            private List<String> mUrls = BeautyModel.getUrls();
 
             @Override
             protected Bitmap getBitmapForScaleImageItem ( int position ) {

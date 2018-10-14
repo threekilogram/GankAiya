@@ -3,7 +3,6 @@ package com.example.wuxio.gankexamples.model;
 import android.graphics.Bitmap;
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
@@ -51,28 +50,17 @@ public class BitmapCache {
             if( !contains ) {
                   sBitmapLoader.download( url );
                   File file = sBitmapLoader.getFile( url );
-                  Log.e( TAG, "downLoadPicture : 缓存图片完成 :" + url + " " + file );
+                  if( file.exists() ) {
+                        Log.e( TAG, "downLoadPicture : 缓存图片完成 :" + url + " " + file );
+                  } else {
+                        Log.e( TAG, "downLoadPicture : 缓存图片失败 :" + url + " " + file );
+                  }
             }
       }
 
       public static boolean hasPictureCache ( String url ) {
 
             return sBitmapLoader.containsOfFile( url );
-      }
-
-      /**
-       * {@link #loadListBitmaps(LocalCategoryBean, int, int, OnListBitmapsLoadedListener)}回调
-       */
-      public interface OnListBitmapsLoadedListener {
-
-            /**
-             * 加载完成
-             *
-             * @param index 起始
-             * @param count 数量
-             * @param result bitmaps
-             */
-            void onLoaded ( int index, int count, List<Bitmap> result );
       }
 
       public static List<Bitmap> loadListBitmaps ( List<String> urls ) {

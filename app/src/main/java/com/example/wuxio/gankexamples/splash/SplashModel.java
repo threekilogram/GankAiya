@@ -2,11 +2,11 @@ package com.example.wuxio.gankexamples.splash;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.Toast;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.utils.NetWork;
+import com.example.wuxio.gankexamples.utils.ToastMessage;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.lang.ref.WeakReference;
 import tech.threekilogram.depository.preference.PreferenceLoader;
@@ -100,7 +100,7 @@ public class SplashModel {
       private static void updateSplashImageUrlForNextTime ( ) {
 
             if( !NetWork.hasNetwork() ) {
-                  Toast.makeText( App.INSTANCE, "没有网络", Toast.LENGTH_SHORT ).show();
+                  ToastMessage.toast( "没有网络" );
             }
 
             PoolExecutor.execute( ( ) -> {
