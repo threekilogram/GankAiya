@@ -90,7 +90,7 @@ public class FileManager {
       /**
        * @return 保存分类android的文件夹
        */
-      private static File getAndroidFile ( ) {
+      public static File getAndroidFile ( ) {
 
             File file = new File( getAppFile(), GankUrl.ANDROID );
             if( !file.exists() ) {

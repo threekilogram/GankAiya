@@ -18,7 +18,6 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import tech.threekilogram.depository.cache.json.ObjectLoader;
 import tech.threekilogram.depository.stream.StreamLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -33,21 +32,14 @@ public class BeautyModel {
 
       private static WeakReference<MainActivity> sRef;
 
-      private static       LocalCategoryBean sBeautiesBean = new LocalCategoryBean();
-      private static final AtomicBoolean     IS_BEAN_BUILD = new AtomicBoolean();
-
-      /**
-       * 正在构建bean时的锁
-       */
-      private static final Object LOCK_BUILDING_BEAUTIES_BEAN = new Object();
+      private static LocalCategoryBean sLocalBean = new LocalCategoryBean();
 
       /**
        * 初始化
        */
       public static void init ( ) {
 
-            if( sBeautiesBean.getUrls() == null ) {
-                  IS_BEAN_BUILD.set( false );
+            if( sLocalBean.getUrls() == null ) {
                   buildBeautiesBean();
             }
       }
@@ -75,7 +67,7 @@ public class BeautyModel {
                         } else {
 
                               /* 3.如果无法从网络构建 */
-                              sBeautiesBean.setUrls( new ArrayList<>() );
+                              sLocalBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
                               notifyAllWait();
                               Log.e( TAG, "buildBeautiesBean : 没有网络,无法获取历史福利数据" );
@@ -88,9 +80,8 @@ public class BeautyModel {
 
       private static void notifyAllWait ( ) {
 
-            BeautyModel.IS_BEAN_BUILD.set( true );
-            synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
-                  BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.notifyAll();
+            synchronized(GankUrl.BEAUTY) {
+                  GankUrl.BEAUTY.notifyAll();
             }
       }
 
@@ -121,8 +112,8 @@ public class BeautyModel {
             Log.e( TAG, "buildBeautiesBean : 从本地缓存构建福利bean中" );
             /* 从缓存加载数据 */
             LocalCategoryBean bean = ObjectLoader.loadFromFile( beanFile, LocalCategoryBean.class );
-            sBeautiesBean.setStartDate( bean.getStartDate() );
-            sBeautiesBean.setUrls( bean.getUrls() );
+            sLocalBean.setStartDate( bean.getStartDate() );
+            sLocalBean.setUrls( bean.getUrls() );
             Log.e( TAG, "buildBeautiesBeanFromFile : 从本地缓存构建福利bean完成" );
 
             /* 唤醒等待beautiesBean创建的线程启动 */
@@ -140,10 +131,10 @@ public class BeautyModel {
        */
       private static void downLoadLatestBeautyJson ( ) {
 
-            Date date = DateUtil.getDate( sBeautiesBean.getStartDate() );
+            Date date = DateUtil.getDate( sLocalBean.getStartDate() );
             File jsonFile = BeanLoader.downLoadLatestBeautyJson( date );
 
-            JsonUtil.parserLatestBeautyJson( jsonFile, date, sBeautiesBean );
+            JsonUtil.parserLatestBeautyJson( jsonFile, date, sLocalBean );
 
             boolean delete = jsonFile.delete();
       }
@@ -169,14 +160,14 @@ public class BeautyModel {
             );
 
             List<String> result = new ArrayList<>();
-            sBeautiesBean.setUrls( result );
-            JsonUtil.parseDownLoadAllBeautyJson( beautyJsonFile, sBeautiesBean );
+            sLocalBean.setUrls( result );
+            JsonUtil.parseDownLoadAllBeautyJson( beautyJsonFile, sLocalBean );
 
             /* 唤醒等待beautiesBean创建的线程启动 */
             notifyAllWait();
 
             /* 缓存最新数据 */
-            ObjectLoader.toFile( beautiesBeanFile, sBeautiesBean, LocalCategoryBean.class );
+            ObjectLoader.toFile( beautiesBeanFile, sLocalBean, LocalCategoryBean.class );
             Log.e( TAG, "buildBeautiesBean : 缓存网络构建beautyBean到文件完成: " + beautiesBeanFile.exists()
                 + " " + beautiesBeanFile );
       }
@@ -184,18 +175,20 @@ public class BeautyModel {
       /**
        * 获取构建好的bean
        */
-      public static LocalCategoryBean getBeautiesBean ( ) {
+      public static LocalCategoryBean getLocalBean ( ) {
 
-            if( !IS_BEAN_BUILD.get() ) {
-                  synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
-                        try {
-                              BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.wait();
-                        } catch(InterruptedException e) {
-                              e.printStackTrace();
+            if( sLocalBean.getUrls() == null ) {
+                  synchronized(GankUrl.BEAUTY) {
+                        if( sLocalBean.getUrls() == null ) {
+                              try {
+                                    GankUrl.BEAUTY.wait();
+                              } catch(InterruptedException e) {
+                                    e.printStackTrace();
+                              }
                         }
                   }
             }
-            return sBeautiesBean;
+            return sLocalBean;
       }
 
       /**
@@ -203,16 +196,18 @@ public class BeautyModel {
        */
       public static List<String> getBeautiesUrl ( ) {
 
-            if( !IS_BEAN_BUILD.get() ) {
-                  synchronized(BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN) {
-                        try {
-                              BeautyModel.LOCK_BUILDING_BEAUTIES_BEAN.wait();
-                        } catch(InterruptedException e) {
-                              e.printStackTrace();
+            if( sLocalBean.getUrls() == null ) {
+                  synchronized(GankUrl.BEAUTY) {
+                        if( sLocalBean.getUrls() == null ) {
+                              try {
+                                    GankUrl.BEAUTY.wait();
+                              } catch(InterruptedException e) {
+                                    e.printStackTrace();
+                              }
                         }
                   }
             }
-            return sBeautiesBean.getUrls();
+            return sLocalBean.getUrls();
       }
 
       /**
