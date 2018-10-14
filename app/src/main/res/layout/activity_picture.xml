@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<tech.threekilogram.scalegesture.ImageWatcherView
+<tech.threekilogram.watcher.ImageWatcherView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/imageWatcher"
@@ -16,4 +16,4 @@
           android:layout_gravity="center_horizontal"
           android:text="1/5"/>
 
-</tech.threekilogram.scalegesture.ImageWatcherView>
+</tech.threekilogram.watcher.ImageWatcherView>

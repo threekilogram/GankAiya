@@ -31,6 +31,7 @@ import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.constant.Constant;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
@@ -418,17 +419,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick ( View v ) {
 
-//                  if( mBannerAdapter.mBitmaps != null ) {
-//                        PictureActivity.start(
-//                            MainActivity.this,
-//                            mBanner,
-//                            mBannerAdapter.mBitmaps
-//                        );
-//                  }
-                  BannerHolder childViewHolder = (BannerHolder) mBanner.getRecyclerPager()
-                                                                       .getChildViewHolder( v );
+                  if( mBannerAdapter.mBitmaps != null ) {
 
-                  Log.e( TAG, "onClick : " + childViewHolder.mCurrentPosition );
+                        BannerHolder childViewHolder = (BannerHolder) mBanner.getRecyclerPager()
+                                                                             .getChildViewHolder(
+                                                                                 v );
+
+                        Log.e( TAG, "onClick : " + childViewHolder.mCurrentPosition );
+
+                        PictureActivity.start(
+                            MainActivity.this,
+                            mBannerAdapter.mStartIndex,
+                            childViewHolder.mCurrentPosition,
+                            mBannerAdapter.mBitmaps
+                        );
+                        stopLoop();
+                  }
             }
       }
 
