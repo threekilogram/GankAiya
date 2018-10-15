@@ -66,25 +66,14 @@ public class GankUrl {
             return null;
       }
 
-      public static String beautyUrl ( int count, int page ) {
-
-            String encode = null;
-            try {
-                  encode = URLEncoder.encode( BEAUTY, "UTF-8" );
-            } catch(UnsupportedEncodingException e) {
-                  e.printStackTrace();
-            }
-            return category( encode, count, page );
-      }
-
       public static String beautyAllUrl ( ) {
 
-            return beautyUrl( Integer.MAX_VALUE, 1 );
+            return category( BEAUTY, Integer.MAX_VALUE, 1 );
       }
 
       public static String beautyLatestUrl ( ) {
 
-            return beautyUrl( 1, 1 );
+            return category( BEAUTY, 1, 1 );
       }
 
       public static String androidAllUrl ( ) {

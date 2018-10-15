@@ -3,7 +3,6 @@ package com.example.wuxio.gankexamples.model;
 import android.util.Log;
 import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
-import com.example.wuxio.gankexamples.splash.SplashModel;
 import java.io.File;
 import java.util.Date;
 import tech.threekilogram.depository.stream.StreamLoader;
@@ -21,21 +20,12 @@ public class BeanLoader {
       public static void init ( ) { }
 
       /**
-       * 获取最新的beauty分类的最新的一条数据,{@link SplashModel#setSplashImage()}
+       * 获取最新的一条分类数据数据
        */
-      public static String loadLatestBeautyUrl ( ) {
+      public static GankCategory loadLatestCategoryJson ( String latestUrl ) {
 
-            /* 从网络加载最新的数据 */
-            String latestUrl = GankUrl.beautyLatestUrl();
-            GankCategory gankCategory = StreamLoader
+            return StreamLoader
                 .loadJsonFromNet( latestUrl, GankCategory.class );
-
-            String result = gankCategory.getResults().get( 0 ).getUrl();
-            Log.e(
-                TAG,
-                "loadLatestBeautyUrl : 获取到的最新福利url: " + result
-            );
-            return result;
       }
 
       /**

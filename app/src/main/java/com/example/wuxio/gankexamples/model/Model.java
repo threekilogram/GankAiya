@@ -32,7 +32,7 @@ public class Model {
 
             /* 从网络获取最新的数据 */
             if( NetWork.hasNetwork() ) {
-                  int i = Model.downLoadLatestBeautyJson(
+                  int i = Model.downLoadLatestJson(
                       category,
                       r,
                       latestJsonFile,
@@ -47,7 +47,7 @@ public class Model {
       /**
        * 下载最新的福利数据,如果没有缓存过那么添加到local缓存
        */
-      public static int downLoadLatestBeautyJson (
+      public static int downLoadLatestJson (
           String category, LocalCategoryBean localBean, File latestJsonFile, File localFile ) {
 
             Date date = DateUtil.getDate( localBean.getStartDate() );

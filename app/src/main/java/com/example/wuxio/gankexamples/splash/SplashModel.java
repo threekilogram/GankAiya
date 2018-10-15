@@ -5,6 +5,8 @@ import android.util.Log;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.model.GankUrl;
+import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.utils.NetWork;
 import com.example.wuxio.gankexamples.utils.ToastMessage;
 import com.threekilogram.objectbus.executor.PoolExecutor;
@@ -22,7 +24,7 @@ public class SplashModel {
       /**
        * splash preference name
        */
-      private static final String SPLASH_CONFIG           = "splash_config";
+      private static final String SPLASH_PREFERENCE       = "splash_config";
       /**
        * splash image logo url key
        */
@@ -55,7 +57,7 @@ public class SplashModel {
             if( sPreferenceLoader == null ) {
                   sPreferenceLoader = new PreferenceLoader(
                       App.INSTANCE,
-                      SPLASH_CONFIG
+                      SPLASH_PREFERENCE
                   );
             }
 
@@ -105,18 +107,22 @@ public class SplashModel {
 
             PoolExecutor.execute( ( ) -> {
 
+                  GankCategory gankCategory = BeanLoader
+                      .loadLatestCategoryJson( GankUrl.beautyLatestUrl() );
+                  Log.e(
+                      TAG, "updateSplashImageUrlForNextTime : 获取到最新的福利数据 " + gankCategory );
                   try {
-                        String beautyUrl = BeanLoader.loadLatestBeautyUrl();
-                        if( !beautyUrl.equals( sSplashImageUrl ) ) {
-                              sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, beautyUrl );
-                              BitmapCache.downLoadPicture( beautyUrl );
+                        String url = gankCategory.getResults().get( 0 ).getUrl();
+                        Log.e( TAG, "updateSplashImageUrlForNextTime : 获取到最新的splash地址 " + url );
+                        if( url != null && !url.equals( sSplashImageUrl ) ) {
+                              sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url );
                               Log.e(
-                                  TAG,
-                                  "updateSplashImageUrlForNextTime : 配置最新的splash地址 " + beautyUrl
-                              );
+                                  TAG, "updateSplashImageUrlForNextTime : 更新最新的splash地址 " + url );
+                              BitmapCache.downLoadPicture( url );
                         }
                   } catch(Exception e) {
                         Log.e( TAG, "updateSplashImageUrlForNextTime : 配置最新的splash地址异常" );
+                        e.printStackTrace();
                   }
             } );
       }
