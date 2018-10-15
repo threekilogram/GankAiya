@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
 
             mDrawer.post( ( ) -> {
 
-                  mBannerLoading.start();
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
                   mTabSelectListener.onTabSelected( mTabLayout.getTabAt( 0 ) );

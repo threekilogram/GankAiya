@@ -1,10 +1,12 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
 import android.util.Log;
+import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -140,6 +142,13 @@ public class ShowModelManager {
                         GankCategoryItem item = AndroidModel.getItemFromFile( position );
                         Log.e( TAG, "loadItemFromFile : " + position + " " + item );
                         if( item != null ) {
+
+//                              List<String> images = item.getImages();
+//                              if( images != null && images.size() > 0 ) {
+//                                    String url = images.get( 0 );
+//                                    BitmapCache.downLoadPicture( url );
+//                              }
+
                               try {
                                     sAndroidRef.get().onItemChanged( position );
                               } catch(Exception e) {
@@ -148,5 +157,10 @@ public class ShowModelManager {
                         }
                   }
             } );
+      }
+
+      public static File getGifFile ( String url ) {
+
+            return BitmapCache.getFile( url );
       }
 }

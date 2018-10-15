@@ -51,6 +51,11 @@ public class BitmapCache {
             return sBitmapLoader.getFile( url );
       }
 
+      public static File getFile ( String url ) {
+
+            return sBitmapLoader.getFile( url );
+      }
+
       public static boolean hasPictureCache ( String url ) {
 
             return sBitmapLoader.containsOfFile( url );

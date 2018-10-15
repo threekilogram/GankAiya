@@ -46,6 +46,7 @@ public class LoadingView extends View {
                   sLoadingDrawable.setRadius( 7 );
                   sLoadingDrawable.setPaintColor( getResources().getColor( R.color.blue ) );
                   sLoadingDrawable.start();
+                  isStart = true;
             }
       }
 
@@ -61,9 +62,9 @@ public class LoadingView extends View {
       @Override
       protected void onDraw ( Canvas canvas ) {
 
-            sLoadingDrawable.draw( canvas );
-
+            super.onDraw( canvas );
             if( isStart ) {
+                  sLoadingDrawable.draw( canvas );
                   invalidate();
             }
       }
@@ -74,29 +75,11 @@ public class LoadingView extends View {
 
             super.onVisibilityChanged( changedView, visibility );
 
-            if( visibility == GONE || visibility == INVISIBLE ) {
-                  isStart = false;
-            } else {
+            if( visibility == VISIBLE ) {
                   isStart = true;
                   invalidate();
+            } else {
+                  isStart = false;
             }
-      }
-
-      @Override
-      protected void onDetachedFromWindow ( ) {
-
-            stop();
-            super.onDetachedFromWindow();
-      }
-
-      public void start ( ) {
-
-            isStart = true;
-            invalidate();
-      }
-
-      public void stop ( ) {
-
-            isStart = false;
       }
 }

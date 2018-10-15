@@ -167,7 +167,6 @@ public class ShowFragment extends Fragment {
 
             private GifImageView mGifImageView;
             private TextView     mDesc;
-            private TextView     mDate;
             private TextView     mWho;
             private LoadingView  mLoadingView;
 
@@ -181,33 +180,12 @@ public class ShowFragment extends Fragment {
 
                   mGifImageView = itemView.findViewById( R.id.gifImageView );
                   mDesc = itemView.findViewById( R.id.desc );
-                  mDate = itemView.findViewById( R.id.date );
                   mWho = itemView.findViewById( R.id.who );
                   mLoadingView = itemView.findViewById( R.id.loadingView );
             }
 
             private void bind ( int position, GankCategoryItem item ) {
 
-                  if( item == null ) {
-                        mLoadingView.setVisibility( View.VISIBLE );
-
-                        mDesc.setVisibility( View.INVISIBLE );
-                        mWho.setVisibility( View.INVISIBLE );
-                        mDate.setVisibility( View.INVISIBLE );
-
-                        ShowModelManager.loadItemFromFile( mCategory, position );
-                  } else {
-
-                        mLoadingView.setVisibility( View.GONE );
-
-                        mDesc.setVisibility( View.VISIBLE );
-                        mWho.setVisibility( View.VISIBLE );
-                        mDate.setVisibility( View.VISIBLE );
-
-                        mDesc.setText( item.getDesc() );
-                        mWho.setText( item.getWho() );
-                        mDate.setText( item.getPublishedAt().substring( 0, 10 ) );
-                  }
             }
       }
 }

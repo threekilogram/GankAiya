@@ -133,11 +133,15 @@ public class BeautyModel {
                             >= NetStateValue.ONLY_WIFI_CONNECT ) {
 
                               String url = beautyUrls.get( i );
-                              File file = BitmapCache.downLoadPicture( url );
-                              if( file.exists() ) {
-                                    success++;
-                              } else {
-                                    failed++;
+                              try {
+                                    File file = BitmapCache.downLoadPicture( url );
+                                    if( file.exists() ) {
+                                          success++;
+                                    } else {
+                                          failed++;
+                                    }
+                              } catch(Exception e) {
+                                    /*  */
                               }
                         }
                   }
