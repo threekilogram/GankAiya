@@ -29,6 +29,7 @@ public class JsonUtil {
                   jsonParser.start();
 
                   LocalCategoryBean bean = new LocalCategoryBean();
+                  bean.setUrls( new ArrayList<>() );
 
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
 

@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.model.bean;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,11 +11,6 @@ public class LocalCategoryBean {
 
       private String       mStartDate;
       private List<String> mUrls;
-
-      public LocalCategoryBean ( ) {
-
-            mUrls = new ArrayList<>();
-      }
 
       public List<String> getUrls ( ) {
 

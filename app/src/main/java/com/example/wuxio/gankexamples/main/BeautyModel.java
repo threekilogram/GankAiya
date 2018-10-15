@@ -27,15 +27,15 @@ public class BeautyModel {
 
       private static WeakReference<MainActivity> sRef;
 
-      private static LocalCategoryBean sLocalBean;
+      private static LocalCategoryBean sLocalBeautyBean;
 
       /**
        * 初始化
        */
       public static void init ( ) {
 
-            if( sLocalBean == null ) {
-                  sLocalBean = new LocalCategoryBean();
+            if( sLocalBeautyBean == null ) {
+                  sLocalBeautyBean = new LocalCategoryBean();
                   buildLocalBean();
             }
       }
@@ -51,7 +51,7 @@ public class BeautyModel {
                   File localBeanFile = FileManager.getLocalBeautyBeanFile();
                   if( localBeanFile.exists() ) {
 
-                        sLocalBean = Model.buildLocalBeanFromFile(
+                        sLocalBeautyBean = Model.buildLocalBeanFromFile(
                             GankUrl.BEAUTY,
                             localBeanFile,
                             FileManager.getLatestBeautyJsonFile()
@@ -65,7 +65,7 @@ public class BeautyModel {
                         if( NetWork.hasNetwork() ) {
 
                               /* 3.从网络下载,并构建bean*/
-                              sLocalBean = Model.buildLocalBeanFromNet(
+                              sLocalBeautyBean = Model.buildLocalBeanFromNet(
                                   GankUrl.beautyAllUrl(),
                                   FileManager.getBeautyJsonFile(),
                                   localBeanFile
@@ -75,8 +75,8 @@ public class BeautyModel {
                         } else {
 
                               /* 3.如果无法从网络构建 */
-                              sLocalBean = new LocalCategoryBean();
-                              sLocalBean.setUrls( new ArrayList<>() );
+                              sLocalBeautyBean = new LocalCategoryBean();
+                              sLocalBeautyBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
                               notifyAllWait();
                               Log.e( TAG, "buildLocalBean : 没有网络,无法获取历史福利数据" );
@@ -96,9 +96,9 @@ public class BeautyModel {
 
       private static void waitLocalBuild ( ) {
 
-            if( sLocalBean == null ) {
+            if( sLocalBeautyBean.getUrls() == null ) {
                   synchronized(GankUrl.BEAUTY) {
-                        if( sLocalBean == null ) {
+                        if( sLocalBeautyBean.getUrls() == null ) {
                               try {
                                     GankUrl.BEAUTY.wait();
                               } catch(InterruptedException e) {
@@ -131,10 +131,10 @@ public class BeautyModel {
       /**
        * 获取构建好的bean
        */
-      public static LocalCategoryBean getLocalBean ( ) {
+      public static LocalCategoryBean getLocalBeautyBean ( ) {
 
             waitLocalBuild();
-            return sLocalBean;
+            return sLocalBeautyBean;
       }
 
       /**
@@ -143,7 +143,7 @@ public class BeautyModel {
       public static List<String> getUrls ( ) {
 
             waitLocalBuild();
-            return sLocalBean.getUrls();
+            return sLocalBeautyBean.getUrls();
       }
 
       /**
