@@ -33,11 +33,11 @@ public class BeautyModel {
       public static void init ( ) {
 
             if( sBeautyLocalBean == null ) {
-                  Log.e( TAG, "init : 初始化本地福利bean " );
+                  Log.e( TAG, "init : 初次启动 初始化本地福利bean " );
                   sBeautyLocalBean = new LocalCategoryBean();
                   buildLocalBean();
             } else {
-                  Log.e( TAG, "init : 从网络更新本地福利bean" );
+                  Log.e( TAG, "init : 再次启动 从网络更新本地福利bean" );
             }
       }
 
@@ -51,7 +51,7 @@ public class BeautyModel {
                   File localBeanFile = FileManager.getLocalBeautyBeanFile();
                   if( localBeanFile.exists() ) {
 
-                        Log.e( TAG, "buildLocalBean : 从本地文件创建本地福利bean中 " );
+                        Log.e( TAG, "buildLocalBean : 从本地文件创建本地福利bean中 " + localBeanFile );
                         sBeautyLocalBean = Model.buildLocalBeanFromFile(
                             GankUrl.BEAUTY,
                             localBeanFile,
@@ -122,7 +122,7 @@ public class BeautyModel {
       private static void cacheBeautyPicture ( ) {
 
             List<String> beautyUrls = getUrls();
-
+            Log.e( TAG, "cacheBeautyPicture : 需要缓存图片数量 " + beautyUrls.size() );
             PoolExecutor.execute( ( ) -> {
 
                   Log.e( TAG, "cacheBeautyPicture : 缓存图片中 " );
@@ -130,7 +130,7 @@ public class BeautyModel {
                   int failed = 0;
                   for( int i = 0; i < beautyUrls.size(); i++ ) {
                         if( NetStateChangeManager.getCurrentNetState()
-                            == NetStateValue.ONLY_WIFI_CONNECT ) {
+                            >= NetStateValue.ONLY_WIFI_CONNECT ) {
 
                               String url = beautyUrls.get( i );
                               File file = BitmapCache.downLoadPicture( url );

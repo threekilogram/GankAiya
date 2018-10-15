@@ -10,6 +10,7 @@ import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.main.fragment.AndroidModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import com.threekilogram.systemui.SystemUi;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -56,7 +57,7 @@ public class RootActivity extends AppCompatActivity {
             } );
 
             /* 立即启动splash */
-            //SplashActivity.start( this );
+            SplashActivity.start( this );
       }
 
       @Override

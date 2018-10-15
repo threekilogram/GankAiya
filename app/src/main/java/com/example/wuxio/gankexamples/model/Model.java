@@ -62,7 +62,6 @@ public class Model {
                   } );
             }
 
-            boolean delete = jsonFile.delete();
             return newSize - size;
       }
 

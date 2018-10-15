@@ -2,6 +2,7 @@ package com.example.wuxio.gankexamples.main.fragment;
 
 import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
@@ -36,7 +37,10 @@ public class AndroidModel {
 
             if( sAndroidLocalBean == null ) {
                   sAndroidLocalBean = new LocalCategoryBean();
+                  Log.e( TAG, "init : 初次启动 初始化本地android bean " );
                   buildLocalBean();
+            } else {
+                  Log.e( TAG, "init : 再次启动 更新本地android bean" );
             }
       }
 
@@ -47,39 +51,53 @@ public class AndroidModel {
 
             PoolExecutor.execute( ( ) -> {
 
-                  /* 1.读取本地 LocalCategoryBean 缓存*/
                   File localBeanFile = FileManager.getLocalAndroidBeanFile();
                   if( localBeanFile.exists() ) {
 
+                        Log.e(
+                            TAG, "buildLocalBean : 从本地文件构建 android local bean中 " + localBeanFile );
+                        File jsonFile = FileManager.getLatestAndroidJsonFile();
                         sAndroidLocalBean = Model.buildLocalBeanFromFile(
                             GankUrl.ANDROID,
                             localBeanFile,
-                            FileManager.getLatestAndroidJsonFile()
+                            jsonFile
+                        );
+                        Log.e(
+                            TAG,
+                            "buildLocalBean : 从本地文件构建 android local bean完成 " + sAndroidLocalBean
+                                .getUrls().size()
                         );
 
-                        /* 唤醒等待beautiesBean创建的线程启动 */
                         notifyAllWait();
+
+                        Log.e( TAG, "buildLocalBean : 从最新的json中保存android item 数据中 " );
+                        JsonUtil.parserJsonToItemJson( jsonFile, sAndroidLoader );
+                        Log.e( TAG, "buildLocalBean : 从最新的json中保存android item 数据完成 " );
                   } else {
 
-                        /* 2.没有beauty历史记录缓存 */
                         if( NetWork.hasNetwork() ) {
 
-                              /* 3.从网络下载,并构建bean*/
+                              Log.e( TAG, "buildLocalBean : 从网络构建 android local bean中 " );
+                              File jsonFile = FileManager.getAndroidJsonFile();
                               sAndroidLocalBean = Model.buildLocalBeanFromNet(
                                   GankUrl.androidAllUrl(),
-                                  FileManager.getAndroidJsonFile(),
+                                  jsonFile,
                                   localBeanFile
                               );
-                              /* 唤醒等待beautiesBean创建的线程启动 */
+                              Log.e( TAG, "buildLocalBean : 从网络构建 android local bean完成 "
+                                  + sAndroidLocalBean.getUrls().size() );
+
                               notifyAllWait();
+
+                              Log.e( TAG, "buildLocalBean : 从网络json中保存android item 数据中 " );
+                              JsonUtil.parserJsonToItemJson( jsonFile, sAndroidLoader );
+                              Log.e( TAG, "buildLocalBean : 从网络json中保存android item 数据完成 " );
                         } else {
 
-                              /* 3.如果无法从网络构建 */
                               sAndroidLocalBean = new LocalCategoryBean();
                               sAndroidLocalBean.setUrls( new ArrayList<>() );
-                              /* 唤醒等待beautiesBean创建的线程启动 */
+                              Log.e( TAG, "buildLocalBean : 没有网络 无法从网络构建android local bean" );
                               notifyAllWait();
-                              Log.e( TAG, "buildLocalBean : 没有网络,无法获取历史福利数据" );
                         }
                   }
             } );

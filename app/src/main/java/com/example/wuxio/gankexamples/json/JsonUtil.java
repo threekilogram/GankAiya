@@ -46,9 +46,6 @@ public class JsonUtil {
                         }
                   }
                   jsonParser.finish();
-                  Log.e(
-                      TAG, "parseJsonToLocalBean : 从网络构建完成: " + bean.getUrls()
-                                                                    .size() );
                   return bean;
             } catch(IOException e) {
                   e.printStackTrace();
@@ -88,18 +85,16 @@ public class JsonUtil {
                   e.printStackTrace();
             }
 
-            Log.e( TAG, "needMoreJson : 是否需要获取更多数据-->: " + category + " " + result );
             return result;
       }
 
       /**
-       * 将最新的福利数据添加到BeautiesBean缓存
+       * 将最新的数据添加到LocalCategoryBean缓存
        */
       public static void parserLatestJson (
           File latestJsonFile, Date date, LocalCategoryBean beautiesBean ) {
 
             try {
-                  Log.e( TAG, "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 解析最新的福利数据" );
                   ArrayList<String> newData = new ArrayList<>();
 
                   FileReader reader = new FileReader( latestJsonFile );
@@ -110,11 +105,6 @@ public class JsonUtil {
                   jsonParser.skipToString( "publishedAt" );
                   String publishedAt = jsonParser.readString( "publishedAt" );
                   if( publishedAt.equals( beautiesBean.getStartDate() ) ) {
-                        Log.e(
-                            TAG,
-                            "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 没有新福利数据需要添加 "
-                                + publishedAt
-                        );
                         jsonParser.finish();
                         return;
                   } else {
@@ -124,16 +114,6 @@ public class JsonUtil {
                         if( url != null ) {
                               newData.add( url );
                         }
-                        Log.e(
-                            TAG,
-                            "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 最新的福利数据日期:"
-                                + publishedAt
-                        );
-                        Log.e(
-                            TAG,
-                            "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 解析到新福利数据: "
-                                + url
-                        );
                   }
 
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
@@ -147,11 +127,6 @@ public class JsonUtil {
                                     if( url != null ) {
                                           newData.add( url );
                                     }
-                                    Log.e(
-                                        TAG,
-                                        "parserLatestJson :添加最新福利数据到BeautiesBean缓存--> 解析到新福利数据: "
-                                            + url
-                                    );
                               } else {
                                     break;
                               }
@@ -159,46 +134,13 @@ public class JsonUtil {
                   }
                   jsonParser.finish();
                   beautiesBean.getUrls().addAll( 0, newData );
-                  Log.e(
-                      TAG, "parserLatestJson : 添加最新福利数据到BeautiesBean缓存--> 完成 " + newData.size() );
             } catch(IOException e) {
                   e.printStackTrace();
             }
       }
 
-      public static void parserCategoryJsonToLocalBean ( File jsonFile, LocalCategoryBean bean ) {
-
-            try {
-                  Log.e( TAG, "parserCategoryJsonToLocalBean : 解析分类数据 " + jsonFile );
-                  JsonParser jsonParser = new JsonParser( new FileReader( jsonFile ) );
-
-                  ArrayList<String> urls = new ArrayList<>();
-
-                  jsonParser.start();
-                  while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
-
-                        if( bean.getStartDate() == null ) {
-                              jsonParser.skipToString( "publishedAt" );
-                              String publishedAt = jsonParser.readString( "publishedAt" );
-                              bean.setStartDate( publishedAt );
-                        }
-
-                        jsonParser.skipToString( "url" );
-                        String url = jsonParser.readString( "url" );
-                        if( url != null ) {
-                              urls.add( url );
-                        }
-                  }
-                  jsonParser.finish();
-
-                  Log.e( TAG, "parserCategoryJsonToLocalBean : 解析数据数量: " + urls.size() );
-                  bean.setUrls( urls );
-            } catch(IOException e) {
-                  e.printStackTrace();
-            }
-      }
-
-      public static void parserBeanToFile ( File jsonFile, JsonLoader<GankCategoryItem> loader ) {
+      public static void parserJsonToItemJson (
+          File jsonFile, JsonLoader<GankCategoryItem> loader ) {
 
             try {
                   JsonParser jsonParser = new JsonParser( new FileReader( jsonFile ) );
@@ -234,8 +176,7 @@ public class JsonUtil {
                         }
                   }
                   jsonParser.finish();
-
-                  Log.e( TAG, "parserBeanToFile : 从网络解析保存所有分类bean完成 " + count );
+                  Log.e( TAG, "parserJsonToItemJson : 解析数据完成 " + count + " " + jsonFile );
             } catch(IOException e) {
                   e.printStackTrace();
             }
