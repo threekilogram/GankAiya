@@ -46,7 +46,7 @@
                                   />
                         </tech.threekilogram.pager.banner.RecyclerPagerBanner>
 
-                        <ImageView
+                        <com.example.wuxio.gankexamples.widget.LoadingView
                             android:id="@+id/bannerLoading"
                             android:layout_width="@dimen/banner_loading_size"
                             android:layout_height="@dimen/banner_loading_size"

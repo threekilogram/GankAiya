@@ -91,8 +91,8 @@
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"/>
 
-      <ProgressBar
-          android:id="@+id/progressBar"
+      <com.example.wuxio.gankexamples.widget.LoadingView
+          android:id="@+id/loadingView"
           style="?android:attr/progressBarStyle"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"

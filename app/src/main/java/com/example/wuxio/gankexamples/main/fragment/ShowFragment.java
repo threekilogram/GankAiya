@@ -13,10 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
+import com.example.wuxio.gankexamples.widget.LoadingView;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import pl.droidsonroids.gif.GifImageView;
@@ -158,7 +158,7 @@ public class ShowFragment extends Fragment {
             private GifImageView mGif01;
             private TextView     mDate;
             private TextView     mWho;
-            private ProgressBar  mProgressBar;
+            private LoadingView  mLoadingView;
 
             public ShowHolder ( View itemView ) {
 
@@ -174,7 +174,7 @@ public class ShowFragment extends Fragment {
                   mGif01 = itemView.findViewById( R.id.gif01 );
                   mDate = itemView.findViewById( R.id.date );
                   mWho = itemView.findViewById( R.id.who );
-                  mProgressBar = itemView.findViewById( R.id.progressBar );
+                  mLoadingView = itemView.findViewById( R.id.loadingView );
             }
 
             private void bind ( int position, GankCategoryItem item ) {
@@ -189,13 +189,13 @@ public class ShowFragment extends Fragment {
                         mDate.setText( item.getCreatedAt() );
                         mWho.setText( item.getWho() );
 
-                        mProgressBar.setVisibility( View.GONE );
+                        mLoadingView.setVisibility( View.GONE );
                         mDesc.setVisibility( View.VISIBLE );
                         mDate.setVisibility( View.VISIBLE );
                         mWho.setVisibility( View.VISIBLE );
                   } else {
 
-                        mProgressBar.setVisibility( View.VISIBLE );
+                        mLoadingView.setVisibility( View.VISIBLE );
                         mDesc.setVisibility( View.GONE );
                         mDate.setVisibility( View.GONE );
                         mWho.setVisibility( View.GONE );

@@ -35,8 +35,8 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
+import com.example.wuxio.gankexamples.widget.LoadingView;
 import com.threekilogram.bitmapreader.BitmapReader;
-import com.threekilogram.drawable.anim.BiliBiliLoadingDrawable;
 import com.threekilogram.systemui.SystemUi;
 import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
@@ -60,9 +60,8 @@ public class MainActivity extends AppCompatActivity {
       protected ViewPager               mViewPager;
       protected TabLayout               mTabLayout;
       protected CollapsingToolbarLayout mCollapsingToolbar;
-      protected ImageView               mBannerLoading;
+      protected LoadingView             mBannerLoading;
       private   MainPagerAdapter        mPagerAdapter;
-      private   BiliBiliLoadingDrawable mBiliLoadingDrawable;
       private   DotView                 mDotView;
       private   MainTabSelectListener   mTabSelectListener;
 
@@ -115,9 +114,6 @@ public class MainActivity extends AppCompatActivity {
             /* 设置导航菜单 */
             initNavigationView( mNavigationView );
 
-            /* banner Loading */
-            initBannerLoading();
-
             /* banner indicator */
             mDotView = findViewById( R.id.dotView );
             mDotView.setDotCount( 5 );
@@ -143,28 +139,13 @@ public class MainActivity extends AppCompatActivity {
       }
 
       /**
-       * 初始化banner Loading
-       */
-      private void initBannerLoading ( ) {
-
-            mBiliLoadingDrawable = new BiliBiliLoadingDrawable(
-                getResources().getDimensionPixelSize( R.dimen.banner_loading_size ) );
-            mBiliLoadingDrawable.setStrokeWidth( 5 );
-            mBiliLoadingDrawable.setDuration( 2400 );
-            mBiliLoadingDrawable.setRepeat( Integer.MAX_VALUE / 2400 );
-            mBiliLoadingDrawable.setRadius( 7 );
-            mBiliLoadingDrawable.setPaintColor( getResources().getColor( R.color.blue ) );
-            mBannerLoading.setImageDrawable( mBiliLoadingDrawable );
-            mBiliLoadingDrawable.start();
-      }
-
-      /**
        * 创建好 activity 之后执行一些初始化activity的操作
        */
       private void postAction ( ) {
 
             mDrawer.post( ( ) -> {
 
+                  mBannerLoading.start();
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
                   mTabSelectListener.onTabSelected( mTabLayout.getTabAt( 0 ) );
@@ -255,7 +236,6 @@ public class MainActivity extends AppCompatActivity {
       private void showBannerLoading ( ) {
 
             mBannerLoading.setVisibility( View.VISIBLE );
-            mBiliLoadingDrawable.start();
       }
 
       /**
@@ -264,7 +244,6 @@ public class MainActivity extends AppCompatActivity {
       private void hideBannerLoading ( ) {
 
             mBannerLoading.setVisibility( View.INVISIBLE );
-            mBiliLoadingDrawable.stop();
       }
 
       /**

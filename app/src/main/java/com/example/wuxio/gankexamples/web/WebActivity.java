@@ -12,7 +12,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.example.wuxio.gankexamples.R;
 
 /**
@@ -59,7 +58,7 @@ public class WebActivity extends AppCompatActivity {
 
         mTitle = findViewById(R.id.title);
         mToolbar = findViewById(R.id.toolbar);
-        mProgressBar = findViewById(R.id.progressBar);
+        mProgressBar = findViewById( R.id.loadingView );
         mWebView = findViewById(R.id.webView);
 
         mToolbar.setNavigationOnClickListener(v -> finish());
