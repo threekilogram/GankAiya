@@ -1,5 +1,8 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +20,7 @@ import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.widget.LoadingView;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import pl.droidsonroids.gif.GifImageView;
@@ -24,34 +28,30 @@ import pl.droidsonroids.gif.GifImageView;
 /**
  * @author wuxio 2018-04-29:9:23
  */
-public class ShowFragment extends Fragment {
+public abstract class ShowFragment extends Fragment {
 
       private static final String TAG = ShowFragment.class.getSimpleName();
+
+      protected static Bitmap sDefaultGif;
 
       protected View                    rootView;
       protected RecyclerFlingChangeView mRecycler;
       protected SwipeRefreshLayout      mSwipeRefresh;
-      private   String                  mCategory;
       private   ShowAdapter             mAdapter;
-
-      public static ShowFragment newInstance ( String category ) {
-
-            ShowFragment fragment = new ShowFragment();
-            fragment.mCategory = category;
-            return fragment;
-      }
 
       @Override
       public void onCreate ( @Nullable Bundle savedInstanceState ) {
 
-            ShowModelManager.bind( mCategory, this );
             super.onCreate( savedInstanceState );
+
+            if( sDefaultGif == null ) {
+                  sDefaultGif = BitmapFactory.decodeResource( getResources(), R.drawable.wait );
+            }
       }
 
       @Override
       public void onDestroy ( ) {
 
-            ShowModelManager.unBind( mCategory, this );
             super.onDestroy();
       }
 
@@ -73,10 +73,15 @@ public class ShowFragment extends Fragment {
             mRecycler = rootView.findViewById( R.id.recycler );
             LinearLayoutManager layoutManager = new LinearLayoutManager( getContext() );
             mRecycler.setLayoutManager( layoutManager );
-            mRecycler.setFlingScale( 0.33f );
+            mRecycler.setFlingScale( 0.4f );
+            mRecycler.setItemAnimator( null );
+            mAdapter = new ShowAdapter();
+            mRecycler.setAdapter( mAdapter );
 
             /* 打开界面 刷新 */
             mSwipeRefresh.setRefreshing( true );
+
+            /* 防止泄露 */
             WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefresh );
             mSwipeRefresh.setOnRefreshListener( ( ) -> {
                   mSwipeRefresh.postDelayed(
@@ -94,46 +99,66 @@ public class ShowFragment extends Fragment {
 
       public void onSelected ( ) {
 
-            Log.e( TAG, "onSelected : " + mCategory );
+            Log.e( TAG, "onSelected : " );
             rootView.post( ( ) -> {
 
-                  if( mAdapter == null ) {
-                        ShowModelManager.loadUrls( mCategory );
-                  }
+                  setAdapterData( mAdapter );
             } );
-      }
-
-      void setAdapterData ( List<String> urls ) {
-
-            if( urls != null ) {
-                  mAdapter = new ShowAdapter( urls );
-                  mRecycler.setAdapter( mAdapter );
-                  mSwipeRefresh.setRefreshing( false );
-            }
       }
 
       public void onUnSelected ( ) {
 
-            Log.e( TAG, "onUnSelected : " + mCategory );
+            Log.e( TAG, "onUnSelected : " );
       }
 
       public void onReselected ( ) {
 
-            Log.e( TAG, "onReselected : " + mCategory );
+            Log.e( TAG, "onReselected : " );
       }
 
-      public void onItemChanged ( int position ) {
+      /**
+       * 为{@link ShowAdapter#mUrls}设置数据,设置好数据之后,记得调用{@link ShowAdapter#setUrls(List)}
+       *
+       * @param adapterData fragment adapter
+       */
+      protected abstract void setAdapterData ( ShowAdapter adapterData );
 
-            mRecycler.post( ( ) -> mAdapter.notifyItemChanged( position ) );
-      }
+      /**
+       * 为{@link ShowHolder}设置位于该位置的数据
+       *
+       * @param holder holder
+       * @param position holder位置
+       */
+      protected abstract void setShowHolderData ( ShowHolder holder, int position );
 
-      private class ShowAdapter extends Adapter<ShowHolder> {
+      /**
+       * 为{@link ShowHolder}设置位于该位置的gif数据
+       *
+       * @param position 位置
+       * @param url gif url
+       * @param holder 需要设置的holder
+       */
+      protected abstract void setShowHolderGif ( int position, String url, ShowHolder holder );
+
+      /**
+       * recycler adapter
+       */
+      protected class ShowAdapter extends Adapter<ShowHolder> {
 
             private List<String> mUrls;
 
-            private ShowAdapter ( List<String> urls ) {
+            List<String> getUrls ( ) {
 
-                  mUrls = urls;
+                  return mUrls;
+            }
+
+            void setUrls ( List<String> urls ) {
+
+                  mRecycler.post( ( ) -> {
+                        mAdapter.mUrls = urls;
+                        mAdapter.notifyDataSetChanged();
+                        mSwipeRefresh.setRefreshing( false );
+                  } );
             }
 
             @NonNull
@@ -149,10 +174,8 @@ public class ShowFragment extends Fragment {
             public void onBindViewHolder (
                 @NonNull ShowHolder holder, int position ) {
 
-                  holder.bind(
-                      position,
-                      ShowModelManager.getItemFromMemory( mCategory, position )
-                  );
+                  holder.mBindPosition = position;
+                  setShowHolderData( holder, position );
             }
 
             @Override
@@ -162,17 +185,26 @@ public class ShowFragment extends Fragment {
             }
       }
 
-      private class ShowHolder extends ViewHolder {
+      /**
+       * viewHolder
+       */
+      protected class ShowHolder extends ViewHolder {
 
             private GifImageView mGifImageView;
             private TextView     mDesc;
             private TextView     mWho;
             private LoadingView  mLoadingView;
+            private int          mBindPosition;
 
             private ShowHolder ( View itemView ) {
 
                   super( itemView );
                   initView( itemView );
+            }
+
+            int getBindPosition ( ) {
+
+                  return mBindPosition;
             }
 
             private void initView ( @NonNull final View itemView ) {
@@ -183,25 +215,51 @@ public class ShowFragment extends Fragment {
                   mLoadingView = itemView.findViewById( R.id.loadingView );
             }
 
-            private void bind ( int position, GankCategoryItem item ) {
+            void setGankCategoryItem ( int position, GankCategoryItem item ) {
+
+                  itemView.post( ( ) -> {
+                        if( position == mBindPosition ) {
+
+                              bind( position, item );
+                        }
+                  } );
+            }
+
+            void setGif ( int position, File gifFile ) {
+
+                  itemView.post( ( ) -> {
+                        if( position == mBindPosition ) {
+                              mGifImageView.setImageURI( Uri.fromFile( gifFile ) );
+                        }
+                  } );
+            }
+
+            void bind ( int position, GankCategoryItem item ) {
 
                   if( item == null ) {
 
                         mGifImageView.setVisibility( View.INVISIBLE );
+                        mGifImageView.setImageBitmap( sDefaultGif );
                         mDesc.setVisibility( View.INVISIBLE );
                         mWho.setVisibility( View.INVISIBLE );
                         mLoadingView.setVisibility( View.VISIBLE );
-
-                        ShowModelManager.loadItem( mCategory, position );
                   } else {
 
-                        mGifImageView.setVisibility( View.VISIBLE );
                         mDesc.setVisibility( View.VISIBLE );
                         mWho.setVisibility( View.VISIBLE );
                         mLoadingView.setVisibility( View.INVISIBLE );
 
                         mDesc.setText( item.getDesc() );
                         mWho.setText( item.getWho() );
+
+                        List<String> images = item.getImages();
+                        if( images != null && images.size() > 0 ) {
+                              mGifImageView.setVisibility( View.VISIBLE );
+                              setShowHolderGif( position, images.get( 0 ), this );
+                        } else {
+                              mGifImageView.setVisibility( View.GONE );
+                              mGifImageView.setImageBitmap( sDefaultGif );
+                        }
                   }
             }
       }
