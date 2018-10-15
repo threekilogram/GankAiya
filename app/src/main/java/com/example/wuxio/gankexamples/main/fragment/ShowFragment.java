@@ -13,8 +13,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
+import java.lang.ref.WeakReference;
+import java.util.List;
 import pl.droidsonroids.gif.GifImageView;
 
 /**
@@ -40,12 +44,14 @@ public class ShowFragment extends Fragment {
       @Override
       public void onCreate ( @Nullable Bundle savedInstanceState ) {
 
+            ShowModelManager.bind( mCategory, this );
             super.onCreate( savedInstanceState );
       }
 
       @Override
       public void onDestroy ( ) {
 
+            ShowModelManager.unBind( mCategory, this );
             super.onDestroy();
       }
 
@@ -70,14 +76,35 @@ public class ShowFragment extends Fragment {
 
             /* 打开界面 刷新 */
             mSwipeRefresh.setRefreshing( true );
+            WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefresh );
+            mSwipeRefresh.setOnRefreshListener( ( ) -> {
+                  mSwipeRefresh.postDelayed(
+                      ( ) -> {
+                            try {
+                                  ref.get().setRefreshing( false );
+                            } catch(Exception e) {
+                                  /* nothing worry about */
+                            }
+                      },
+                      2000
+                  );
+            } );
       }
 
       public void onSelected ( ) {
 
             Log.e( TAG, "onSelected : " + mCategory );
             if( mAdapter == null ) {
-                  mAdapter = new ShowAdapter();
+                  ShowModelManager.loadItems( mCategory );
+            }
+      }
+
+      void setAdapterData ( List<String> urls ) {
+
+            if( urls != null ) {
+                  mAdapter = new ShowAdapter( urls );
                   mRecycler.setAdapter( mAdapter );
+                  mSwipeRefresh.setRefreshing( false );
             }
       }
 
@@ -93,6 +120,13 @@ public class ShowFragment extends Fragment {
 
       private class ShowAdapter extends Adapter<ShowHolder> {
 
+            private List<String> mUrls;
+
+            public ShowAdapter ( List<String> urls ) {
+
+                  mUrls = urls;
+            }
+
             @NonNull
             @Override
             public ShowHolder onCreateViewHolder ( @NonNull ViewGroup parent, int viewType ) {
@@ -106,13 +140,13 @@ public class ShowFragment extends Fragment {
             public void onBindViewHolder (
                 @NonNull ShowHolder holder, int position ) {
 
-                  holder.bind( position );
+                  holder.bind( position, ShowModelManager.getItem( mCategory, position ) );
             }
 
             @Override
             public int getItemCount ( ) {
 
-                  return 50;
+                  return mUrls == null ? 0 : mUrls.size();
             }
       }
 
@@ -124,6 +158,7 @@ public class ShowFragment extends Fragment {
             private GifImageView mGif01;
             private TextView     mDate;
             private TextView     mWho;
+            private ProgressBar  mProgressBar;
 
             public ShowHolder ( View itemView ) {
 
@@ -139,18 +174,31 @@ public class ShowFragment extends Fragment {
                   mGif01 = itemView.findViewById( R.id.gif01 );
                   mDate = itemView.findViewById( R.id.date );
                   mWho = itemView.findViewById( R.id.who );
+                  mProgressBar = itemView.findViewById( R.id.progressBar );
             }
 
-            private void bind ( int position ) {
+            private void bind ( int position, GankCategoryItem item ) {
 
-                  if( position % 3 == 0 ) {
-                        mGif00.setVisibility( View.GONE );
-                        mGif01.setVisibility( View.GONE );
-                        mGif02.setVisibility( View.GONE );
+                  mGif00.setVisibility( View.GONE );
+                  mGif01.setVisibility( View.GONE );
+                  mGif02.setVisibility( View.GONE );
+
+                  if( item != null ) {
+
+                        mDesc.setText( item.getDesc() );
+                        mDate.setText( item.getCreatedAt() );
+                        mWho.setText( item.getWho() );
+
+                        mProgressBar.setVisibility( View.GONE );
+                        mDesc.setVisibility( View.VISIBLE );
+                        mDate.setVisibility( View.VISIBLE );
+                        mWho.setVisibility( View.VISIBLE );
                   } else {
-                        mGif00.setVisibility( View.VISIBLE );
-                        mGif01.setVisibility( View.VISIBLE );
-                        mGif02.setVisibility( View.VISIBLE );
+
+                        mProgressBar.setVisibility( View.VISIBLE );
+                        mDesc.setVisibility( View.GONE );
+                        mDate.setVisibility( View.GONE );
+                        mWho.setVisibility( View.GONE );
                   }
             }
       }

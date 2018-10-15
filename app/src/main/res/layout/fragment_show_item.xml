@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:minHeight="100dp">
 
       <TextView
           android:id="@+id/desc"
@@ -15,7 +16,7 @@
           android:layout_marginEnd="8dp"
           android:ellipsize="end"
           android:maxLines="2"
-          android:text="仿美团、淘宝、QQ、微博、腾讯、网易、今日头条等标题滚动视图。"
+          android:text="@string/in_line"
           android:textSize="16sp"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintStart_toStartOf="parent"
@@ -65,8 +66,10 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"
           android:layout_marginEnd="8dp"
-          android:text="2017-04-14 12:50:10"
+          android:text="@string/in_line_1"
+          app:layout_constraintBottom_toTopOf="@+id/view"
           app:layout_constraintEnd_toEndOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/gif02"/>
       <TextView
@@ -75,16 +78,31 @@
           android:layout_height="wrap_content"
           android:layout_marginTop="8dp"
           android:layout_marginEnd="8dp"
-          android:text="mingtian"
+          android:text="@string/in_line_2"
           app:layout_constraintEnd_toStartOf="@+id/date"
           app:layout_constraintTop_toBottomOf="@+id/gif01"/>
 
       <View
+          android:id="@+id/view"
           android:layout_width="match_parent"
           android:layout_height="1dp"
-          android:layout_marginTop="8dp"
           android:background="@color/lightGray"
           app:layout_constraintBottom_toBottomOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/who"/>
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"/>
+
+      <ProgressBar
+          android:id="@+id/progressBar"
+          style="?android:attr/progressBarStyle"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"
+          android:layout_marginStart="8dp"
+          android:layout_marginEnd="8dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

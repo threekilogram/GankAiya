@@ -7,5 +7,8 @@
     <string name="donateDeveloper">捐赠开发者</string>
     <string name="loginGithub">登录GitHub账号</string>
     <string name="exitApp">退出应用</string>
+    <string name="in_line">仿美团、淘宝、QQ、微博、腾讯、网易、今日头条等标题滚动视图。</string>
+    <string name="in_line_1">2017-04-14 12:50:10</string>
+    <string name="in_line_2">mingtian</string>
 
 </resources>

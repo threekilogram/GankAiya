@@ -11,6 +11,7 @@ import com.example.wuxio.gankexamples.utils.NetWork;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import tech.threekilogram.depository.cache.json.JsonLoader;
 
 /**
@@ -123,5 +124,23 @@ public class AndroidModel {
                         }
                   }
             }
+      }
+
+      public static LocalCategoryBean getAndroidLocalBean ( ) {
+
+            waitLocalBuild();
+            return sAndroidLocalBean;
+      }
+
+      public static List<String> getAndroidLocalBeanUrls ( ) {
+
+            waitLocalBuild();
+            return sAndroidLocalBean.getUrls();
+      }
+
+      public static GankCategoryItem getItemFromMemory ( int position ) {
+
+            List<String> urls = getAndroidLocalBeanUrls();
+            return sAndroidLoader.loadFromMemory( urls.get( position ) );
       }
 }
