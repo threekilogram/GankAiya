@@ -8,7 +8,6 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.NetWork;
-import com.example.wuxio.gankexamples.utils.ToastMessage;
 import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
@@ -26,17 +25,19 @@ public class BeautyModel {
       private static final String TAG = BeautyModel.class.getSimpleName();
 
       private static WeakReference<MainActivity> sRef;
-
-      private static LocalCategoryBean sLocalBeautyBean;
+      private static LocalCategoryBean           sBeautyLocalBean;
 
       /**
        * 初始化
        */
       public static void init ( ) {
 
-            if( sLocalBeautyBean == null ) {
-                  sLocalBeautyBean = new LocalCategoryBean();
+            if( sBeautyLocalBean == null ) {
+                  Log.e( TAG, "init : 初始化本地福利bean " );
+                  sBeautyLocalBean = new LocalCategoryBean();
                   buildLocalBean();
+            } else {
+                  Log.e( TAG, "init : 从网络更新本地福利bean" );
             }
       }
 
@@ -47,39 +48,38 @@ public class BeautyModel {
 
             PoolExecutor.execute( ( ) -> {
 
-                  /* 1.读取本地 LocalCategoryBean 缓存*/
                   File localBeanFile = FileManager.getLocalBeautyBeanFile();
                   if( localBeanFile.exists() ) {
 
-                        sLocalBeautyBean = Model.buildLocalBeanFromFile(
+                        Log.e( TAG, "buildLocalBean : 从本地文件创建本地福利bean中 " );
+                        sBeautyLocalBean = Model.buildLocalBeanFromFile(
                             GankUrl.BEAUTY,
                             localBeanFile,
                             FileManager.getLatestBeautyJsonFile()
                         );
-
-                        /* 唤醒等待beautiesBean创建的线程启动 */
+                        Log.e(
+                            TAG, "buildLocalBean : 从本地文件创建本地福利bean完成 " + sBeautyLocalBean.getUrls()
+                                                                                         .size() );
                         notifyAllWait();
                   } else {
 
-                        /* 2.没有beauty历史记录缓存 */
                         if( NetWork.hasNetwork() ) {
 
-                              /* 3.从网络下载,并构建bean*/
-                              sLocalBeautyBean = Model.buildLocalBeanFromNet(
+                              Log.e( TAG, "buildLocalBean : 从网络创建本地福利bean中 " );
+                              sBeautyLocalBean = Model.buildLocalBeanFromNet(
                                   GankUrl.beautyAllUrl(),
                                   FileManager.getBeautyJsonFile(),
                                   localBeanFile
                               );
-                              /* 唤醒等待beautiesBean创建的线程启动 */
+                              Log.e( TAG, "buildLocalBean : 从网络创建本地福利bean中完成 " );
                               notifyAllWait();
                         } else {
 
-                              /* 3.如果无法从网络构建 */
-                              sLocalBeautyBean = new LocalCategoryBean();
-                              sLocalBeautyBean.setUrls( new ArrayList<>() );
+                              Log.e( TAG, "buildLocalBean : 没有网络无法构建本地福利bean " );
+                              sBeautyLocalBean = new LocalCategoryBean();
+                              sBeautyLocalBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
                               notifyAllWait();
-                              Log.e( TAG, "buildLocalBean : 没有网络,无法获取历史福利数据" );
                         }
                   }
 
@@ -87,6 +87,9 @@ public class BeautyModel {
             } );
       }
 
+      /**
+       * 唤醒{@link #waitLocalBuild()}等待的线程
+       */
       private static void notifyAllWait ( ) {
 
             synchronized(GankUrl.BEAUTY) {
@@ -94,11 +97,15 @@ public class BeautyModel {
             }
       }
 
+      /**
+       * 如果{@link #sBeautyLocalBean}没有构建完成那么等待完成
+       */
       private static void waitLocalBuild ( ) {
 
-            if( sLocalBeautyBean.getUrls() == null ) {
+            /* 双重加锁验证 */
+            if( sBeautyLocalBean.getUrls() == null ) {
                   synchronized(GankUrl.BEAUTY) {
-                        if( sLocalBeautyBean.getUrls() == null ) {
+                        if( sBeautyLocalBean.getUrls() == null ) {
                               try {
                                     GankUrl.BEAUTY.wait();
                               } catch(InterruptedException e) {
@@ -117,24 +124,34 @@ public class BeautyModel {
             List<String> beautyUrls = getUrls();
 
             PoolExecutor.execute( ( ) -> {
+
+                  Log.e( TAG, "cacheBeautyPicture : 缓存图片中 " );
+                  int success = 0;
+                  int failed = 0;
                   for( int i = 0; i < beautyUrls.size(); i++ ) {
                         if( NetStateChangeManager.getCurrentNetState()
                             == NetStateValue.ONLY_WIFI_CONNECT ) {
 
                               String url = beautyUrls.get( i );
-                              BitmapCache.downLoadPicture( url );
+                              File file = BitmapCache.downLoadPicture( url );
+                              if( file.exists() ) {
+                                    success++;
+                              } else {
+                                    failed++;
+                              }
                         }
                   }
+                  Log.e( TAG, "cacheBeautyPicture : 缓存图片完成: 成功 " + success + " 失败 " + failed );
             } );
       }
 
       /**
        * 获取构建好的bean
        */
-      public static LocalCategoryBean getLocalBeautyBean ( ) {
+      public static LocalCategoryBean getBeautyLocalBean ( ) {
 
             waitLocalBuild();
-            return sLocalBeautyBean;
+            return sBeautyLocalBean;
       }
 
       /**
@@ -143,7 +160,7 @@ public class BeautyModel {
       public static List<String> getUrls ( ) {
 
             waitLocalBuild();
-            return sLocalBeautyBean.getUrls();
+            return sBeautyLocalBean.getUrls();
       }
 
       /**
@@ -170,20 +187,10 @@ public class BeautyModel {
 
                         needUrls.add( beautiesUrl.get( i ) );
                   }
+
+                  Log.e( TAG, "loadBannerBitmap : 获取banner图片中 " );
                   List<Bitmap> bitmaps = BitmapCache.loadListBitmaps( needUrls );
-
-                  for( Bitmap bitmap : bitmaps ) {
-                        if( bitmap == null ) {
-                              if( NetWork.hasNetwork() ) {
-                                    ToastMessage.toast( "没有网络" );
-                                    Log.e( TAG, "loadBannerBitmap : 没有网络" );
-                              } else {
-                                    ToastMessage.toast( "无法获取banner图片数据" );
-                                    Log.e( TAG, "loadBannerBitmap : 无法获取banner图片数据" );
-                              }
-                        }
-                  }
-
+                  Log.e( TAG, "loadBannerBitmap : 获取banner图片完成 " );
                   setMainActivityBannerData( 0, bitmaps );
             } );
       }

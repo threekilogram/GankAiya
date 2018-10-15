@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.main.BeautyModel;
+import com.example.wuxio.gankexamples.main.fragment.AndroidModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.threekilogram.objectbus.executor.PoolExecutor;
@@ -51,6 +52,7 @@ public class RootActivity extends AppCompatActivity {
 
                   /* 初始化福利数据 */
                   BeautyModel.init();
+                  AndroidModel.init();
             } );
 
             /* 立即启动splash */

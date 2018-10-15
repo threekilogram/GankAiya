@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
             hideBannerLoading();
 
-            Log.e( TAG, "onBannerBitmapsPrepared : banner设置好数据" );
+            Log.e( TAG, "onBannerBitmapsPrepared : banner已设置数据" );
       }
 
       /**

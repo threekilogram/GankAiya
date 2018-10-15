@@ -19,16 +19,15 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class SplashModel {
 
-      private static final String TAG = SplashModel.class.getSimpleName();
-
+      private static final String TAG             = SplashModel.class.getSimpleName();
       /**
        * splash preference name
        */
-      private static final String SPLASH_PREFERENCE       = "splash_config";
+      private static final String PREFERENCE_NAME = "splash_config";
       /**
        * splash image logo url key
        */
-      private static final String SPLASH_IMAGE_CACHED_URL = "splash_image_cached_url";
+      private static final String KEY_SPLASH_URL  = "splash_image_cached_url";
 
       /**
        * 读取的image url
@@ -43,6 +42,9 @@ public class SplashModel {
        */
       private static WeakReference<SplashActivity> sRef;
 
+      /**
+       * 绑定宿主
+       */
       static void bind ( SplashActivity activity ) {
 
             sRef = new WeakReference<>( activity );
@@ -57,11 +59,11 @@ public class SplashModel {
             if( sPreferenceLoader == null ) {
                   sPreferenceLoader = new PreferenceLoader(
                       App.INSTANCE,
-                      SPLASH_PREFERENCE
+                      PREFERENCE_NAME
                   );
             }
 
-            sSplashImageUrl = sPreferenceLoader.getString( SPLASH_IMAGE_CACHED_URL );
+            sSplashImageUrl = sPreferenceLoader.getString( KEY_SPLASH_URL );
 
             Log.e( TAG, "setSplashImage : 配置的splash图片地址: " + sSplashImageUrl );
 
@@ -107,22 +109,26 @@ public class SplashModel {
 
             PoolExecutor.execute( ( ) -> {
 
-                  GankCategory gankCategory = BeanLoader
-                      .loadLatestCategoryJson( GankUrl.beautyLatestUrl() );
+                  GankCategory c = BeanLoader.loadLatestCategoryJson( GankUrl.beautyLatestUrl() );
                   Log.e(
-                      TAG, "updateSplashImageUrlForNextTime : 获取到最新的福利数据 " + gankCategory );
+                      TAG, "updateSplashImageUrlForNextTime : 获取到最新的福利数据 " + c );
+
                   try {
-                        String url = gankCategory.getResults().get( 0 ).getUrl();
+
+                        String url = c.getResults().get( 0 ).getUrl();
                         Log.e( TAG, "updateSplashImageUrlForNextTime : 获取到最新的splash地址 " + url );
+
                         if( url != null && !url.equals( sSplashImageUrl ) ) {
-                              sPreferenceLoader.save( SPLASH_IMAGE_CACHED_URL, url );
+
+                              sPreferenceLoader.save( KEY_SPLASH_URL, url );
                               Log.e(
                                   TAG, "updateSplashImageUrlForNextTime : 更新最新的splash地址 " + url );
+
                               BitmapCache.downLoadPicture( url );
                         }
                   } catch(Exception e) {
+
                         Log.e( TAG, "updateSplashImageUrlForNextTime : 配置最新的splash地址异常" );
-                        e.printStackTrace();
                   }
             } );
       }

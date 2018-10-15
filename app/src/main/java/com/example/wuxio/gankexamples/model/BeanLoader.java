@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.model;
 
-import android.util.Log;
 import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import java.io.File;
@@ -11,8 +10,6 @@ import tech.threekilogram.depository.stream.StreamLoader;
  * @author Liujin 2018-10-07:19:24
  */
 public class BeanLoader {
-
-      private static final String TAG = BeanLoader.class.getSimpleName();
 
       /**
        * 初始化变量
@@ -42,8 +39,6 @@ public class BeanLoader {
                   latestJsonFile.delete();
             }
 
-            Log.e( TAG, "downLoadLatestJson : 下载最新的json数据中... " + category );
-
             /* 下载最新的数据 */
             StreamLoader.downLoad( url, latestJsonFile );
 
@@ -54,8 +49,6 @@ public class BeanLoader {
                   url = GankUrl.category( category, count, page );
                   StreamLoader.downLoad( url, latestJsonFile );
             }
-
-            Log.e( TAG, "downLoadLatestJson : 下载最新的json数据完成 " + category + " " + count );
 
             return latestJsonFile;
       }

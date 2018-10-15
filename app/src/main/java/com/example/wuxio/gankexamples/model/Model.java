@@ -26,9 +26,7 @@ public class Model {
           File localFile,
           File latestJsonFile ) {
 
-            Log.e( TAG, "buildLocalBean : 从本地缓存构建localBean中 " + localFile );
             LocalCategoryBean r = ObjectLoader.loadFromFile( localFile, LocalCategoryBean.class );
-            Log.e( TAG, "buildLocalBeanFromFile : 从本地缓存构建localBean完成 " + r.getUrls().size() );
 
             /* 从网络获取最新的数据 */
             if( NetWork.hasNetwork() ) {
@@ -38,7 +36,7 @@ public class Model {
                       latestJsonFile,
                       localFile
                   );
-                  Log.e( TAG, "buildLocalBeanFromFile : 从网络添加最新的数据到本地localBean完成 " + i );
+                  Log.e( TAG, "buildLocalBeanFromFile : 网络获取最新数据: " + category + " " + i );
             }
 
             return r;
@@ -55,6 +53,7 @@ public class Model {
 
             int size = localBean.getUrls().size();
             JsonUtil.parserLatestJson( jsonFile, date, localBean );
+
             int newSize = localBean.getUrls().size();
             if( newSize > size ) {
                   /* 缓存最新数据到本地 */
@@ -62,6 +61,7 @@ public class Model {
                         ObjectLoader.toFile( localFile, localBean, LocalCategoryBean.class );
                   } );
             }
+
             boolean delete = jsonFile.delete();
             return newSize - size;
       }
@@ -77,28 +77,15 @@ public class Model {
             if( jsonFile.exists() ) {
                   boolean delete = jsonFile.delete();
             }
-            Log.e(
-                TAG,
-                "buildLocalBeanFromNet : 从网络下载.json中: " + url
-            );
+
             StreamLoader.downLoad( url, jsonFile );
-            Log.e(
-                TAG,
-                "buildLocalBeanFromNet : 从网络下载.json完成: " + jsonFile
-            );
 
             LocalCategoryBean bean = JsonUtil.parseJsonToLocalBean( jsonFile );
-            Log.e( TAG, "buildLocalBeanFromNet : 从网络构建localBean完成 " );
 
             PoolExecutor.execute( ( ) -> {
 
                   /* 缓存最新数据 */
                   ObjectLoader.toFile( localBeanFile, bean, LocalCategoryBean.class );
-                  Log.e(
-                      TAG,
-                      "buildLocalBeanFromNet : 缓存localBean到文件完成 " + localBeanFile.exists() + " "
-                          + localBeanFile
-                  );
             } );
 
             return bean;

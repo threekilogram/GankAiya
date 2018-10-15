@@ -1,7 +1,6 @@
 package com.example.wuxio.gankexamples.model;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
 import com.threekilogram.objectbus.executor.PoolExecutor;
@@ -15,8 +14,6 @@ import tech.threekilogram.screen.ScreenSize;
  * @author Liujin 2018-10-14:10:52
  */
 public class BitmapCache {
-
-      private static final String TAG = BitmapCache.class.getSimpleName();
 
       /**
        * 加载图片
@@ -43,19 +40,15 @@ public class BitmapCache {
       /**
        * 下载url对应的图片
        */
-      public static void downLoadPicture ( String url ) {
+      public static File downLoadPicture ( String url ) {
 
             boolean contains = sBitmapLoader.containsOfFile( url );
 
             if( !contains ) {
                   sBitmapLoader.download( url );
-                  //File file = sBitmapLoader.getFile( url );
-                  //if( file.exists() ) {
-                  //Log.e( TAG, "downLoadPicture : 缓存图片完成 :" + url + " " + file );
-                  //} else {
-                  //Log.e( TAG, "downLoadPicture : 缓存图片失败 :" + url + " " + file );
-                  //}
             }
+
+            return sBitmapLoader.getFile( url );
       }
 
       public static boolean hasPictureCache ( String url ) {
@@ -65,7 +58,7 @@ public class BitmapCache {
 
       public static List<Bitmap> loadListBitmaps ( List<String> urls ) {
 
-            /* 1.找出没有缓存的图片 */
+            /* 找出没有缓存的图片 */
             ArrayList<String> notCacheUrl = new ArrayList<>();
             for( String url : urls ) {
                   if( !sBitmapLoader.containsOfFile( url ) ) {
@@ -73,18 +66,18 @@ public class BitmapCache {
                   }
             }
 
+            /* 下载图片 */
             int size = notCacheUrl.size();
             if( size > 0 ) {
 
                   ArrayList<DownLoadBitmapRunnable> runnableList = new ArrayList<>( size );
                   for( String s : notCacheUrl ) {
-                        Log.e( TAG, "loadListBitmaps : 加载一组图片:没有缓存的图片 " + s );
                         runnableList.add( new DownLoadBitmapRunnable( s ) );
                   }
                   PoolExecutor.execute( runnableList );
             }
 
-            /* 3.加载成bitmap */
+            /* 加载成bitmap */
             int urlSize = urls.size();
             int width = ScreenSize.getWidth();
             int height = ScreenSize.getHeight();
@@ -94,7 +87,6 @@ public class BitmapCache {
                   result.add( bitmap );
             }
 
-            Log.e( TAG, "loadListBitmaps : 加载一组图片完成" );
             return result;
       }
 
