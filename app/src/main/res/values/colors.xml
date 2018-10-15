@@ -22,4 +22,6 @@
     <color name="category_text">#323232</color>
     <color name="category_text2">#b6b4b4</color>
 
+    <color name="lightGray">#d2d2d2</color>
+
 </resources>

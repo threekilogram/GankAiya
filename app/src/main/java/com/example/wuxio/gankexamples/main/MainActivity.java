@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
-                  mTabSelectListener.onTabReselected( mTabLayout.getTabAt( 0 ) );
+                  mTabSelectListener.onTabSelected( mTabLayout.getTabAt( 0 ) );
             } );
       }
 
