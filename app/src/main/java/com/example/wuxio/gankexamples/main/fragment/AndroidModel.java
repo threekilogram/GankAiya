@@ -15,12 +15,12 @@ import tech.threekilogram.depository.stream.StreamLoader;
 /**
  * @author Liujin 2018-10-14:20:57
  */
-public class CategoryModel {
+public class AndroidModel {
 
-      private static final String TAG = CategoryModel.class.getSimpleName();
+      private static final String TAG = AndroidModel.class.getSimpleName();
 
       private static JsonLoader<GankCategoryItem> sAndroidLoader;
-      private static LocalCategoryBean            sAndroidBean = new LocalCategoryBean();
+      private static LocalCategoryBean            sAndroidBean;
 
       private static final int sCount = 30;
 
@@ -33,31 +33,28 @@ public class CategoryModel {
                       GankCategoryItem.class
                   );
             }
-            buildLocalBean( GankUrl.ANDROID );
+            buildLocalBean();
       }
 
-      private static void buildLocalBean ( String type ) {
+      private static void buildLocalBean ( ) {
 
-            if( type.equals( GankUrl.ANDROID ) ) {
+            final File localFile = FileManager.getLocalAndroidBeanFile();
+            final File jsonFile = FileManager.getAndroidJsonFile();
+            final File latestFile = FileManager.getLatestAndroidJsonFile();
 
-                  final File localFile = FileManager.getLocalAndroidBeanFile();
-                  final File jsonFile = FileManager.getAndroidJsonFile();
-                  final File latestFile = FileManager.getLatestAndroidJsonFile();
+            PoolExecutor.execute( ( ) -> {
+                  if( localFile.exists() ) {
 
-                  PoolExecutor.execute( ( ) -> {
-                        if( localFile.exists() ) {
-
-                              buildLocalBeanFromFile( localFile );
-                        } else {
-                              buildLocalBeanFromNet(
-                                  sAndroidBean,
-                                  jsonFile,
-                                  GankUrl.androidAllUrl(),
-                                  localFile
-                              );
-                        }
-                  } );
-            }
+                        buildLocalBeanFromFile( localFile );
+                  } else {
+                        buildLocalBeanFromNet(
+                            sAndroidBean,
+                            jsonFile,
+                            GankUrl.androidAllUrl(),
+                            localFile
+                        );
+                  }
+            } );
       }
 
       private static void buildLocalBeanFromFile ( File localFile ) {

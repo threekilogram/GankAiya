@@ -1,7 +1,6 @@
 package com.example.wuxio.gankexamples.model;
 
 import android.util.Log;
-import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.splash.SplashModel;
@@ -42,32 +41,32 @@ public class BeanLoader {
       /**
        * 获取最新的福利数据
        */
-      public static File downLoadLatestBeautyJson ( Date startDate ) {
+      public static File downLoadLatestJson (
+          String category, File latestJsonFile, Date startDate ) {
 
             final int page = 1;
             int count = 20;
-            final String beautyUrl = GankUrl.beautyUrl( count, page );
+            String url = GankUrl.category( category, count, page );
 
-            File jsonFile = FileManager.getLatestBeautyJsonFile();
-            if( jsonFile.exists() ) {
-                  jsonFile.delete();
+            if( latestJsonFile.exists() ) {
+                  latestJsonFile.delete();
             }
 
-            Log.e( TAG, "downLoadLatestBeautyJson : 下载最新的福利数据中..." );
+            Log.e( TAG, "downLoadLatestJson : 下载最新的json数据中... " + category );
 
             /* 下载最新的数据 */
-            StreamLoader.downLoad( beautyUrl, jsonFile );
+            StreamLoader.downLoad( url, latestJsonFile );
 
             /* 如果最新的数据不够,那么增加数量,继续下载 */
-            while( JsonUtil.parserBeautyJsonToGetIsNeedMoreLatest( jsonFile, startDate ) ) {
-                  boolean delete = jsonFile.delete();
+            while( JsonUtil.parserJsonToGetIsNeedMore( category, latestJsonFile, startDate ) ) {
+                  boolean delete = latestJsonFile.delete();
                   count += count;
-                  String beautyUrl1 = GankUrl.beautyUrl( count, page );
-                  StreamLoader.downLoad( beautyUrl1, jsonFile );
+                  url = GankUrl.category( category, count, page );
+                  StreamLoader.downLoad( url, latestJsonFile );
             }
 
-            Log.e( TAG, "downLoadLatestBeautyJson : 下载最新的福利数据完成 " + count );
+            Log.e( TAG, "downLoadLatestJson : 下载最新的json数据完成 " + category + " " + count );
 
-            return jsonFile;
+            return latestJsonFile;
       }
 }

@@ -48,15 +48,22 @@ public class GankUrl {
        *
        * @return url
        */
-      public static String category ( @CategoryValue String category, int count, int page ) {
+      public static String category ( String category, int count, int page ) {
 
-            return String.format(
-                Locale.ENGLISH,
-                "https://gank.io/api/data/%s/%d/%d",
-                category,
-                count,
-                page
-            );
+            try {
+                  category = URLEncoder.encode( category, "UTF-8" );
+                  return String.format(
+                      Locale.ENGLISH,
+                      "https://gank.io/api/data/%s/%d/%d",
+                      category,
+                      count,
+                      page
+                  );
+            } catch(UnsupportedEncodingException e) {
+                  e.printStackTrace();
+            }
+
+            return null;
       }
 
       public static String beautyUrl ( int count, int page ) {

@@ -2,7 +2,6 @@ package com.example.wuxio.gankexamples.json;
 
 import android.util.JsonToken;
 import android.util.Log;
-import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import tech.threekilogram.depository.cache.json.JsonLoader;
-import tech.threekilogram.depository.cache.json.ObjectLoader;
 
 /**
  * @author Liujin 2018-10-14:9:27
@@ -23,51 +21,38 @@ public class JsonUtil {
 
       private static final String TAG = JsonUtil.class.getSimpleName();
 
-      /**
-       *
-       * @param jsonFile
-       * @param bean
-       */
-      public static void parseDownLoadAllBeautyJson ( File jsonFile, LocalCategoryBean bean ) {
+      public static LocalCategoryBean parseJsonToLocalBean ( File jsonFile ) {
 
-            /* 只读取url */
             try {
                   FileReader reader = new FileReader( jsonFile );
                   JsonParser jsonParser = new JsonParser( reader );
                   jsonParser.start();
 
+                  LocalCategoryBean bean = new LocalCategoryBean();
+
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
+
+                        if( bean.getStartDate() == null ) {
+                              jsonParser.skipToString( "publishedAt" );
+                              String publishedAt = jsonParser.readString( "publishedAt" );
+                              bean.setStartDate( publishedAt );
+                        }
+
                         jsonParser.skipToString( "url" );
                         String url = jsonParser.readString( "url" );
                         if( url != null ) {
                               bean.getUrls().add( url );
-                              Log.e(
-                                  TAG, "parseDownLoadAllBeautyJson : 从网络构建BeautiesBean中: " + url );
                         }
                   }
                   jsonParser.finish();
                   Log.e(
-                      TAG, "parseDownLoadAllBeautyJson : 从网络构建完成: " + bean.getUrls()
-                                                                          .size() );
+                      TAG, "parseJsonToLocalBean : 从网络构建完成: " + bean.getUrls()
+                                                                    .size() );
+                  return bean;
             } catch(IOException e) {
                   e.printStackTrace();
             }
-
-            /* 只读取起始日期 */
-            try {
-                  FileReader reader = new FileReader( jsonFile );
-                  JsonParser jsonParser = new JsonParser( reader );
-                  jsonParser.start();
-
-                  jsonParser.skipToString( "publishedAt" );
-                  String publishedAt = jsonParser.readString( "publishedAt" );
-                  jsonParser.finish();
-
-                  bean.setStartDate( publishedAt );
-                  Log.e( TAG, "parseDownLoadAllBeautyJson : 解析网络福利json起始日期: " + publishedAt );
-            } catch(IOException e) {
-                  e.printStackTrace();
-            }
+            return null;
       }
 
       /**
@@ -78,7 +63,8 @@ public class JsonUtil {
        *
        * @return true : 所有日期都早于指定的日期
        */
-      public static boolean parserBeautyJsonToGetIsNeedMoreLatest ( File jsonFile, Date date ) {
+      public static boolean parserJsonToGetIsNeedMore (
+          String category, File jsonFile, Date date ) {
 
             boolean result = true;
             try {
@@ -101,21 +87,21 @@ public class JsonUtil {
                   e.printStackTrace();
             }
 
-            Log.e( TAG, "needMoreJson : 是否需要获取更多数据-->福利: " + result );
+            Log.e( TAG, "needMoreJson : 是否需要获取更多数据-->: " + category + " " + result );
             return result;
       }
 
       /**
        * 将最新的福利数据添加到BeautiesBean缓存
        */
-      public static void parserLatestBeautyJson (
-          File jsonFile, Date date, LocalCategoryBean beautiesBean ) {
+      public static void parserLatestJson (
+          File latestJsonFile, Date date, LocalCategoryBean beautiesBean ) {
 
             try {
-                  Log.e( TAG, "parserLatestBeautyJson :添加最新福利数据到BeautiesBean缓存 --> 解析最新的福利数据" );
+                  Log.e( TAG, "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 解析最新的福利数据" );
                   ArrayList<String> newData = new ArrayList<>();
 
-                  FileReader reader = new FileReader( jsonFile );
+                  FileReader reader = new FileReader( latestJsonFile );
                   JsonParser jsonParser = new JsonParser( reader );
                   jsonParser.start();
 
@@ -125,7 +111,7 @@ public class JsonUtil {
                   if( publishedAt.equals( beautiesBean.getStartDate() ) ) {
                         Log.e(
                             TAG,
-                            "parserLatestBeautyJson :添加最新福利数据到BeautiesBean缓存 --> 没有新福利数据需要添加 "
+                            "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 没有新福利数据需要添加 "
                                 + publishedAt
                         );
                         jsonParser.finish();
@@ -139,12 +125,12 @@ public class JsonUtil {
                         }
                         Log.e(
                             TAG,
-                            "parserLatestBeautyJson :添加最新福利数据到BeautiesBean缓存--> 最新的福利数据日期:"
+                            "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 最新的福利数据日期:"
                                 + publishedAt
                         );
                         Log.e(
                             TAG,
-                            "parserLatestBeautyJson :添加最新福利数据到BeautiesBean缓存--> 解析到新福利数据: "
+                            "parserLatestJson :添加最新数据到LocalCategoryBean缓存 --> 解析到新福利数据: "
                                 + url
                         );
                   }
@@ -153,8 +139,8 @@ public class JsonUtil {
                         jsonParser.skipToString( "publishedAt" );
                         publishedAt = jsonParser.readString( "publishedAt" );
                         if( publishedAt != null ) {
-                              Date date1 = DateUtil.getDate( publishedAt );
-                              if( DateUtil.isLater( date, date1 ) ) {
+                              Date publishedDate = DateUtil.getDate( publishedAt );
+                              if( DateUtil.isLater( date, publishedDate ) ) {
                                     jsonParser.skipToString( "url" );
                                     String url = jsonParser.readString( "url" );
                                     if( url != null ) {
@@ -162,7 +148,7 @@ public class JsonUtil {
                                     }
                                     Log.e(
                                         TAG,
-                                        "parserLatestBeautyJson :添加最新福利数据到BeautiesBean缓存--> 解析到新福利数据: "
+                                        "parserLatestJson :添加最新福利数据到BeautiesBean缓存--> 解析到新福利数据: "
                                             + url
                                     );
                               } else {
@@ -172,11 +158,8 @@ public class JsonUtil {
                   }
                   jsonParser.finish();
                   beautiesBean.getUrls().addAll( 0, newData );
-
-                  /* 缓存最新数据到本地 */
-                  File beanFile = FileManager.getLocalBeautyBeanFile();
-                  ObjectLoader.toFile( beanFile, beautiesBean, LocalCategoryBean.class );
-                  Log.e( TAG, "parserLatestBeautyJson : 添加最新福利数据到BeautiesBean缓存--> 完成" );
+                  Log.e(
+                      TAG, "parserLatestJson : 添加最新福利数据到BeautiesBean缓存--> 完成 " + newData.size() );
             } catch(IOException e) {
                   e.printStackTrace();
             }
