@@ -21,23 +21,23 @@ public class AndroidModel {
 
       private static final String TAG = AndroidModel.class.getSimpleName();
 
-      private static JsonLoader<GankCategoryItem> sAndroidLoader;
-      private static LocalCategoryBean            sAndroidLocalBean;
+      private static JsonLoader<GankCategoryItem> sItemLoader;
+      private static LocalCategoryBean            sLocalBean;
 
       private static final int COUNT = 100;
 
       public static void init ( ) {
 
-            if( sAndroidLoader == null ) {
-                  sAndroidLoader = new JsonLoader<>(
+            if( sItemLoader == null ) {
+                  sItemLoader = new JsonLoader<>(
                       COUNT,
                       FileManager.getAndroidFile(),
                       GankCategoryItem.class
                   );
             }
 
-            if( sAndroidLocalBean == null ) {
-                  sAndroidLocalBean = new LocalCategoryBean();
+            if( sLocalBean == null ) {
+                  sLocalBean = new LocalCategoryBean();
                   Log.e( TAG, "init : 初次启动 初始化本地android bean " );
                   buildLocalBean();
             } else {
@@ -58,21 +58,21 @@ public class AndroidModel {
                         Log.e(
                             TAG, "buildLocalBean : 从本地文件构建 android local bean中 " + localBeanFile );
                         File jsonFile = FileManager.getLatestAndroidJsonFile();
-                        sAndroidLocalBean = Model.buildLocalBeanFromFile(
+                        sLocalBean = Model.buildLocalBeanFromFile(
                             GankUrl.ANDROID,
                             localBeanFile,
                             jsonFile
                         );
                         Log.e(
                             TAG,
-                            "buildLocalBean : 从本地文件构建 android local bean完成 " + sAndroidLocalBean
+                            "buildLocalBean : 从本地文件构建 android local bean完成 " + sLocalBean
                                 .getUrls().size()
                         );
 
                         notifyAllWait();
 
                         Log.e( TAG, "buildLocalBean : 从最新的json中保存android item 数据中 " );
-                        JsonUtil.parserJsonToItemJson( jsonFile, sAndroidLoader );
+                        JsonUtil.parserJsonToItemJson( jsonFile, sItemLoader );
                         Log.e( TAG, "buildLocalBean : 从最新的json中保存android item 数据完成 " );
                   } else {
 
@@ -80,23 +80,23 @@ public class AndroidModel {
 
                               Log.e( TAG, "buildLocalBean : 从网络构建 android local bean中 " );
                               File jsonFile = FileManager.getAndroidJsonFile();
-                              sAndroidLocalBean = Model.buildLocalBeanFromNet(
+                              sLocalBean = Model.buildLocalBeanFromNet(
                                   GankUrl.androidAllUrl(),
                                   jsonFile,
                                   localBeanFile
                               );
                               Log.e( TAG, "buildLocalBean : 从网络构建 android local bean完成 "
-                                  + sAndroidLocalBean.getUrls().size() );
+                                  + sLocalBean.getUrls().size() );
 
                               notifyAllWait();
 
                               Log.e( TAG, "buildLocalBean : 从网络json中保存android item 数据中 " );
-                              JsonUtil.parserJsonToItemJson( jsonFile, sAndroidLoader );
+                              JsonUtil.parserJsonToItemJson( jsonFile, sItemLoader );
                               Log.e( TAG, "buildLocalBean : 从网络json中保存android item 数据完成 " );
                         } else {
 
-                              sAndroidLocalBean = new LocalCategoryBean();
-                              sAndroidLocalBean.setUrls( new ArrayList<>() );
+                              sLocalBean = new LocalCategoryBean();
+                              sLocalBean.setUrls( new ArrayList<>() );
                               Log.e( TAG, "buildLocalBean : 没有网络 无法从网络构建android local bean" );
                               notifyAllWait();
                         }
@@ -113,9 +113,9 @@ public class AndroidModel {
 
       private static void waitLocalBuild ( ) {
 
-            if( sAndroidLocalBean.getUrls() == null ) {
+            if( sLocalBean.getUrls() == null ) {
                   synchronized(GankUrl.ANDROID) {
-                        if( sAndroidLocalBean.getUrls() == null ) {
+                        if( sLocalBean.getUrls() == null ) {
                               try {
                                     GankUrl.ANDROID.wait();
                               } catch(InterruptedException e) {
@@ -129,25 +129,25 @@ public class AndroidModel {
       public static LocalCategoryBean getAndroidLocalBean ( ) {
 
             waitLocalBuild();
-            return sAndroidLocalBean;
+            return sLocalBean;
       }
 
       public static List<String> getAndroidLocalBeanUrls ( ) {
 
             waitLocalBuild();
-            return sAndroidLocalBean.getUrls();
+            return sLocalBean.getUrls();
       }
 
       public static GankCategoryItem getItemFromMemory ( int position ) {
 
             List<String> urls = getAndroidLocalBeanUrls();
-            return sAndroidLoader.loadFromMemory( urls.get( position ) );
+            return sItemLoader.loadFromMemory( urls.get( position ) );
       }
 
       public static GankCategoryItem getItem ( int position ) {
 
             List<String> urls = getAndroidLocalBeanUrls();
             String url = urls.get( position );
-            return sAndroidLoader.load( url );
+            return sItemLoader.load( url );
       }
 }
