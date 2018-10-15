@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.threekilogram.viewskin.ContainerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeRefresh"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+      <android.support.v7.widget.RecyclerView
+          android:id="@+id/recycler"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"/>
 
-        <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-        </android.support.v7.widget.RecyclerView>
-
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-</com.threekilogram.viewskin.ContainerLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

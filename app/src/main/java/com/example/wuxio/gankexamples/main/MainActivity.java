@@ -15,7 +15,7 @@ import android.support.design.widget.TabLayout.OnTabSelectedListener;
 import android.support.design.widget.TabLayout.Tab;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
       /**
        * main content fragment adapter
        */
-      private class MainPagerAdapter extends FragmentStatePagerAdapter {
+      private class MainPagerAdapter extends FragmentPagerAdapter {
 
             private ShowFragment[] mShowFragments = new ShowFragment[ GankUrl.CATEGORY.length ];
 
