@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
@@ -17,6 +16,7 @@ import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.widget.LoadingView;
+import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import pl.droidsonroids.gif.GifImageView;
@@ -28,11 +28,11 @@ public class ShowFragment extends Fragment {
 
       private static final String TAG = ShowFragment.class.getSimpleName();
 
-      protected View               rootView;
-      protected RecyclerView       mRecycler;
-      protected SwipeRefreshLayout mSwipeRefresh;
-      private   String             mCategory;
-      private   ShowAdapter        mAdapter;
+      protected View                    rootView;
+      protected RecyclerFlingChangeView mRecycler;
+      protected SwipeRefreshLayout      mSwipeRefresh;
+      private   String                  mCategory;
+      private   ShowAdapter             mAdapter;
 
       public static ShowFragment newInstance ( String category ) {
 
@@ -73,6 +73,7 @@ public class ShowFragment extends Fragment {
             mRecycler = rootView.findViewById( R.id.recycler );
             LinearLayoutManager layoutManager = new LinearLayoutManager( getContext() );
             mRecycler.setLayoutManager( layoutManager );
+            mRecycler.setFlingScale( 0.33f );
 
             /* 打开界面 刷新 */
             mSwipeRefresh.setRefreshing( true );
@@ -97,7 +98,7 @@ public class ShowFragment extends Fragment {
             rootView.post( ( ) -> {
 
                   if( mAdapter == null ) {
-                        ShowModelManager.loadItems( mCategory );
+                        ShowModelManager.loadUrls( mCategory );
                   }
             } );
       }
@@ -123,7 +124,6 @@ public class ShowFragment extends Fragment {
 
       public void onItemChanged ( int position ) {
 
-            Log.e( TAG, "onItemChanged : " + position );
             mRecycler.post( ( ) -> mAdapter.notifyItemChanged( position ) );
       }
 
@@ -149,7 +149,6 @@ public class ShowFragment extends Fragment {
             public void onBindViewHolder (
                 @NonNull ShowHolder holder, int position ) {
 
-                  Log.e( TAG, "onBindViewHolder : " + position );
                   holder.bind(
                       position,
                       ShowModelManager.getItemFromMemory( mCategory, position )
@@ -170,7 +169,7 @@ public class ShowFragment extends Fragment {
             private TextView     mWho;
             private LoadingView  mLoadingView;
 
-            public ShowHolder ( View itemView ) {
+            private ShowHolder ( View itemView ) {
 
                   super( itemView );
                   initView( itemView );
@@ -186,6 +185,24 @@ public class ShowFragment extends Fragment {
 
             private void bind ( int position, GankCategoryItem item ) {
 
+                  if( item == null ) {
+
+                        mGifImageView.setVisibility( View.INVISIBLE );
+                        mDesc.setVisibility( View.INVISIBLE );
+                        mWho.setVisibility( View.INVISIBLE );
+                        mLoadingView.setVisibility( View.VISIBLE );
+
+                        ShowModelManager.loadItem( mCategory, position );
+                  } else {
+
+                        mGifImageView.setVisibility( View.VISIBLE );
+                        mDesc.setVisibility( View.VISIBLE );
+                        mWho.setVisibility( View.VISIBLE );
+                        mLoadingView.setVisibility( View.INVISIBLE );
+
+                        mDesc.setText( item.getDesc() );
+                        mWho.setText( item.getWho() );
+                  }
             }
       }
 }

@@ -24,7 +24,7 @@ public class AndroidModel {
       private static JsonLoader<GankCategoryItem> sAndroidLoader;
       private static LocalCategoryBean            sAndroidLocalBean;
 
-      private static final int COUNT = 30;
+      private static final int COUNT = 100;
 
       public static void init ( ) {
 
@@ -144,16 +144,10 @@ public class AndroidModel {
             return sAndroidLoader.loadFromMemory( urls.get( position ) );
       }
 
-      public static GankCategoryItem getItemFromFile ( int position ) {
+      public static GankCategoryItem getItem ( int position ) {
 
             List<String> urls = getAndroidLocalBeanUrls();
             String url = urls.get( position );
-            Log.e(
-                TAG,
-                "getItemFromFile : " + position + " " + url + " " + sAndroidLoader.getFile( url )
-                                                                                  .exists() + " "
-                    + sAndroidLoader.getFile( url )
-            );
-            return sAndroidLoader.loadFromFile( url );
+            return sAndroidLoader.load( url );
       }
 }

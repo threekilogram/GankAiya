@@ -1,9 +1,9 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
-import android.util.Log;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
+import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
@@ -24,6 +24,8 @@ public class ShowModelManager {
       public static WeakReference<ShowFragment> sRecommendRef;
       public static WeakReference<ShowFragment> sExtraResourcesRef;
       public static WeakReference<ShowFragment> sRestVideoRef;
+
+      private static ObjectBus sBus = ObjectBus.newQueue();
 
       public static void bind ( String category, ShowFragment showFragment ) {
 
@@ -108,7 +110,7 @@ public class ShowModelManager {
       /**
        * 加载一个类型的数据
        */
-      public static void loadItems ( String type ) {
+      public static void loadUrls ( String type ) {
 
             if( GankUrl.ANDROID.equals( type ) ) {
                   loadAndroidData();
@@ -134,20 +136,13 @@ public class ShowModelManager {
             return null;
       }
 
-      public static void loadItemFromFile ( String type, int position ) {
+      public static void loadItem ( String type, int position ) {
 
-            PoolExecutor.execute( ( ) -> {
+            sBus.toPool( ( ) -> {
 
                   if( GankUrl.ANDROID.equals( type ) ) {
-                        GankCategoryItem item = AndroidModel.getItemFromFile( position );
-                        Log.e( TAG, "loadItemFromFile : " + position + " " + item );
+                        GankCategoryItem item = AndroidModel.getItem( position );
                         if( item != null ) {
-
-//                              List<String> images = item.getImages();
-//                              if( images != null && images.size() > 0 ) {
-//                                    String url = images.get( 0 );
-//                                    BitmapCache.downLoadPicture( url );
-//                              }
 
                               try {
                                     sAndroidRef.get().onItemChanged( position );
@@ -156,7 +151,7 @@ public class ShowModelManager {
                               }
                         }
                   }
-            } );
+            } ).run();
       }
 
       public static File getGifFile ( String url ) {
