@@ -121,6 +121,12 @@ public class ShowFragment extends Fragment {
             Log.e( TAG, "onReselected : " + mCategory );
       }
 
+      public void onItemChanged ( int position ) {
+
+            Log.e( TAG, "onItemChanged : " + position );
+            mRecycler.post( ( ) -> mAdapter.notifyItemChanged( position ) );
+      }
+
       private class ShowAdapter extends Adapter<ShowHolder> {
 
             private List<String> mUrls;
@@ -143,7 +149,11 @@ public class ShowFragment extends Fragment {
             public void onBindViewHolder (
                 @NonNull ShowHolder holder, int position ) {
 
-                  holder.bind( position, ShowModelManager.getItem( mCategory, position ) );
+                  Log.e( TAG, "onBindViewHolder : " + position );
+                  holder.bind(
+                      position,
+                      ShowModelManager.getItemFromMemory( mCategory, position )
+                  );
             }
 
             @Override
@@ -184,6 +194,8 @@ public class ShowFragment extends Fragment {
                         mDesc.setVisibility( View.INVISIBLE );
                         mWho.setVisibility( View.INVISIBLE );
                         mDate.setVisibility( View.INVISIBLE );
+
+                        ShowModelManager.loadItemFromFile( mCategory, position );
                   } else {
 
                         mLoadingView.setVisibility( View.GONE );
@@ -194,7 +206,7 @@ public class ShowFragment extends Fragment {
 
                         mDesc.setText( item.getDesc() );
                         mWho.setText( item.getWho() );
-                        mDate.setText( item.getCreatedAt() );
+                        mDate.setText( item.getPublishedAt().substring( 0, 10 ) );
                   }
             }
       }

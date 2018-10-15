@@ -143,4 +143,17 @@ public class AndroidModel {
             List<String> urls = getAndroidLocalBeanUrls();
             return sAndroidLoader.loadFromMemory( urls.get( position ) );
       }
+
+      public static GankCategoryItem getItemFromFile ( int position ) {
+
+            List<String> urls = getAndroidLocalBeanUrls();
+            String url = urls.get( position );
+            Log.e(
+                TAG,
+                "getItemFromFile : " + position + " " + url + " " + sAndroidLoader.getFile( url )
+                                                                                  .exists() + " "
+                    + sAndroidLoader.getFile( url )
+            );
+            return sAndroidLoader.loadFromFile( url );
+      }
 }

@@ -1,5 +1,6 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
+import android.util.Log;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.threekilogram.objectbus.executor.MainExecutor;
@@ -11,6 +12,8 @@ import java.util.List;
  * @author Liujin 2018-10-15:11:30
  */
 public class ShowModelManager {
+
+      private static final String TAG = ShowModelManager.class.getSimpleName();
 
       public static WeakReference<ShowFragment> sAndroidRef;
       public static WeakReference<ShowFragment> sAppRef;
@@ -121,11 +124,29 @@ public class ShowModelManager {
             } );
       }
 
-      public static GankCategoryItem getItem ( String type, int position ) {
+      public static GankCategoryItem getItemFromMemory ( String type, int position ) {
 
             if( GankUrl.ANDROID.equals( type ) ) {
                   return AndroidModel.getItemFromMemory( position );
             }
             return null;
+      }
+
+      public static void loadItemFromFile ( String type, int position ) {
+
+            PoolExecutor.execute( ( ) -> {
+
+                  if( GankUrl.ANDROID.equals( type ) ) {
+                        GankCategoryItem item = AndroidModel.getItemFromFile( position );
+                        Log.e( TAG, "loadItemFromFile : " + position + " " + item );
+                        if( item != null ) {
+                              try {
+                                    sAndroidRef.get().onItemChanged( position );
+                              } catch(Exception e) {
+                                    /* nothing worry about */
+                              }
+                        }
+                  }
+            } );
       }
 }
