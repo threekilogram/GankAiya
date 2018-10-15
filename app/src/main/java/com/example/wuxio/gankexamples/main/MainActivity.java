@@ -19,8 +19,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.Gravity;
@@ -42,6 +40,8 @@ import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
 import tech.threekilogram.pager.indicator.DotView;
+import tech.threekilogram.pager.scroll.recycler.OnRecyclerPagerScrollListener;
+import tech.threekilogram.pager.scroll.recycler.RecyclerPagerScroll;
 import tech.threekilogram.screen.ScreenSize;
 
 /**
@@ -118,11 +118,13 @@ public class MainActivity extends AppCompatActivity {
             mDotView = findViewById( R.id.dotView );
             mDotView.setDotCount( 5 );
             mDotView.setSelected( 0 );
+            mDotView.setColorSelected( getResources().getColor( R.color.blue ) );
 
             /* banner */
             mBannerAdapter = new RecyclerBannerAdapter();
             mBanner.setBannerAdapter( mBannerAdapter );
-            mBanner.addOnScrollListener( new MainBannerScrollListener() );
+            RecyclerPagerScroll scroll = new RecyclerPagerScroll( mBanner.getRecyclerPager() );
+            scroll.setOnRecyclerPagerScrollListener( new BannerScrollListener() );
 
             /* 防止tabLayout 进入statusBar */
             int height = SystemUi.getStatusBarHeight( MainActivity.this );
@@ -324,6 +326,22 @@ public class MainActivity extends AppCompatActivity {
             }
       }
 
+      private class BannerScrollListener implements OnRecyclerPagerScrollListener {
+
+            @Override
+            public void onScroll (
+                int state, int currentPosition, int nextPosition, int offsetX, int offsetY ) {
+
+            }
+
+            @Override
+            public void onPageSelected ( int prevSelected, int newSelected ) {
+
+                  int actualPosition = mBannerAdapter.getActualPosition( newSelected );
+                  mDotView.setSelected( actualPosition );
+            }
+      }
+
       /**
        * banner adapter
        */
@@ -408,23 +426,6 @@ public class MainActivity extends AppCompatActivity {
                             mBannerAdapter.mBitmaps
                         );
                         //stopLoop();
-                  }
-            }
-      }
-
-      /**
-       * banner 滚动时更新指示器
-       */
-      private class MainBannerScrollListener extends OnScrollListener {
-
-            @Override
-            public void onScrollStateChanged (
-                RecyclerView recyclerView, int newState ) {
-
-                  if( newState == RecyclerView.SCROLL_STATE_SETTLING ) {
-                        int position = mBanner.getRecyclerPager().getCurrentPosition() + 1;
-                        int actualPosition = mBannerAdapter.getActualPosition( position );
-                        mDotView.setSelected( actualPosition );
                   }
             }
       }

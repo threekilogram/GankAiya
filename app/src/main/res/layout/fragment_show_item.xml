@@ -2,15 +2,27 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="100dp">
+    android:layout_height="wrap_content">
+
+      <pl.droidsonroids.gif.GifImageView
+          android:id="@+id/gifImageView"
+          android:layout_width="80dp"
+          android:layout_height="0dp"
+          android:layout_marginTop="8dp"
+          android:layout_marginBottom="8dp"
+          android:layout_marginStart="8dp"
+          android:scaleType="centerInside"
+          tools:src="@drawable/a42"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"/>
 
       <TextView
           android:id="@+id/desc"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:layout_margin="8dp"
           android:layout_marginTop="8dp"
           android:layout_marginStart="8dp"
           android:layout_marginEnd="8dp"
@@ -19,59 +31,18 @@
           android:text="@string/in_line"
           android:textSize="16sp"
           app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/gifImageView"
           app:layout_constraintTop_toTopOf="parent"/>
 
-      <pl.droidsonroids.gif.GifImageView
-          android:id="@+id/gif00"
-          android:layout_width="0dp"
-          android:layout_height="110dp"
-          android:layout_marginTop="8dp"
-          android:layout_marginStart="8dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/a42"
-          app:layout_constraintEnd_toStartOf="@+id/gif01"
-          app:layout_constraintHorizontal_bias="0.5"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/desc"/>
-
-      <pl.droidsonroids.gif.GifImageView
-          android:id="@+id/gif02"
-          android:layout_width="0dp"
-          android:layout_height="110dp"
-          android:layout_marginTop="8dp"
-          android:layout_marginStart="8dp"
-          android:layout_marginEnd="8dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/a42"
-          app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintHorizontal_bias="0.5"
-          app:layout_constraintStart_toEndOf="@+id/gif01"
-          app:layout_constraintTop_toBottomOf="@+id/desc"/>
-
-      <pl.droidsonroids.gif.GifImageView
-          android:id="@+id/gif01"
-          android:layout_width="0dp"
-          android:layout_height="110dp"
-          android:layout_marginTop="8dp"
-          android:layout_marginStart="8dp"
-          android:scaleType="centerInside"
-          android:src="@drawable/a42"
-          app:layout_constraintEnd_toStartOf="@+id/gif02"
-          app:layout_constraintHorizontal_bias="0.5"
-          app:layout_constraintStart_toEndOf="@+id/gif00"
-          app:layout_constraintTop_toBottomOf="@+id/desc"/>
       <TextView
           android:id="@+id/date"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop="8dp"
-          android:layout_marginBottom="8dp"
           android:layout_marginEnd="8dp"
           android:text="@string/in_line_1"
-          app:layout_constraintBottom_toTopOf="@+id/view"
           app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintTop_toBottomOf="@+id/gif02"/>
+          app:layout_constraintTop_toBottomOf="@+id/desc"/>
       <TextView
           android:id="@+id/who"
           android:layout_width="wrap_content"
@@ -80,16 +51,18 @@
           android:layout_marginEnd="8dp"
           android:text="@string/in_line_2"
           app:layout_constraintEnd_toStartOf="@+id/date"
-          app:layout_constraintTop_toBottomOf="@+id/gif01"/>
+          app:layout_constraintTop_toBottomOf="@+id/desc"/>
 
       <View
           android:id="@+id/view"
           android:layout_width="match_parent"
           android:layout_height="1dp"
+          android:layout_marginTop="8dp"
           android:background="@color/lightGray"
           app:layout_constraintBottom_toBottomOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintStart_toStartOf="parent"/>
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/date"/>
 
       <com.example.wuxio.gankexamples.widget.LoadingView
           android:id="@+id/loadingView"

@@ -94,9 +94,12 @@ public class ShowFragment extends Fragment {
       public void onSelected ( ) {
 
             Log.e( TAG, "onSelected : " + mCategory );
-            if( mAdapter == null ) {
-                  ShowModelManager.loadItems( mCategory );
-            }
+            rootView.post( ( ) -> {
+
+                  if( mAdapter == null ) {
+                        ShowModelManager.loadItems( mCategory );
+                  }
+            } );
       }
 
       void setAdapterData ( List<String> urls ) {
@@ -122,7 +125,7 @@ public class ShowFragment extends Fragment {
 
             private List<String> mUrls;
 
-            public ShowAdapter ( List<String> urls ) {
+            private ShowAdapter ( List<String> urls ) {
 
                   mUrls = urls;
             }
@@ -152,10 +155,8 @@ public class ShowFragment extends Fragment {
 
       private class ShowHolder extends ViewHolder {
 
+            private GifImageView mGifImageView;
             private TextView     mDesc;
-            private GifImageView mGif00;
-            private GifImageView mGif02;
-            private GifImageView mGif01;
             private TextView     mDate;
             private TextView     mWho;
             private LoadingView  mLoadingView;
@@ -168,10 +169,8 @@ public class ShowFragment extends Fragment {
 
             private void initView ( @NonNull final View itemView ) {
 
+                  mGifImageView = itemView.findViewById( R.id.gifImageView );
                   mDesc = itemView.findViewById( R.id.desc );
-                  mGif00 = itemView.findViewById( R.id.gif00 );
-                  mGif02 = itemView.findViewById( R.id.gif02 );
-                  mGif01 = itemView.findViewById( R.id.gif01 );
                   mDate = itemView.findViewById( R.id.date );
                   mWho = itemView.findViewById( R.id.who );
                   mLoadingView = itemView.findViewById( R.id.loadingView );
@@ -179,26 +178,23 @@ public class ShowFragment extends Fragment {
 
             private void bind ( int position, GankCategoryItem item ) {
 
-                  mGif00.setVisibility( View.GONE );
-                  mGif01.setVisibility( View.GONE );
-                  mGif02.setVisibility( View.GONE );
+                  if( item == null ) {
+                        mLoadingView.setVisibility( View.VISIBLE );
 
-                  if( item != null ) {
-
-                        mDesc.setText( item.getDesc() );
-                        mDate.setText( item.getCreatedAt() );
-                        mWho.setText( item.getWho() );
-
-                        mLoadingView.setVisibility( View.GONE );
-                        mDesc.setVisibility( View.VISIBLE );
-                        mDate.setVisibility( View.VISIBLE );
-                        mWho.setVisibility( View.VISIBLE );
+                        mDesc.setVisibility( View.INVISIBLE );
+                        mWho.setVisibility( View.INVISIBLE );
+                        mDate.setVisibility( View.INVISIBLE );
                   } else {
 
-                        mLoadingView.setVisibility( View.VISIBLE );
-                        mDesc.setVisibility( View.GONE );
-                        mDate.setVisibility( View.GONE );
-                        mWho.setVisibility( View.GONE );
+                        mLoadingView.setVisibility( View.GONE );
+
+                        mDesc.setVisibility( View.VISIBLE );
+                        mWho.setVisibility( View.VISIBLE );
+                        mDate.setVisibility( View.VISIBLE );
+
+                        mDesc.setText( item.getDesc() );
+                        mWho.setText( item.getWho() );
+                        mDate.setText( item.getCreatedAt() );
                   }
             }
       }
