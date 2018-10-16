@@ -120,7 +120,7 @@ public class CategoryModel {
                             TAG, "buildLocalBean : 从本地文件构建索引中 " + CATEGORY + " " + mLocalBeanFile );
 
                         sLocalBean = Model.buildLocalBeanFromFile(
-                            GankUrl.ANDROID,
+                            CATEGORY,
                             mLocalBeanFile,
                             mLatestJsonFile
                         );
@@ -148,7 +148,7 @@ public class CategoryModel {
                               );
 
                               sLocalBean = Model.buildLocalBeanFromNet(
-                                  GankUrl.androidAllUrl(),
+                                  GankUrl.category( CATEGORY, Integer.MAX_VALUE, 1 ),
                                   mJsonFile,
                                   mLocalBeanFile
                               );

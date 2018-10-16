@@ -49,7 +49,7 @@ dependencies {
     /* message */
     implementation 'com.github.threekilogram:Messengers:1.2'
     /* loading */
-    implementation 'com.github.threekilogram:AnimateDrawable:1.1.8'
+    implementation 'com.github.threekilogram:AnimateDrawable:1.2.1'
     /* net state */
     implementation 'com.github.threekilogram:NetStateChangeManager:1.2.5'
     /* cache */

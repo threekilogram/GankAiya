@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
-import com.example.wuxio.gankexamples.widget.LoadingView;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
@@ -260,7 +259,6 @@ public class ShowFragment extends Fragment {
             private GifImageView mGifImageView;
             private TextView     mDesc;
             private TextView     mWho;
-            private LoadingView  mLoadingView;
             private int          mBindPosition;
 
             private ShowHolder ( View itemView ) {
@@ -279,7 +277,6 @@ public class ShowFragment extends Fragment {
                   mGifImageView = itemView.findViewById( R.id.gifImageView );
                   mDesc = itemView.findViewById( R.id.desc );
                   mWho = itemView.findViewById( R.id.who );
-                  mLoadingView = itemView.findViewById( R.id.loadingView );
             }
 
             void setGankCategoryItem ( int position, GankCategoryItem item ) {
@@ -309,12 +306,10 @@ public class ShowFragment extends Fragment {
                         mGifImageView.setImageBitmap( sDefaultGif );
                         mDesc.setVisibility( View.INVISIBLE );
                         mWho.setVisibility( View.INVISIBLE );
-                        mLoadingView.setVisibility( View.VISIBLE );
                   } else {
 
                         mDesc.setVisibility( View.VISIBLE );
                         mWho.setVisibility( View.VISIBLE );
-                        mLoadingView.setVisibility( View.INVISIBLE );
 
                         mDesc.setText( item.getDesc() );
                         mWho.setText( item.getWho() );
