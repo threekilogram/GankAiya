@@ -17,9 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.widget.LoadingView;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
+import com.threekilogram.objectbus.bus.ObjectBus;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -28,16 +31,30 @@ import pl.droidsonroids.gif.GifImageView;
 /**
  * @author wuxio 2018-04-29:9:23
  */
-public abstract class ShowFragment extends Fragment {
+public class ShowFragment extends Fragment {
 
-      private static final String TAG = ShowFragment.class.getSimpleName();
+      private String TAG;
 
+      /**
+       * 默认gif图片
+       */
       protected static Bitmap sDefaultGif;
 
-      protected View                    rootView;
       protected RecyclerFlingChangeView mRecycler;
       protected SwipeRefreshLayout      mSwipeRefresh;
       private   ShowAdapter             mAdapter;
+      private   String                  mCategory;
+      private   ObjectBus               mBus = ObjectBus.newFixSizeQueue( 30 );
+      private   CategoryModel           mCategoryModel;
+
+      public static ShowFragment newInstance ( String category ) {
+
+            ShowFragment fragment = new ShowFragment();
+            fragment.mCategory = category;
+            fragment.TAG = ShowFragment.class.getSimpleName() + " " + category;
+            fragment.mCategoryModel = CategoryModel.instance( category );
+            return fragment;
+      }
 
       @Override
       public void onCreate ( @Nullable Bundle savedInstanceState ) {
@@ -62,14 +79,22 @@ public abstract class ShowFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState ) {
 
-            rootView = inflater.inflate( R.layout.fragment_show, container, false );
-            initView( rootView );
-            return rootView;
+            return inflater.inflate( R.layout.fragment_show, container, false );
+      }
+
+      @Override
+      public void onViewCreated ( @NonNull View view, @Nullable Bundle savedInstanceState ) {
+
+            super.onViewCreated( view, savedInstanceState );
+            initView( view );
       }
 
       private void initView ( View rootView ) {
 
             mSwipeRefresh = rootView.findViewById( R.id.swipeRefresh );
+            /* 打开界面 刷新 */
+            mSwipeRefresh.setRefreshing( true );
+
             mRecycler = rootView.findViewById( R.id.recycler );
             LinearLayoutManager layoutManager = new LinearLayoutManager( getContext() );
             mRecycler.setLayoutManager( layoutManager );
@@ -78,10 +103,7 @@ public abstract class ShowFragment extends Fragment {
             mAdapter = new ShowAdapter();
             mRecycler.setAdapter( mAdapter );
 
-            /* 打开界面 刷新 */
-            mSwipeRefresh.setRefreshing( true );
-
-            /* 防止泄露 */
+            /* 模拟刷新 */
             WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefresh );
             mSwipeRefresh.setOnRefreshListener( ( ) -> {
                   mSwipeRefresh.postDelayed(
@@ -100,7 +122,7 @@ public abstract class ShowFragment extends Fragment {
       public void onSelected ( ) {
 
             Log.e( TAG, "onSelected : " );
-            rootView.post( ( ) -> {
+            mRecycler.post( ( ) -> {
 
                   setAdapterData( mAdapter );
             } );
@@ -116,29 +138,74 @@ public abstract class ShowFragment extends Fragment {
             Log.e( TAG, "onReselected : " );
       }
 
-      /**
-       * 为{@link ShowAdapter#mUrls}设置数据,设置好数据之后,记得调用{@link ShowAdapter#setUrls(List)}
-       *
-       * @param adapterData fragment adapter
-       */
-      protected abstract void setAdapterData ( ShowAdapter adapterData );
+      protected void setAdapterData ( ShowAdapter adapter ) {
 
-      /**
-       * 为{@link ShowHolder}设置位于该位置的数据
-       *
-       * @param holder holder
-       * @param position holder位置
-       */
-      protected abstract void setShowHolderData ( ShowHolder holder, int position );
+            List<String> urls = adapter.getUrls();
+            if( urls == null || urls.size() == 0 ) {
+                  setUrls( adapter );
+            }
+      }
 
-      /**
-       * 为{@link ShowHolder}设置位于该位置的gif数据
-       *
-       * @param position 位置
-       * @param url gif url
-       * @param holder 需要设置的holder
-       */
-      protected abstract void setShowHolderGif ( int position, String url, ShowHolder holder );
+      private void setUrls ( ShowAdapter adapter ) {
+
+            WeakReference<ShowAdapter> ref = new WeakReference<>( adapter );
+
+            PoolExecutor.execute( ( ) -> {
+                  List<String> urls = mCategoryModel.getLocalBeanUrls();
+                  if( urls != null && urls.size() > 0 ) {
+
+                        try {
+                              ref.get().setUrls( urls );
+                        } catch(Exception e) {
+                              /* nothing at there */
+                        }
+                  }
+            } );
+      }
+
+      protected void setShowHolderData ( ShowHolder holder, int position ) {
+
+            GankCategoryItem item = mCategoryModel.getItemFromMemory( position );
+            if( item != null ) {
+                  if( holder.getBindPosition() == position ) {
+                        holder.bind( position, item );
+                  }
+                  return;
+            }
+
+            WeakReference<ShowHolder> ref = new WeakReference<>( holder );
+            mBus.toPool( ( ) -> {
+
+                  GankCategoryItem loaded = mCategoryModel.getItem( position );
+                  if( loaded != null ) {
+                        try {
+                              ref.get().setGankCategoryItem( position, loaded );
+                        } catch(Exception e) {
+                              /* nothing at there */
+                        }
+                  }
+            } ).run();
+      }
+
+      protected void setShowHolderGif (
+          int position, String url, ShowHolder holder ) {
+
+            loadGif( position, url, new WeakReference<>( holder ) );
+      }
+
+      private void loadGif ( int position, String url, WeakReference<ShowHolder> ref ) {
+
+            mBus.toPool( ( ) -> {
+                  File file = BitmapCache.downLoadPicture( url );
+                  if( file.exists() ) {
+                        try {
+                              ref.get().setGif( position, file );
+                        } catch(Exception e) {
+                              /* nothing at there */
+                        }
+                  }
+            } ).run();
+      }
 
       /**
        * recycler adapter
@@ -188,7 +255,7 @@ public abstract class ShowFragment extends Fragment {
       /**
        * viewHolder
        */
-      protected class ShowHolder extends ViewHolder {
+      private class ShowHolder extends ViewHolder {
 
             private GifImageView mGifImageView;
             private TextView     mDesc;

@@ -1,7 +1,6 @@
 package com.example.wuxio.gankexamples.file;
 
 import com.example.wuxio.gankexamples.App;
-import com.example.wuxio.gankexamples.model.GankUrl;
 import java.io.File;
 
 /**
@@ -85,41 +84,5 @@ public class FileManager {
       public static File getLatestBeautyJsonFile ( ) {
 
             return new File( getBeautyFile(), BEAUTY + "_latest.json" );
-      }
-
-      /**
-       * @return 保存分类android的文件夹
-       */
-      public static File getAndroidFile ( ) {
-
-            File file = new File( getAppFile(), GankUrl.ANDROID );
-            if( !file.exists() ) {
-                  boolean mkdirs = file.mkdirs();
-            }
-            return file;
-      }
-
-      /**
-       * 本地创建的android分类数据索引
-       */
-      public static File getLocalAndroidBeanFile ( ) {
-
-            return new File( getAndroidFile(), GankUrl.ANDROID + "_all" );
-      }
-
-      /**
-       * 网络下载的android分类历史数据
-       */
-      public static File getAndroidJsonFile ( ) {
-
-            return new File( getAndroidFile(), GankUrl.ANDROID + ".json" );
-      }
-
-      /**
-       * 最新的20条android分类数据
-       */
-      public static File getLatestAndroidJsonFile ( ) {
-
-            return new File( getAndroidFile(), GankUrl.ANDROID + "_latest.json" );
       }
 }

@@ -28,7 +28,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.main.fragment.AndroidFragment;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
@@ -438,7 +437,9 @@ public class MainActivity extends AppCompatActivity {
             private ShowFragment[] mShowFragments = new ShowFragment[ GankUrl.CATEGORY.length ];
 
             {
-                  mShowFragments[ 0 ] = AndroidFragment.newInstance();
+                  for( int i = 0; i < GankUrl.CATEGORY.length; i++ ) {
+                        mShowFragments[ i ] = ShowFragment.newInstance( GankUrl.CATEGORY[ i ] );
+                  }
             }
 
             MainPagerAdapter ( FragmentManager fm ) {
@@ -449,11 +450,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Fragment getItem ( int position ) {
 
-                  ShowFragment showFragment = mShowFragments[ position ];
-                  if( showFragment == null ) {
-                        return AndroidFragment.newInstance();
-                  }
-                  return showFragment;
+                  return mShowFragments[ position ];
             }
 
             public ShowFragment getCurrentFragment ( int position ) {
