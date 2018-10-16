@@ -170,6 +170,8 @@ public class ShowFragment extends Fragment {
                         holder.bind( position, item );
                   }
                   return;
+            } else {
+                  holder.bind( position, null );
             }
 
             WeakReference<ShowHolder> ref = new WeakReference<>( holder );
