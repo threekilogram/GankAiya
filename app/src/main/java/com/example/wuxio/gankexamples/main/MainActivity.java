@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             /* view Pager */
             mPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
             mViewPager.setAdapter( mPagerAdapter );
+            //mViewPager.setOffscreenPageLimit( GankUrl.CATEGORY.length );
 
             /* tabLayout */
             mTabLayout.setupWithViewPager( mViewPager );

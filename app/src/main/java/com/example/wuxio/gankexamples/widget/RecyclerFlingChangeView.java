@@ -53,4 +53,10 @@ public class RecyclerFlingChangeView extends RecyclerView {
 
             return super.onSaveInstanceState();
       }
+
+      @Override
+      protected void onRestoreInstanceState ( Parcelable state ) {
+
+            super.onRestoreInstanceState( state );
+      }
 }

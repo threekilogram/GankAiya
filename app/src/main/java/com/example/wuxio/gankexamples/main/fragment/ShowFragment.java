@@ -11,10 +11,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapCache;
@@ -46,6 +46,7 @@ public class ShowFragment extends Fragment {
       private   String                  mCategory;
       private   ObjectBus               mBus = ObjectBus.newFixSizeQueue( 30 );
       private   CategoryModel           mCategoryModel;
+      private   LinearLayoutManager     mLayoutManager;
 
       public static ShowFragment newInstance ( String category ) {
 
@@ -61,8 +62,49 @@ public class ShowFragment extends Fragment {
 
             super.onCreate( savedInstanceState );
 
+            init();
+      }
+
+      private void init ( ) {
+
             if( sDefaultGif == null ) {
                   sDefaultGif = BitmapFactory.decodeResource( getResources(), R.drawable.wait );
+            }
+
+            if( mLayoutManager == null ) {
+                  mLayoutManager = new LinearLayoutManager( getContext() );
+            }
+            if( mAdapter == null ) {
+                  mAdapter = new ShowAdapter();
+            }
+            if( mRecycler == null ) {
+                  mRecycler = new RecyclerFlingChangeView( getContext() );
+
+                  mRecycler.setLayoutManager( mLayoutManager );
+                  mRecycler.setFlingScale( 0.4f );
+                  mRecycler.setItemAnimator( null );
+                  mRecycler.setAdapter( mAdapter );
+            }
+
+            if( mSwipeRefresh == null ) {
+                  mSwipeRefresh = new SwipeRefreshLayout( getContext() );
+                  /* 模拟刷新 */
+                  WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefresh );
+                  mSwipeRefresh.setOnRefreshListener( ( ) -> {
+                        mSwipeRefresh.postDelayed(
+                            ( ) -> {
+                                  try {
+                                        ref.get().setRefreshing( false );
+                                  } catch(Exception e) {
+                                        /* nothing worry about */
+                                  }
+                            },
+                            2000
+                        );
+                  } );
+
+                  mSwipeRefresh
+                      .addView( mRecycler, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT );
             }
       }
 
@@ -79,49 +121,11 @@ public class ShowFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState ) {
 
-            return inflater.inflate( R.layout.fragment_show, container, false );
-      }
-
-      @Override
-      public void onViewCreated ( @NonNull View view, @Nullable Bundle savedInstanceState ) {
-
-            super.onViewCreated( view, savedInstanceState );
-            initView( view );
-      }
-
-      private void initView ( View rootView ) {
-
-            mSwipeRefresh = rootView.findViewById( R.id.swipeRefresh );
-            /* 打开界面 刷新 */
-            mSwipeRefresh.setRefreshing( true );
-
-            mRecycler = rootView.findViewById( R.id.recycler );
-            LinearLayoutManager layoutManager = new LinearLayoutManager( getContext() );
-            mRecycler.setLayoutManager( layoutManager );
-            mRecycler.setFlingScale( 0.4f );
-            mRecycler.setItemAnimator( null );
-            mAdapter = new ShowAdapter();
-            mRecycler.setAdapter( mAdapter );
-
-            /* 模拟刷新 */
-            WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefresh );
-            mSwipeRefresh.setOnRefreshListener( ( ) -> {
-                  mSwipeRefresh.postDelayed(
-                      ( ) -> {
-                            try {
-                                  ref.get().setRefreshing( false );
-                            } catch(Exception e) {
-                                  /* nothing worry about */
-                            }
-                      },
-                      2000
-                  );
-            } );
+            return mSwipeRefresh;
       }
 
       public void onSelected ( ) {
 
-            Log.e( TAG, "onSelected : " );
             mRecycler.post( ( ) -> {
 
                   setAdapterData( mAdapter );
@@ -130,18 +134,17 @@ public class ShowFragment extends Fragment {
 
       public void onUnSelected ( ) {
 
-            Log.e( TAG, "onUnSelected : " );
       }
 
       public void onReselected ( ) {
 
-            Log.e( TAG, "onReselected : " );
       }
 
       protected void setAdapterData ( ShowAdapter adapter ) {
 
             List<String> urls = adapter.getUrls();
             if( urls == null || urls.size() == 0 ) {
+                  mSwipeRefresh.setRefreshing( true );
                   setUrls( adapter );
             }
       }
