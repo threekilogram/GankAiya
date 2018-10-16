@@ -93,6 +93,12 @@ public class CategoryModel {
       public static void init ( ) {
 
             sAndroid.initField();
+            sApp.initField();
+            sIos.initField();
+            sFront.initField();
+            sRecommend.initField();
+            sExtraResource.initField();
+            sRestVideo.initField();
       }
 
       private CategoryModel ( String category ) {
