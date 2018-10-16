@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
             /* view Pager */
             mPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
             mViewPager.setAdapter( mPagerAdapter );
-            //mViewPager.setOffscreenPageLimit( GankUrl.CATEGORY.length );
             mPageChangedListener = new MainOnPageChangedListener();
             mViewPager.addOnPageChangeListener( mPageChangedListener );
 
@@ -256,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
       protected void onRestart ( ) {
 
             super.onRestart();
-            //startLoop();
       }
 
       /**
@@ -452,7 +450,6 @@ public class MainActivity extends AppCompatActivity {
                             childViewHolder.mCurrentPosition,
                             mBannerAdapter.mBitmaps
                         );
-                        //stopLoop();
                   }
             }
       }
