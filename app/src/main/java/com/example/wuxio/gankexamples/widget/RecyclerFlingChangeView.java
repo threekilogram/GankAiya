@@ -1,6 +1,7 @@
 package com.example.wuxio.gankexamples.widget;
 
 import android.content.Context;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -14,19 +15,20 @@ public class RecyclerFlingChangeView extends RecyclerView {
 
       public RecyclerFlingChangeView ( Context context ) {
 
-            super( context );
+            this( context, null, 0 );
       }
 
       public RecyclerFlingChangeView (
           Context context, @Nullable AttributeSet attrs ) {
 
-            super( context, attrs );
+            this( context, attrs, 0 );
       }
 
       public RecyclerFlingChangeView (
           Context context, @Nullable AttributeSet attrs, int defStyle ) {
 
             super( context, attrs, defStyle );
+            setSaveEnabled( true );
       }
 
       @Override
@@ -44,5 +46,11 @@ public class RecyclerFlingChangeView extends RecyclerView {
       public float getFlingScale ( ) {
 
             return mFlingScale;
+      }
+
+      @Override
+      protected Parcelable onSaveInstanceState ( ) {
+
+            return super.onSaveInstanceState();
       }
 }
