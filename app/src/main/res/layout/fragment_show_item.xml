@@ -56,4 +56,13 @@
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintTop_toBottomOf="@+id/who"/>
 
+      <com.threekilogram.drawable.widget.StaticAnimateDrawableView
+          android:id="@+id/loading"
+          android:layout_width="@dimen/banner_loading_size"
+          android:layout_height="@dimen/banner_loading_size"
+          app:layout_constraintBottom_toBottomOf="@+id/view"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"/>
+
 </android.support.constraint.ConstraintLayout>

@@ -2,6 +2,7 @@ package com.example.wuxio.gankexamples.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -35,7 +36,7 @@ import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
 import com.threekilogram.drawable.BiliBiliLoadingDrawable;
-import com.threekilogram.drawable.widget.AnimateDrawableView;
+import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.systemui.SystemUi;
 import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
@@ -52,19 +53,19 @@ public class MainActivity extends AppCompatActivity {
 
       private static final String TAG = MainActivity.class.getName();
 
-      protected DrawerLayout            mDrawer;
-      protected NavigationView          mNavigationView;
-      protected RecyclerPagerBanner     mBanner;
-      private   RecyclerBannerAdapter   mBannerAdapter;
-      protected AppBarLayout            mAppBar;
-      protected CoordinatorLayout       mCoordinator;
-      protected ViewPager               mViewPager;
-      protected TabLayout               mTabLayout;
-      protected CollapsingToolbarLayout mCollapsingToolbar;
-      protected AnimateDrawableView     mBannerLoading;
-      private   MainPagerAdapter        mPagerAdapter;
-      private   DotView                 mDotView;
-      private   MainTabSelectListener   mTabSelectListener;
+      protected DrawerLayout              mDrawer;
+      protected NavigationView            mNavigationView;
+      protected RecyclerPagerBanner       mBanner;
+      private   RecyclerBannerAdapter     mBannerAdapter;
+      protected AppBarLayout              mAppBar;
+      protected CoordinatorLayout         mCoordinator;
+      protected ViewPager                 mViewPager;
+      protected TabLayout                 mTabLayout;
+      protected CollapsingToolbarLayout   mCollapsingToolbar;
+      protected StaticAnimateDrawableView mBannerLoading;
+      private   MainPagerAdapter          mPagerAdapter;
+      private   DotView                   mDotView;
+      private   MainTabSelectListener     mTabSelectListener;
 
       /**
        * 静态启动方法
@@ -111,13 +112,13 @@ public class MainActivity extends AppCompatActivity {
             mTabLayout = findViewById( R.id.tabLayout );
             mCollapsingToolbar = findViewById( R.id.collapsingToolbar );
             mBannerLoading = findViewById( R.id.bannerLoading );
-            BiliBiliLoadingDrawable loadingDrawable = new BiliBiliLoadingDrawable(
-                getResources().getDimensionPixelSize( R.dimen.banner_loading_size ) );
-            loadingDrawable.setColor( getResources().getColor( R.color.blue ) );
-            loadingDrawable.setStrokeWidth( 5 );
-            loadingDrawable.setRadius( 8 );
-            mBannerLoading.setDrawable( loadingDrawable );
-            mBannerLoading.setCount( Integer.MAX_VALUE );
+
+            if( StaticAnimateDrawableView.getDrawable() == null ) {
+                  BiliBiliLoadingDrawable drawable = MainActivity
+                      .createBiliBiliLoadingDrawable( this );
+                  StaticAnimateDrawableView.setDrawable( drawable );
+                  StaticAnimateDrawableView.setDuration( 3000 );
+            }
 
             /* 设置导航菜单 */
             initNavigationView( mNavigationView );
@@ -148,6 +149,18 @@ public class MainActivity extends AppCompatActivity {
             mTabLayout.addOnTabSelectedListener( mTabSelectListener );
       }
 
+      @NonNull
+      public static BiliBiliLoadingDrawable createBiliBiliLoadingDrawable ( Context context ) {
+
+            Resources resources = context.getResources();
+            BiliBiliLoadingDrawable loadingDrawable = new BiliBiliLoadingDrawable(
+                resources.getDimensionPixelSize( R.dimen.banner_loading_size ) );
+            loadingDrawable.setColor( resources.getColor( R.color.blue ) );
+            loadingDrawable.setStrokeWidth( 5 );
+            loadingDrawable.setRadius( 8 );
+            return loadingDrawable;
+      }
+
       /**
        * 创建好 activity 之后执行一些初始化activity的操作
        */
@@ -155,7 +168,6 @@ public class MainActivity extends AppCompatActivity {
 
             mDrawer.post( ( ) -> {
 
-                  mBannerLoading.start();
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
                   mTabSelectListener.onTabSelected( mTabLayout.getTabAt( 0 ) );
@@ -246,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
       private void showBannerLoading ( ) {
 
             mBannerLoading.setVisibility( View.VISIBLE );
-            mBannerLoading.start();
       }
 
       /**
@@ -255,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
       private void hideBannerLoading ( ) {
 
             mBannerLoading.setVisibility( View.INVISIBLE );
-            mBannerLoading.stop();
       }
 
       /**

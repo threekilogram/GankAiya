@@ -20,6 +20,7 @@ import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
+import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
@@ -258,10 +259,11 @@ public class ShowFragment extends Fragment {
        */
       private class ShowHolder extends ViewHolder {
 
-            private GifImageView mGifImageView;
-            private TextView     mDesc;
-            private TextView     mWho;
-            private int          mBindPosition;
+            private GifImageView              mGifImageView;
+            private StaticAnimateDrawableView mLoading;
+            private TextView                  mDesc;
+            private TextView                  mWho;
+            private int                       mBindPosition;
 
             private ShowHolder ( View itemView ) {
 
@@ -279,6 +281,7 @@ public class ShowFragment extends Fragment {
                   mGifImageView = itemView.findViewById( R.id.gifImageView );
                   mDesc = itemView.findViewById( R.id.desc );
                   mWho = itemView.findViewById( R.id.who );
+                  mLoading = itemView.findViewById( R.id.loading );
             }
 
             void setGankCategoryItem ( int position, GankCategoryItem item ) {
@@ -308,8 +311,10 @@ public class ShowFragment extends Fragment {
                         mGifImageView.setImageBitmap( sDefaultGif );
                         mDesc.setVisibility( View.INVISIBLE );
                         mWho.setVisibility( View.INVISIBLE );
+                        mLoading.setVisibility( View.VISIBLE );
                   } else {
 
+                        mLoading.setVisibility( View.INVISIBLE );
                         mDesc.setVisibility( View.VISIBLE );
                         mWho.setVisibility( View.VISIBLE );
 
