@@ -7,14 +7,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapCache;
@@ -41,7 +39,6 @@ public class ShowFragment extends Fragment {
       protected static Bitmap sDefaultGif;
 
       protected RecyclerFlingChangeView mRecycler;
-      protected SwipeRefreshLayout      mSwipeRefresh;
       private   ShowAdapter             mAdapter;
       private   String                  mCategory;
       private   ObjectBus               mBus = ObjectBus.newFixSizeQueue( 30 );
@@ -85,27 +82,6 @@ public class ShowFragment extends Fragment {
                   mRecycler.setItemAnimator( null );
                   mRecycler.setAdapter( mAdapter );
             }
-
-            if( mSwipeRefresh == null ) {
-                  mSwipeRefresh = new SwipeRefreshLayout( getContext() );
-                  /* 模拟刷新 */
-                  WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefresh );
-                  mSwipeRefresh.setOnRefreshListener( ( ) -> {
-                        mSwipeRefresh.postDelayed(
-                            ( ) -> {
-                                  try {
-                                        ref.get().setRefreshing( false );
-                                  } catch(Exception e) {
-                                        /* nothing worry about */
-                                  }
-                            },
-                            2000
-                        );
-                  } );
-
-                  mSwipeRefresh
-                      .addView( mRecycler, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT );
-            }
       }
 
       @Override
@@ -121,30 +97,24 @@ public class ShowFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState ) {
 
-            return mSwipeRefresh;
+            return mRecycler;
       }
 
-      public void onSelected ( ) {
+      public void onSelected ( ) { }
 
-            mRecycler.post( ( ) -> {
+      public void onUnSelected ( ) { }
 
-                  setAdapterData( mAdapter );
-            } );
-      }
+      public void onReselected ( ) { }
 
-      public void onUnSelected ( ) {
+      public void onIdle ( ) {
 
-      }
-
-      public void onReselected ( ) {
-
+            setAdapterData( mAdapter );
       }
 
       protected void setAdapterData ( ShowAdapter adapter ) {
 
             List<String> urls = adapter.getUrls();
             if( urls == null || urls.size() == 0 ) {
-                  mSwipeRefresh.setRefreshing( true );
                   setUrls( adapter );
             }
       }
@@ -229,7 +199,7 @@ public class ShowFragment extends Fragment {
                   mRecycler.post( ( ) -> {
                         mAdapter.mUrls = urls;
                         mAdapter.notifyDataSetChanged();
-                        mSwipeRefresh.setRefreshing( false );
+                        //mSwipeRefresh.setRefreshing( false );
                   } );
             }
 

@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView.ViewHolder;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
       private   MainPagerAdapter          mPagerAdapter;
       private   DotView                   mDotView;
       private   MainTabSelectListener     mTabSelectListener;
+      private   MainOnPageChangedListener mPageChangedListener;
 
       /**
        * 静态启动方法
@@ -143,6 +145,8 @@ public class MainActivity extends AppCompatActivity {
             mPagerAdapter = new MainPagerAdapter( getSupportFragmentManager() );
             mViewPager.setAdapter( mPagerAdapter );
             //mViewPager.setOffscreenPageLimit( GankUrl.CATEGORY.length );
+            mPageChangedListener = new MainOnPageChangedListener();
+            mViewPager.addOnPageChangeListener( mPageChangedListener );
 
             /* tabLayout */
             mTabLayout.setupWithViewPager( mViewPager );
@@ -172,6 +176,8 @@ public class MainActivity extends AppCompatActivity {
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
                   mTabSelectListener.onTabSelected( mTabLayout.getTabAt( 0 ) );
+                  mPageChangedListener.onPageSelected( 0 );
+                  mPageChangedListener.onPageScrollStateChanged( ViewPager.SCROLL_STATE_IDLE );
             } );
       }
 
@@ -515,6 +521,31 @@ public class MainActivity extends AppCompatActivity {
             public void onTabReselected ( Tab tab ) {
 
                   mPagerAdapter.mShowFragments[ tab.getPosition() ].onReselected();
+            }
+      }
+
+      private class MainOnPageChangedListener implements OnPageChangeListener {
+
+            private int mPosition;
+
+            @Override
+            public void onPageScrolled (
+                int position, float positionOffset, int positionOffsetPixels ) {
+
+            }
+
+            @Override
+            public void onPageSelected ( int position ) {
+
+                  mPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged ( int state ) {
+
+                  if( state == ViewPager.SCROLL_STATE_IDLE ) {
+                        mPagerAdapter.mShowFragments[ mPosition ].onIdle();
+                  }
             }
       }
 }
