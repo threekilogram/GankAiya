@@ -24,7 +24,13 @@ public class CategoryModel {
        */
       private static final int COUNT = 100;
 
-      private static CategoryModel sAndroid = new CategoryModel( GankUrl.ANDROID );
+      private static CategoryModel sAndroid       = new CategoryModel( GankUrl.ANDROID );
+      private static CategoryModel sApp           = new CategoryModel( GankUrl.APP );
+      private static CategoryModel sIos           = new CategoryModel( GankUrl.IOS );
+      private static CategoryModel sFront         = new CategoryModel( GankUrl.FRONT );
+      private static CategoryModel sRecommend     = new CategoryModel( GankUrl.RECOMMEND );
+      private static CategoryModel sExtraResource = new CategoryModel( GankUrl.EXTRA_RESOURCES );
+      private static CategoryModel sRestVideo     = new CategoryModel( GankUrl.REST_VIDEO );
 
       private final String TAG;
       private final String CATEGORY;
@@ -60,7 +66,24 @@ public class CategoryModel {
             if( GankUrl.ANDROID.equals( type ) ) {
                   return sAndroid;
             }
-
+            if( GankUrl.APP.equals( type ) ) {
+                  return sApp;
+            }
+            if( GankUrl.IOS.equals( type ) ) {
+                  return sIos;
+            }
+            if( GankUrl.FRONT.equals( type ) ) {
+                  return sFront;
+            }
+            if( GankUrl.RECOMMEND.equals( type ) ) {
+                  return sRecommend;
+            }
+            if( GankUrl.EXTRA_RESOURCES.equals( type ) ) {
+                  return sExtraResource;
+            }
+            if( GankUrl.REST_VIDEO.equals( type ) ) {
+                  return sRestVideo;
+            }
             return sAndroid;
       }
 

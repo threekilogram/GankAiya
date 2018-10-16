@@ -73,6 +73,8 @@ public class BeautyModel {
                               );
                               Log.e( TAG, "buildLocalBean : 从网络创建本地福利bean中完成 " );
                               notifyAllWait();
+
+                              cacheBeautyPicture();
                         } else {
 
                               Log.e( TAG, "buildLocalBean : 没有网络无法构建本地福利bean " );
@@ -82,8 +84,6 @@ public class BeautyModel {
                               notifyAllWait();
                         }
                   }
-
-                  cacheBeautyPicture();
             } );
       }
 
@@ -134,11 +134,13 @@ public class BeautyModel {
 
                               String url = beautyUrls.get( i );
                               try {
-                                    File file = BitmapCache.downLoadPicture( url );
-                                    if( file.exists() ) {
-                                          success++;
-                                    } else {
-                                          failed++;
+                                    if( url != null ) {
+                                          File file = BitmapCache.downLoadPicture( url );
+                                          if( file.exists() ) {
+                                                success++;
+                                          } else {
+                                                failed++;
+                                          }
                                     }
                               } catch(Exception e) {
                                     /*  */
