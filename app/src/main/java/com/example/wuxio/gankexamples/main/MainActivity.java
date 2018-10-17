@@ -46,8 +46,7 @@ import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
 import tech.threekilogram.pager.indicator.DotView;
-import tech.threekilogram.pager.scroll.recycler.OnRecyclerPagerScrollListener;
-import tech.threekilogram.pager.scroll.recycler.RecyclerPagerScroll;
+import tech.threekilogram.pager.scroll.recycler.RecyclerPagerScrollListener;
 import tech.threekilogram.screen.ScreenSize;
 
 /**
@@ -155,8 +154,16 @@ public class MainActivity extends AppCompatActivity {
             /* banner */
             mBannerAdapter = new RecyclerBannerAdapter();
             mBanner.setBannerAdapter( mBannerAdapter );
-            RecyclerPagerScroll scroll = new RecyclerPagerScroll( mBanner.getRecyclerPager() );
-            scroll.setOnRecyclerPagerScrollListener( new BannerScrollListener() );
+            mBanner.addOnScrollListener( new RecyclerPagerScrollListener() {
+
+                  @Override
+                  protected void onPageSelected ( int currentPosition, int nextPosition ) {
+
+                        super.onPageSelected( currentPosition, nextPosition );
+                        int actualPosition = mBannerAdapter.getActualPosition( nextPosition );
+                        mDotView.setSelected( actualPosition );
+                  }
+            } );
 
             /* 防止tabLayout 进入statusBar */
             int height = SystemUi.getStatusBarHeight( MainActivity.this );
@@ -376,22 +383,6 @@ public class MainActivity extends AppCompatActivity {
 
                   Log.i( TAG, "exitApp:" + "" );
                   RootActivity.quitApp( MainActivity.this );
-            }
-      }
-
-      private class BannerScrollListener implements OnRecyclerPagerScrollListener {
-
-            @Override
-            public void onScroll (
-                int state, int currentPosition, int nextPosition, int offsetX, int offsetY ) {
-
-            }
-
-            @Override
-            public void onPageSelected ( int prevSelected, int newSelected ) {
-
-                  int actualPosition = mBannerAdapter.getActualPosition( newSelected );
-                  mDotView.setSelected( actualPosition );
             }
       }
 

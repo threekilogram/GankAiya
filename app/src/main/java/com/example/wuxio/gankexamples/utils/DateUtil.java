@@ -48,6 +48,9 @@ public class DateUtil {
             return getDate( date2 ).getTime() - getDate( date1 ).getTime() > 0;
       }
 
+      /**
+       * true data2 晚于 date1
+       */
       public static boolean isLater ( Date date1, Date date2 ) {
 
             return date2.getTime() - date1.getTime() > 0;

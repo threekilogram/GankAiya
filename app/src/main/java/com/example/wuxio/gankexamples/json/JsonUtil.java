@@ -24,12 +24,16 @@ public class JsonUtil {
       public static LocalCategoryBean parseJsonToLocalBean ( File jsonFile ) {
 
             try {
+                  LocalCategoryBean bean = new LocalCategoryBean();
+                  bean.setUrls( new ArrayList<>() );
+
+                  if( !jsonFile.exists() ) {
+                        return bean;
+                  }
+
                   FileReader reader = new FileReader( jsonFile );
                   JsonParser jsonParser = new JsonParser( reader );
                   jsonParser.start();
-
-                  LocalCategoryBean bean = new LocalCategoryBean();
-                  bean.setUrls( new ArrayList<>() );
 
                   while( jsonParser.peek() != JsonToken.END_DOCUMENT ) {
 
@@ -61,11 +65,14 @@ public class JsonUtil {
        *
        * @return true : 所有日期都早于指定的日期
        */
-      public static boolean parserJsonToGetIsNeedMore (
-          String category, File jsonFile, Date date ) {
+      public static boolean parserJsonToGetIsNeedMore ( File jsonFile, Date date ) {
 
             boolean result = true;
             try {
+                  if( !jsonFile.exists() ) {
+                        return false;
+                  }
+
                   FileReader reader = new FileReader( jsonFile );
                   JsonParser jsonParser = new JsonParser( reader );
                   jsonParser.start();
@@ -95,6 +102,10 @@ public class JsonUtil {
           File latestJsonFile, Date date, LocalCategoryBean beautiesBean ) {
 
             try {
+                  if( !latestJsonFile.exists() ) {
+                        return;
+                  }
+
                   ArrayList<String> newData = new ArrayList<>();
 
                   FileReader reader = new FileReader( latestJsonFile );
@@ -143,6 +154,11 @@ public class JsonUtil {
           File jsonFile, JsonLoader<GankCategoryItem> loader ) {
 
             try {
+
+                  if( !jsonFile.exists() ) {
+                        return;
+                  }
+
                   JsonParser jsonParser = new JsonParser( new FileReader( jsonFile ) );
                   jsonParser.start();
                   int count = 0;

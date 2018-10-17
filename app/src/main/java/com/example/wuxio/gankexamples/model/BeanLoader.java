@@ -43,7 +43,7 @@ public class BeanLoader {
             StreamLoader.downLoad( url, latestJsonFile );
 
             /* 如果最新的数据不够,那么增加数量,继续下载 */
-            while( JsonUtil.parserJsonToGetIsNeedMore( category, latestJsonFile, startDate ) ) {
+            while( JsonUtil.parserJsonToGetIsNeedMore( latestJsonFile, startDate ) ) {
                   boolean delete = latestJsonFile.delete();
                   count += count;
                   url = GankUrl.category( category, count, page );

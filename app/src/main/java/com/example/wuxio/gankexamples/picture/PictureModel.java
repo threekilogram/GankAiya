@@ -1,7 +1,6 @@
 package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.lang.ref.WeakReference;
@@ -25,8 +24,6 @@ public class PictureModel {
             sStartIndex = startIndex;
             sCurrentIndex = currentIndex;
             sBitmaps = bitmaps;
-
-            Log.e( TAG, "bind : picture 初始状态 " + sStartIndex + " " + sCurrentIndex );
       }
 
       static void bind ( PictureActivity activity ) {

@@ -41,7 +41,7 @@ dependencies {
     /* status Bar */
     implementation 'com.github.threekilogram:SystemUI:1.2.2'
     /* banner and image watcher */
-    implementation 'com.github.threekilogram:PagerExtend:1.2.8'
+    implementation 'com.github.threekilogram:PagerExtend:1.2.9'
     /* imageWatcher */
     implementation 'com.github.threekilogram:ScaleImageView:1.2.4'
     /* layout */
@@ -60,4 +60,6 @@ dependencies {
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
     /* json parser */
     implementation 'com.github.threekilogram:JsonParser:3.0.2'
+    /* permission */
+    implementation 'com.github.threekilogram:AndroidPermission:1.2.0'
 }
