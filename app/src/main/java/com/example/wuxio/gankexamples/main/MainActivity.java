@@ -31,12 +31,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.about.AboutAppActivity;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
+import com.example.wuxio.gankexamples.web.WebActivity;
 import com.threekilogram.drawable.BiliBiliLoadingDrawable;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.executor.MainExecutor;
@@ -337,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
              */
             private void toAbout ( ) {
 
-                  Log.i( TAG, "toAbout:" + "" );
+                  AboutAppActivity.start( MainActivity.this );
             }
 
             /**
@@ -345,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
              */
             private void toQuestionFeedback ( ) {
 
-                  Log.i( TAG, "toQuestionFeedback:" + "" );
             }
 
             /**
@@ -353,7 +354,6 @@ public class MainActivity extends AppCompatActivity {
              */
             private void toDonate ( ) {
 
-                  Log.i( TAG, "toDonate:" + "" );
             }
 
             /**
@@ -361,7 +361,8 @@ public class MainActivity extends AppCompatActivity {
              */
             private void toLoginGitHub ( ) {
 
-                  Log.i( TAG, "toLoginGitHub:" + "" );
+                  WebActivity
+                      .start( MainActivity.this, "https://github.com/threekilogram", "Github" );
             }
 
             /**
@@ -369,7 +370,6 @@ public class MainActivity extends AppCompatActivity {
              */
             private void exitApp ( ) {
 
-                  Log.i( TAG, "exitApp:" + "" );
                   RootActivity.quitApp( MainActivity.this );
             }
       }
