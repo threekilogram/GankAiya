@@ -8,11 +8,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapCache;
@@ -80,7 +84,7 @@ public class ShowFragment extends Fragment {
                   mRecycler.setLayoutManager( mLayoutManager );
                   mRecycler.setFlingScale( 0.4f );
                   mRecycler.setItemAnimator( null );
-                  mRecycler.setAdapter( mAdapter );
+                  mRecycler.setAdapter( new LoadingAdapter() );
             }
       }
 
@@ -198,8 +202,8 @@ public class ShowFragment extends Fragment {
 
                   mRecycler.post( ( ) -> {
                         mAdapter.mUrls = urls;
+                        mRecycler.setAdapter( mAdapter );
                         mAdapter.notifyDataSetChanged();
-                        //mSwipeRefresh.setRefreshing( false );
                   } );
             }
 
@@ -303,6 +307,56 @@ public class ShowFragment extends Fragment {
                               mGifImageView.setImageBitmap( sDefaultGif );
                         }
                   }
+            }
+      }
+
+      /**
+       * recycler 没有数据时的adapter
+       */
+      private class LoadingAdapter extends RecyclerView.Adapter<LoadingHolder> {
+
+            @NonNull
+            @Override
+            public LoadingHolder onCreateViewHolder ( @NonNull ViewGroup parent, int viewType ) {
+
+                  ImageView imageView = new ImageView( parent.getContext() );
+                  imageView.setScaleType( ScaleType.CENTER_INSIDE );
+                  imageView.setLayoutParams(
+                      new LayoutParams( LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT ) );
+                  imageView.setImageResource( R.drawable.wait );
+                  return new LoadingHolder( imageView );
+            }
+
+            @Override
+            public void onBindViewHolder (
+                @NonNull LoadingHolder holder, int position ) {
+
+                  holder.bind();
+            }
+
+            @Override
+            public int getItemCount ( ) {
+
+                  return 1;
+            }
+      }
+
+      /**
+       * recycler 没有数据时的adapter的holder
+       */
+      private class LoadingHolder extends ViewHolder {
+
+            public LoadingHolder ( View itemView ) {
+
+                  super( itemView );
+            }
+
+            void bind ( ) {
+
+            }
+
+            void unBind ( ) {
+
             }
       }
 }

@@ -116,8 +116,7 @@ public class MainActivity extends AppCompatActivity {
             mBannerLoading = findViewById( R.id.bannerLoading );
 
             if( StaticAnimateDrawableView.getDrawable() == null ) {
-                  BiliBiliLoadingDrawable drawable = MainActivity
-                      .createBiliBiliLoadingDrawable( this );
+                  BiliBiliLoadingDrawable drawable = createBiliBiliLoadingDrawable( this );
                   StaticAnimateDrawableView.setDrawable( drawable );
                   StaticAnimateDrawableView.setDuration( 3000 );
             }
@@ -190,6 +189,13 @@ public class MainActivity extends AppCompatActivity {
                   RootActivity.start( this );
                   super.onBackPressed();
             }
+      }
+
+      @Override
+      protected void onDestroy ( ) {
+
+            super.onDestroy();
+            StaticAnimateDrawableView.clearView();
       }
 
       /**
