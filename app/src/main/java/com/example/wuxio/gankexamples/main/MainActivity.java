@@ -24,6 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -34,10 +35,12 @@ import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
+import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
 import com.threekilogram.bitmapreader.BitmapReader;
 import com.threekilogram.drawable.BiliBiliLoadingDrawable;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
+import com.threekilogram.objectbus.executor.MainExecutor;
 import com.threekilogram.systemui.SystemUi;
 import java.util.List;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
@@ -54,20 +57,21 @@ public class MainActivity extends AppCompatActivity {
 
       private static final String TAG = MainActivity.class.getName();
 
-      protected DrawerLayout              mDrawer;
-      protected NavigationView            mNavigationView;
-      protected RecyclerPagerBanner       mBanner;
-      private   RecyclerBannerAdapter     mBannerAdapter;
-      protected AppBarLayout              mAppBar;
-      protected CoordinatorLayout         mCoordinator;
-      protected ViewPager                 mViewPager;
-      protected TabLayout                 mTabLayout;
-      protected CollapsingToolbarLayout   mCollapsingToolbar;
-      protected StaticAnimateDrawableView mBannerLoading;
-      private   MainPagerAdapter          mPagerAdapter;
-      private   DotView                   mDotView;
-      private   MainTabSelectListener     mTabSelectListener;
-      private   MainOnPageChangedListener mPageChangedListener;
+      private View                      mRoot;
+      private DrawerLayout              mDrawer;
+      private NavigationView            mNavigationView;
+      private RecyclerPagerBanner       mBanner;
+      private RecyclerBannerAdapter     mBannerAdapter;
+      private AppBarLayout              mAppBar;
+      private CoordinatorLayout         mCoordinator;
+      private ViewPager                 mViewPager;
+      private TabLayout                 mTabLayout;
+      private CollapsingToolbarLayout   mCollapsingToolbar;
+      private StaticAnimateDrawableView mBannerLoading;
+      private MainPagerAdapter          mPagerAdapter;
+      private DotView                   mDotView;
+      private MainTabSelectListener     mTabSelectListener;
+      private MainOnPageChangedListener mPageChangedListener;
 
       /**
        * 静态启动方法
@@ -82,14 +86,36 @@ public class MainActivity extends AppCompatActivity {
       protected void onCreate ( Bundle savedInstanceState ) {
 
             super.onCreate( savedInstanceState );
-            super.setContentView( R.layout.activity_main );
+
+            /* singleTask 模式 */
+            /* 先启动splash页面,该逻辑用于优化mainActivity预加载,当从splash返回时,MainActivity已经准备好页面,防止卡顿 */
+            SplashActivity.start( this );
+            /* 开始预加载页面 */
+            MainExecutor.execute(
+                ( ) -> mRoot = LayoutInflater.from( MainActivity.this )
+                                             .inflate( R.layout.activity_main, null )
+            );
+      }
+
+      @Override
+      protected void onNewIntent ( Intent intent ) {
+
+            super.onNewIntent( intent );
+
+            /* 从splash 跳过来了,设置界面 */
+            if( StaticAnimateDrawableView.getDrawable() == null ) {
+                  BiliBiliLoadingDrawable drawable = createBiliBiliLoadingDrawable( this );
+                  StaticAnimateDrawableView.setDrawable( drawable );
+                  StaticAnimateDrawableView.setDuration( 3000 );
+            }
 
             setSystemUI();
-            initView();
-            postAction();
+            super.setContentView( mRoot );
 
+            initView();
             BeautyModel.bind( this );
             BeautyModel.loadBannerBitmap();
+            postAction( mDrawer );
       }
 
       /**
@@ -115,11 +141,7 @@ public class MainActivity extends AppCompatActivity {
             mCollapsingToolbar = findViewById( R.id.collapsingToolbar );
             mBannerLoading = findViewById( R.id.bannerLoading );
 
-            if( StaticAnimateDrawableView.getDrawable() == null ) {
-                  BiliBiliLoadingDrawable drawable = createBiliBiliLoadingDrawable( this );
-                  StaticAnimateDrawableView.setDrawable( drawable );
-                  StaticAnimateDrawableView.setDuration( 3000 );
-            }
+
 
             /* 设置导航菜单 */
             initNavigationView( mNavigationView );
@@ -167,9 +189,9 @@ public class MainActivity extends AppCompatActivity {
       /**
        * 创建好 activity 之后执行一些初始化activity的操作
        */
-      private void postAction ( ) {
+      private void postAction ( View view ) {
 
-            mDrawer.post( ( ) -> {
+            view.post( ( ) -> {
 
                   /* 设置默认页 */
                   mViewPager.setCurrentItem( 0 );
@@ -186,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
       public void onBackPressed ( ) {
 
             if( BackPressUtil.showInfo( this ) ) {
-                  RootActivity.start( this );
+                  RootActivity.quitApp( this );
                   super.onBackPressed();
             }
       }
@@ -194,8 +216,8 @@ public class MainActivity extends AppCompatActivity {
       @Override
       protected void onDestroy ( ) {
 
-            super.onDestroy();
             StaticAnimateDrawableView.clearView();
+            super.onDestroy();
       }
 
       /**
@@ -353,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
             private void exitApp ( ) {
 
                   Log.i( TAG, "exitApp:" + "" );
-                  RootActivity.start( MainActivity.this );
+                  RootActivity.quitApp( MainActivity.this );
             }
       }
 

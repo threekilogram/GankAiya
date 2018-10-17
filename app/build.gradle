@@ -30,6 +30,8 @@ dependencies {
     /* memory */
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+    /* ui */
+    implementation 'com.github.markzhai:blockcanary-android:1.5.0'
     /* net */
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     /* gif */

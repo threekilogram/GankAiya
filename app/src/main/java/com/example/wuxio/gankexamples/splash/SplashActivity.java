@@ -36,7 +36,7 @@ public class SplashActivity extends AppCompatActivity {
       private   CountDown mCountDownMachine;
 
       /**
-       * start
+       * quitApp
        */
       public static void start ( Context context ) {
 
@@ -80,7 +80,7 @@ public class SplashActivity extends AppCompatActivity {
       @Override
       public void onBackPressed ( ) {
 
-            RootActivity.start( this );
+            RootActivity.quitApp( this );
             finish();
             super.onBackPressed();
       }

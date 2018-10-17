@@ -43,7 +43,7 @@ public class PictureActivity extends AppCompatActivity {
 
             PictureModel.bind( startIndex, currentIndex, bitmaps );
 
-            /* start activity */
+            /* quitApp activity */
             Intent starter = new Intent( activity, PictureActivity.class );
             activity.startActivity(
                 starter
