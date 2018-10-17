@@ -37,7 +37,6 @@ import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
-import com.threekilogram.bitmapreader.BitmapReader;
 import com.threekilogram.drawable.BiliBiliLoadingDrawable;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.executor.MainExecutor;
@@ -47,7 +46,6 @@ import tech.threekilogram.pager.banner.RecyclerPagerBanner;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
 import tech.threekilogram.pager.indicator.DotView;
 import tech.threekilogram.pager.scroll.recycler.RecyclerPagerScrollListener;
-import tech.threekilogram.screen.ScreenSize;
 
 /**
  * @author wuxio
@@ -236,16 +234,6 @@ public class MainActivity extends AppCompatActivity {
 
             View headerView = navigationView.getHeaderView( 0 );
             ImageView avatarImageView = headerView.findViewById( R.id.userAvatar );
-
-            /* 设置圆角图片给导航栏的头像框 */
-
-            Bitmap bitmap = BitmapReader.sampledBitmap(
-                this,
-                R.drawable.avatar,
-                ScreenSize.resToPx( this, R.dimen.user_avatar_size ),
-                ScreenSize.resToPx( this, R.dimen.user_avatar_size )
-            );
-            avatarImageView.setImageBitmap( bitmap );
 
             /* 给导航栏条目设置点击事件 */
 
