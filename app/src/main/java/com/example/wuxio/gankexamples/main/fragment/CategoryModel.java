@@ -22,7 +22,7 @@ public class CategoryModel {
       /**
        * 内存中缓存数据数量
        */
-      private static final int COUNT = 100;
+      private static final int COUNT = 500;
 
       private static CategoryModel sAndroid       = new CategoryModel( GankUrl.ANDROID );
       private static CategoryModel sApp           = new CategoryModel( GankUrl.APP );
