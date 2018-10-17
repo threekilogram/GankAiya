@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapCache;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
+import com.example.wuxio.gankexamples.web.WebActivity;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.bus.ObjectBus;
@@ -121,25 +123,20 @@ public class ShowFragment extends Fragment {
 
             List<String> urls = adapter.getUrls();
             if( urls == null || urls.size() == 0 ) {
-                  setUrls( adapter );
-            }
-      }
+                  WeakReference<ShowAdapter> ref = new WeakReference<>( adapter );
 
-      private void setUrls ( ShowAdapter adapter ) {
+                  PoolExecutor.execute( ( ) -> {
+                        List<String> result = mCategoryModel.getLocalBeanUrls();
+                        if( result != null && result.size() > 0 ) {
 
-            WeakReference<ShowAdapter> ref = new WeakReference<>( adapter );
-
-            PoolExecutor.execute( ( ) -> {
-                  List<String> urls = mCategoryModel.getLocalBeanUrls();
-                  if( urls != null && urls.size() > 0 ) {
-
-                        try {
-                              ref.get().setUrls( urls );
-                        } catch(Exception e) {
-                              /* nothing at there */
+                              try {
+                                    ref.get().setUrls( result );
+                              } catch(Exception e) {
+                                    /* nothing at there */
+                              }
                         }
-                  }
-            } );
+                  } );
+            }
       }
 
       protected void setShowHolderData ( ShowHolder holder, int position ) {
@@ -171,12 +168,7 @@ public class ShowFragment extends Fragment {
       protected void setShowHolderGif (
           int position, String url, ShowHolder holder, int width, int height ) {
 
-            loadGif( position, url, new WeakReference<>( holder ), width, height );
-      }
-
-      private void loadGif (
-          int position, String url, WeakReference<ShowHolder> ref, int width, int height ) {
-
+            WeakReference<ShowHolder> ref = new WeakReference<>( holder );
             mBus.toPool( ( ) -> {
                   File file = BitmapCache.downLoadPicture( url );
                   if( file.exists() ) {
@@ -194,6 +186,7 @@ public class ShowFragment extends Fragment {
                                     }
                               }
                         } catch(Exception e) {
+                              /* nothing */
                         }
                   }
             } ).run();
@@ -259,6 +252,7 @@ public class ShowFragment extends Fragment {
 
                   super( itemView );
                   initView( itemView );
+                  itemView.setOnClickListener( new HolderClickListener( this ) );
             }
 
             int getBindPosition ( ) {
@@ -341,6 +335,25 @@ public class ShowFragment extends Fragment {
                               mGifImageView.setImageBitmap( sDefaultGif );
                         }
                   }
+            }
+      }
+
+      private class HolderClickListener implements OnClickListener {
+
+            private ShowHolder mHolder;
+
+            public HolderClickListener (
+                ShowHolder holder ) {
+
+                  mHolder = holder;
+            }
+
+            @Override
+            public void onClick ( View v ) {
+
+                  int bindPosition = mHolder.mBindPosition;
+                  String url = mAdapter.getUrls().get( bindPosition );
+                  WebActivity.start( getContext(), url, mCategory );
             }
       }
 
