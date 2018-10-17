@@ -2,7 +2,7 @@ package com.example.wuxio.gankexamples.main.fragment;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,8 +26,10 @@ import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.bus.ObjectBus;
 import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
 /**
@@ -167,20 +169,31 @@ public class ShowFragment extends Fragment {
       }
 
       protected void setShowHolderGif (
-          int position, String url, ShowHolder holder ) {
+          int position, String url, ShowHolder holder, int width, int height ) {
 
-            loadGif( position, url, new WeakReference<>( holder ) );
+            loadGif( position, url, new WeakReference<>( holder ), width, height );
       }
 
-      private void loadGif ( int position, String url, WeakReference<ShowHolder> ref ) {
+      private void loadGif (
+          int position, String url, WeakReference<ShowHolder> ref, int width, int height ) {
 
             mBus.toPool( ( ) -> {
                   File file = BitmapCache.downLoadPicture( url );
                   if( file.exists() ) {
+
                         try {
-                              ref.get().setGif( position, file );
+                              if( ref.get().needDecode( position ) ) {
+                                    try {
+                                          GifDrawable gifDrawable = new GifDrawable( file );
+                                          ref.get().setGif( position, gifDrawable );
+                                    } catch(IOException e) {
+                                          e.printStackTrace();
+                                          Bitmap bitmap = BitmapCache
+                                              .loadBitmap( url, width, height );
+                                          ref.get().setBitmap( position, bitmap );
+                                    }
+                              }
                         } catch(Exception e) {
-                              /* nothing at there */
                         }
                   }
             } ).run();
@@ -271,11 +284,25 @@ public class ShowFragment extends Fragment {
                   } );
             }
 
-            void setGif ( int position, File gifFile ) {
+            boolean needDecode ( int position ) {
+
+                  return position == mBindPosition;
+            }
+
+            void setGif ( int position, Drawable drawable ) {
 
                   itemView.post( ( ) -> {
                         if( position == mBindPosition ) {
-                              mGifImageView.setImageURI( Uri.fromFile( gifFile ) );
+                              mGifImageView.setImageDrawable( drawable );
+                        }
+                  } );
+            }
+
+            void setBitmap ( int position, Bitmap bitmap ) {
+
+                  itemView.post( ( ) -> {
+                        if( position == mBindPosition ) {
+                              mGifImageView.setImageBitmap( bitmap );
                         }
                   } );
             }
@@ -301,7 +328,14 @@ public class ShowFragment extends Fragment {
                         List<String> images = item.getImages();
                         if( images != null && images.size() > 0 ) {
                               mGifImageView.setVisibility( View.VISIBLE );
-                              setShowHolderGif( position, images.get( 0 ), this );
+                              mGifImageView.setImageBitmap( sDefaultGif );
+                              setShowHolderGif(
+                                  position,
+                                  images.get( 0 ),
+                                  this,
+                                  mGifImageView.getMeasuredWidth(),
+                                  mGifImageView.getMeasuredHeight()
+                              );
                         } else {
                               mGifImageView.setVisibility( View.GONE );
                               mGifImageView.setImageBitmap( sDefaultGif );
