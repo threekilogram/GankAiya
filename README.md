@@ -38,3 +38,4 @@ implementation 'com.github.threekilogram:JsonParser:3.0.2'
 implementation 'com.github.threekilogram:AndroidPermission:1.2.0'
 ```
 
+![](img/pic00.gif)
