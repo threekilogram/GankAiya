@@ -237,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
       @Override
       protected void onDestroy ( ) {
 
-            StaticAnimateDrawableView.clearView();
             super.onDestroy();
             AppLog.addLog( "main 退出" );
       }

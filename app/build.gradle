@@ -45,7 +45,7 @@ dependencies {
     /* async */
     implementation 'com.github.threekilogram:ObjectBus:2.2.2'
     /* loading */
-    implementation 'com.github.threekilogram:AnimateDrawable:1.2.4'
+    implementation 'com.github.threekilogram:AnimateDrawable:1.2.5'
     /* net state */
     implementation 'com.github.threekilogram:NetStateChangeManager:1.2.5'
     /* cache */
