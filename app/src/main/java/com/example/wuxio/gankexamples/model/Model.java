@@ -1,6 +1,5 @@
 package com.example.wuxio.gankexamples.model;
 
-import android.util.Log;
 import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
@@ -15,8 +14,6 @@ import tech.threekilogram.model.stream.StreamLoader;
  * @author Liujin 2018-10-15:7:48
  */
 public class Model {
-
-      private static final String TAG = Model.class.getSimpleName();
 
       /**
        * 从本地文件构建{@link LocalCategoryBean}
@@ -36,7 +33,6 @@ public class Model {
                       latestJsonFile,
                       localFile
                   );
-                  Log.e( TAG, "buildLocalBeanFromFile : 网络获取最新数据: " + category + " " + i );
             }
 
             return r;

@@ -1,7 +1,6 @@
 package com.example.wuxio.gankexamples.model;
 
 import com.example.wuxio.gankexamples.json.JsonUtil;
-import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import java.io.File;
 import java.util.Date;
 import tech.threekilogram.model.stream.StreamLoader;
@@ -15,15 +14,6 @@ public class BeanLoader {
        * 初始化变量
        */
       public static void init ( ) { }
-
-      /**
-       * 获取最新的一条分类数据数据
-       */
-      public static GankCategory loadLatestCategoryJson ( String latestUrl ) {
-
-            return StreamLoader
-                .loadJsonFromNet( latestUrl, GankCategory.class );
-      }
 
       /**
        * 获取最新的福利数据

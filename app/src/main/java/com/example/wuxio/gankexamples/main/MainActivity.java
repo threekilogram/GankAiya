@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.about.AboutAppActivity;
+import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
             /* 开始预加载页面 */
             MainExecutor.execute(
                 ( ) -> {
+                      AppLog.addLog( "main 启动" );
                       mRoot = LayoutInflater.from( MainActivity.this )
                                             .inflate( R.layout.activity_main, null );
                 }
@@ -227,6 +229,7 @@ public class MainActivity extends AppCompatActivity {
 
             StaticAnimateDrawableView.clearView();
             super.onDestroy();
+            AppLog.addLog( "main 退出" );
       }
 
       /**

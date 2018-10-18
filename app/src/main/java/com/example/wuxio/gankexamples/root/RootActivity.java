@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.model.BeanLoader;
@@ -43,6 +44,8 @@ public class RootActivity extends AppCompatActivity {
             boolean quit = getIntent().getBooleanExtra( KEY_QUIT, false );
             if( quit ) {
                   finish();
+                  AppLog.addLog( "app 退出" );
+                  AppLog.saveLog();
             } else {
 
                   /* 状态栏透明 */
@@ -67,6 +70,7 @@ public class RootActivity extends AppCompatActivity {
                   /* 立即启动splash */
                   MainActivity.start( this );
                   finish();
+                  AppLog.addLog( "app 启动" );
             }
       }
 

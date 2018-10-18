@@ -49,7 +49,7 @@ public class ShowFragment extends Fragment {
       protected RecyclerFlingChangeView mRecycler;
       private   ShowAdapter             mAdapter;
       private   String                  mCategory;
-      private   ObjectBus               mBus = ObjectBus.newFixSizeQueue( 100 );
+      private   ObjectBus               mBus = ObjectBus.newQueue( 100 );
       private   CategoryModel           mCategoryModel;
       private   LinearLayoutManager     mLayoutManager;
 

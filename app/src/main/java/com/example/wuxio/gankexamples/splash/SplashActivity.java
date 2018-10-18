@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
+import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import java.lang.ref.WeakReference;
@@ -47,6 +48,7 @@ public class SplashActivity extends AppCompatActivity {
       protected void onCreate ( Bundle savedInstanceState ) {
 
             super.onCreate( savedInstanceState );
+            AppLog.addLog( "splash 启动" );
             super.setContentView( R.layout.activity_splash );
 
             initView();
@@ -86,9 +88,9 @@ public class SplashActivity extends AppCompatActivity {
       @Override
       protected void onDestroy ( ) {
 
-            super.onDestroy();
-            /* 释放资源 */
             mCountDowner.cancel();
+            AppLog.addLog( "splash 退出" );
+            super.onDestroy();
       }
 
       /**
@@ -106,13 +108,14 @@ public class SplashActivity extends AppCompatActivity {
        */
       public void toMainActivity ( View view ) {
 
-            MainActivity.start( SplashActivity.this );
-            finish();
-            overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
+            //MainActivity.start( SplashActivity.this );
+            //finish();
+            //overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
       }
 
-      // ========================= 倒计时 =========================
-
+      /**
+       * 倒计时
+       */
       private static class CountDownHandler extends Handler {
 
             private int mWhat      = 3;
