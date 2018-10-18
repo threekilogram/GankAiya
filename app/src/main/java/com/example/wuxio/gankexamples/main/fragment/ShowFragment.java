@@ -2,15 +2,16 @@ package com.example.wuxio.gankexamples.main.fragment;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -48,9 +49,10 @@ public class ShowFragment extends Fragment {
       protected static Bitmap sDefaultGif;
 
       protected RecyclerFlingChangeView mRecycler;
+      protected SwipeRefreshLayout      mSwipeRefreshLayout;
       private   ShowAdapter             mAdapter;
       private   String                  mCategory;
-      private   ObjectBus               mBus = ObjectBus.newQueue( 20 );
+      private   ObjectBus               mBus = ObjectBus.newQueue( 12 );
       private   CategoryModel           mCategoryModel;
       private   LinearLayoutManager     mLayoutManager;
 
@@ -91,6 +93,10 @@ public class ShowFragment extends Fragment {
                   mRecycler.setItemAnimator( null );
                   mRecycler.setAdapter( new LoadingAdapter() );
             }
+            if( mSwipeRefreshLayout == null ) {
+                  mSwipeRefreshLayout = new SwipeRefreshLayout( getContext() );
+                  mSwipeRefreshLayout.addView( mRecycler );
+            }
       }
 
       @Override
@@ -106,14 +112,27 @@ public class ShowFragment extends Fragment {
           @Nullable ViewGroup container,
           @Nullable Bundle savedInstanceState ) {
 
-            return mRecycler;
+            return mSwipeRefreshLayout;
       }
 
       public void onSelected ( ) { }
 
       public void onUnSelected ( ) { }
 
-      public void onReselected ( ) { }
+      public void onReselected ( ) {
+
+            mRecycler.smoothScrollToPosition( 0 );
+            mSwipeRefreshLayout.setRefreshing( true );
+            WeakReference<SwipeRefreshLayout> ref = new WeakReference<>( mSwipeRefreshLayout );
+            MainExecutor.execute( ( ) -> {
+
+                  try {
+                        ref.get().setRefreshing( false );
+                  } catch(Exception e) {
+                        /* nothing */
+                  }
+            }, 1500 );
+      }
 
       public void onIdle ( ) {
 
@@ -154,55 +173,61 @@ public class ShowFragment extends Fragment {
             WeakReference<ShowHolder> ref = new WeakReference<>( holder );
             mBus.toPool( ( ) -> {
 
-                  try {
-                        GankCategoryItem item = mCategoryModel.getItemFromMemory( position );
-                        if( item != null ) {
-                              if( ref.get().getBindPosition() == position ) {
-                                    ref.get().bind( position, item );
-                              }
+                  GankCategoryItem item = mCategoryModel.getItem( position );
+                  holder.setItem( position, item );
+
+                  if( item != null && item.getImages() != null ) {
+                        List<String> images = item.getImages();
+                        if( images.size() == 0 ) {
                               return;
-                        } else {
-                              holder.bind( position, null );
                         }
-
-                        item = mCategoryModel.getItem( position );
-                        if( item != null ) {
-                              try {
-                                    if( ref.get().getBindPosition() == position ) {
-                                          ref.get().bind( position, item );
-                                    }
-                              } catch(Exception e) {
-                                    /* nothing at there */
-                              }
+                        String url = images.get( 0 );
+                        File file = BitmapManager.downLoadPicture( url );
+                        if( !file.exists() ) {
+                              return;
                         }
-                  } catch(Exception e) {
-                        /* nothing */
-                  }
-            } ).run();
-      }
-
-      protected void setShowHolderGif (
-          int position, String url, ShowHolder holder, int width, int height ) {
-
-            WeakReference<ShowHolder> ref = new WeakReference<>( holder );
-            mBus.toPool( ( ) -> {
-                  File file = BitmapManager.downLoadPicture( url );
-                  if( file.exists() ) {
+                        ShowHolder showHolder = ref.get();
+                        if( showHolder == null ) {
+                              return;
+                        }
+                        if( showHolder.getBindPosition() != position ) {
+                              return;
+                        }
 
                         try {
-                              if( ref.get().needDecode( position ) ) {
-                                    try {
-                                          GifDrawable gifDrawable = new GifDrawable( file );
-                                          ref.get().setGif( position, gifDrawable );
-                                    } catch(IOException e) {
-                                          e.printStackTrace();
-                                          Bitmap bitmap = BitmapManager
-                                              .loadBitmap( url, width, height );
-                                          ref.get().setBitmap( position, bitmap );
-                                    }
+                              GifDrawable gifDrawable = new GifDrawable( file );
+                              showHolder.setGifBitmap( position, gifDrawable );
+
+                              Log.e(
+                                  TAG,
+                                  "setShowHolderData gif: " + position + " " + url + " " + file
+                                      + " " + file.exists()
+                              );
+                        } catch(IOException e) {
+                              e.printStackTrace();
+                              Bitmap bitmap = BitmapManager.loadBitmap(
+                                  url,
+                                  showHolder.mGifImageView.getMeasuredWidth(),
+                                  showHolder.mGifImageView.getMeasuredHeight()
+                              );
+                              if( bitmap != null ) {
+                                    showHolder.setBitmap( position, bitmap );
+                                    Log.e(
+                                        TAG,
+                                        "setShowHolderData bitmap: " + position + " " + url + " "
+                                            + file + " "
+                                            + file.exists() + " " + bitmap.getWidth() + " " + bitmap
+                                            .getHeight()
+                                    );
+                              } else {
+                                    showHolder.setErrorBitmap( position );
+                                    Log.e(
+                                        TAG,
+                                        "setShowHolderData error bitmap: " + position + " " + url
+                                            + " " + file
+                                            + " " + file.exists()
+                                    );
                               }
-                        } catch(Exception e) {
-                              /* nothing */
                         }
                   }
             } ).run();
@@ -234,6 +259,7 @@ public class ShowFragment extends Fragment {
                 @NonNull ShowHolder holder, int position ) {
 
                   holder.mBindPosition = position;
+                  holder.loading();
                   setShowHolderData( holder, position );
             }
 
@@ -275,42 +301,33 @@ public class ShowFragment extends Fragment {
                   mLoading = itemView.findViewById( R.id.loading );
             }
 
-            boolean needDecode ( int position ) {
+            void loading ( ) {
 
-                  return position == mBindPosition;
+                  mGifImageView.setVisibility( View.INVISIBLE );
+                  mGifImageView.setImageBitmap( sDefaultGif );
+                  mDesc.setVisibility( View.INVISIBLE );
+                  mWho.setVisibility( View.INVISIBLE );
+                  mLoading.setVisibility( View.VISIBLE );
             }
 
-            void setGif ( int position, Drawable drawable ) {
+            void setItem ( int position, GankCategoryItem item ) {
+
+                  if( position != mBindPosition ) {
+                        return;
+                  }
 
                   MainExecutor.execute( ( ) -> {
 
-                        if( position == mBindPosition ) {
-                              mGifImageView.setImageDrawable( drawable );
+                        if( position != mBindPosition ) {
+                              return;
                         }
-                  } );
-            }
-
-            void setBitmap ( int position, Bitmap bitmap ) {
-
-                  MainExecutor.execute( ( ) -> {
-
-                        if( position == mBindPosition ) {
-                              mGifImageView.setImageBitmap( bitmap );
-                        }
-                  } );
-            }
-
-            void bind ( int position, GankCategoryItem item ) {
-
-                  MainExecutor.execute( ( ) -> {
 
                         if( item == null ) {
 
                               mGifImageView.setVisibility( View.INVISIBLE );
-                              mGifImageView.setImageBitmap( sDefaultGif );
-                              mDesc.setVisibility( View.INVISIBLE );
+                              mDesc.setVisibility( View.VISIBLE );
                               mWho.setVisibility( View.INVISIBLE );
-                              mLoading.setVisibility( View.VISIBLE );
+                              mDesc.setText( "没有数据" );
                         } else {
 
                               mLoading.setVisibility( View.INVISIBLE );
@@ -322,19 +339,61 @@ public class ShowFragment extends Fragment {
 
                               List<String> images = item.getImages();
                               if( images != null && images.size() > 0 ) {
+
                                     mGifImageView.setVisibility( View.VISIBLE );
-                                    setShowHolderGif(
-                                        position,
-                                        images.get( 0 ),
-                                        ShowHolder.this,
-                                        mGifImageView.getMeasuredWidth(),
-                                        mGifImageView.getMeasuredHeight()
-                                    );
                               } else {
+
                                     mGifImageView.setVisibility( View.GONE );
-                                    mGifImageView.setImageBitmap( sDefaultGif );
                               }
                         }
+                  } );
+            }
+
+            void setGifBitmap ( int position, GifDrawable gifDrawable ) {
+
+                  if( position != mBindPosition ) {
+                        return;
+                  }
+
+                  MainExecutor.execute( ( ) -> {
+
+                        if( position != mBindPosition ) {
+                              return;
+                        }
+
+                        mGifImageView.setImageDrawable( gifDrawable );
+                  } );
+            }
+
+            void setBitmap ( int position, Bitmap bitmap ) {
+
+                  if( position != mBindPosition ) {
+                        return;
+                  }
+
+                  MainExecutor.execute( ( ) -> {
+
+                        if( position != mBindPosition ) {
+                              return;
+                        }
+
+                        mGifImageView.setImageBitmap( bitmap );
+                  } );
+            }
+
+            void setErrorBitmap ( int position ) {
+
+                  if( position != mBindPosition ) {
+                        return;
+                  }
+
+                  MainExecutor.execute( ( ) -> {
+
+                        if( position != mBindPosition ) {
+                              return;
+                        }
+
+                        mGifImageView.setImageBitmap( sDefaultGif );
                   } );
             }
       }

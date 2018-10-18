@@ -7,6 +7,7 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
+import com.example.wuxio.gankexamples.root.OnAppExitManager;
 import com.example.wuxio.gankexamples.utils.NetWork;
 import java.io.File;
 import java.util.ArrayList;
@@ -109,6 +110,8 @@ public class CategoryModel {
             if( !mCategoryFile.exists() ) {
                   boolean mkdirs = mCategoryFile.mkdirs();
             }
+
+            OnAppExitManager.addListener( ( ) -> mJsonLoader.clearMemory() );
       }
 
       public void initField ( ) {
