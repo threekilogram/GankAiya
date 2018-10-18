@@ -10,11 +10,11 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.NetWork;
+import com.threekilogram.objectbus.bus.ObjectBus;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-import tech.threekilogram.executor.MainExecutor;
 import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.model.cache.json.ObjectLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -27,6 +27,7 @@ public class BeautyModel {
 
       private static WeakReference<MainActivity> sRef;
       private static LocalCategoryBean           sBeautyLocalBean;
+      private static List<Bitmap>                sBitmaps;
 
       /**
        * 初始化
@@ -215,7 +216,8 @@ public class BeautyModel {
        */
       static void loadBannerBitmap ( ) {
 
-            PoolExecutor.execute( ( ) -> {
+            ObjectBus bus = ObjectBus.newList();
+            bus.toPool( ( ) -> {
 
                   List<String> beautiesUrl = getUrls();
 
@@ -226,20 +228,15 @@ public class BeautyModel {
 
                         needUrls.add( beautiesUrl.get( i ) );
                   }
+                  sBitmaps = BitmapManager.loadListBitmaps( needUrls );
+            } ).toMain( ( ) -> {
 
-                  List<Bitmap> bitmaps = BitmapManager.loadListBitmaps( needUrls );
-                  setMainActivityBannerData( 0, bitmaps );
-            } );
-      }
-
-      private static void setMainActivityBannerData ( int startIndex, List<Bitmap> bitmaps ) {
-
-            MainExecutor.execute( ( ) -> {
                   try {
-                        sRef.get().onBannerBitmapsPrepared( startIndex, bitmaps );
+                        sRef.get().onBannerBitmapsPrepared( 0, sBitmaps );
+                        sBitmaps = null;
                   } catch(Exception e) {
                         /* nothing to worry about */
                   }
-            } );
+            } ).run();
       }
 }

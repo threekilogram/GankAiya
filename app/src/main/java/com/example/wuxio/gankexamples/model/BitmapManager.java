@@ -2,6 +2,7 @@ package com.example.wuxio.gankexamples.model;
 
 import android.graphics.Bitmap;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
 import java.io.File;
 import java.util.ArrayList;
@@ -90,6 +91,9 @@ public class BitmapManager {
             for( String url : urls ) {
                   Bitmap bitmap = sBitmapLoader.load( url, width, height );
                   result.add( bitmap );
+                  if( bitmap == null ) {
+                        AppLog.addLog( "下载图片失败 " + url );
+                  }
             }
 
             return result;

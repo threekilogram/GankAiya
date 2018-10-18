@@ -60,15 +60,33 @@ public class PictureModel {
 
       private static void loadFromFile ( int position, String url ) {
 
+            if( BitmapManager.loadBitmapFromMemory( url ) != null ) {
+                  try {
+                        sRef.get().notifyItemChanged( position );
+                        return;
+                  } catch(Exception e) {
+                        /* nothing worry about */
+                  }
+            }
+
             BitmapManager.loadBitmapFromFile(
                 url,
                 ScreenSize.getWidth(),
                 ScreenSize.getHeight()
             );
-            try {
-                  sRef.get().notifyItemChanged( position );
-            } catch(Exception e) {
-                  /* nothing worry about */
+            if( BitmapManager.loadBitmapFromMemory( url ) != null ) {
+                  try {
+                        sRef.get().notifyItemChanged( position );
+                  } catch(Exception e) {
+                        /* nothing worry about */
+                  }
+            } else {
+
+                  try {
+                        sRef.get().notifyItemCantGetBitmap( position );
+                  } catch(Exception e) {
+                        /* nothing worry about */
+                  }
             }
       }
 }

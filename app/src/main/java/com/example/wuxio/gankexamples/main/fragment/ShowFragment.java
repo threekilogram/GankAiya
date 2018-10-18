@@ -116,7 +116,7 @@ public class ShowFragment extends Fragment {
 
       public void onIdle ( ) {
 
-            setAdapterData( mAdapter );
+            //setAdapterData( mAdapter );
       }
 
       protected void setAdapterData ( ShowAdapter adapter ) {

@@ -10,7 +10,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +49,7 @@ public class PictureActivity extends AppCompatActivity {
       private WatcherAdapter   mAdapter;
       private TextView         mIndex;
       private ImageView        mSave;
+      private PermissionResult mOnRequestPermissionResult;
 
       /**
        * @param startIndex 图片数据起始索引
@@ -111,10 +111,15 @@ public class PictureActivity extends AppCompatActivity {
                   int position = mImageWatcher.getCurrentPosition();
                   String url = mAdapter.mUrls.get( position );
 
+                  if( mOnRequestPermissionResult == null ) {
+
+                        mOnRequestPermissionResult = new PermissionResult();
+                  }
+                  mOnRequestPermissionResult.setUrl( url );
                   PermissionManager.request(
                       PictureActivity.this,
                       permission.WRITE_EXTERNAL_STORAGE,
-                      new PermissionResult( url )
+                      mOnRequestPermissionResult
                   );
             } );
       }
@@ -122,6 +127,16 @@ public class PictureActivity extends AppCompatActivity {
       public void notifyItemChanged ( int position ) {
 
             mAdapter.notifyItemChanged( position );
+      }
+
+      public void notifyItemCantGetBitmap ( int position ) {
+
+            ViewHolder holder = mImageWatcher.getRecyclerView()
+                                             .findViewHolderForLayoutPosition(
+                                                 position );
+            if( holder != null ) {
+                  ( (ScaleHolder) holder ).onBitmapCantGet( position );
+            }
       }
 
       private View createHolderView ( ViewGroup parent ) {
@@ -138,9 +153,14 @@ public class PictureActivity extends AppCompatActivity {
 
             private String mUrl;
 
-            public PermissionResult ( String url ) {
+            public void setUrl ( String url ) {
 
                   mUrl = url;
+            }
+
+            public String getUrl ( ) {
+
+                  return mUrl;
             }
 
             @Override
@@ -149,13 +169,19 @@ public class PictureActivity extends AppCompatActivity {
                   File file = BitmapManager.getFile( mUrl );
                   File directory = Environment
                       .getExternalStoragePublicDirectory( Environment.DIRECTORY_PICTURES );
-                  Log.e( TAG, "onSuccess : " + file + " " + directory );
+                  File result = new File( directory, file.getName() );
+
+                  if( result.exists() ) {
+                        ToastMessage.toast( "已经保存" );
+                        return;
+                  }
+
                   if( file.exists() ) {
                         PoolExecutor.execute( ( ) -> {
 
                               try {
                                     FileInputStream inputStream = new FileInputStream( file );
-                                    File result = new File( directory, file.getName() );
+
                                     FileOutputStream outputStream = new FileOutputStream(
                                         result
                                     );
@@ -260,6 +286,11 @@ public class PictureActivity extends AppCompatActivity {
                   mProgressBar.setVisibility( View.VISIBLE );
 
                   PictureModel.loadBitmapFromCache( position, mAdapter.mUrls.get( position ) );
+            }
+
+            protected void onBitmapCantGet ( int position ) {
+
+                  ToastMessage.toast( "图片失效" );
             }
 
             @NonNull

@@ -22,7 +22,6 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +38,8 @@ import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
 import com.example.wuxio.gankexamples.utils.BackPressUtil;
+import com.example.wuxio.gankexamples.utils.NetWork;
+import com.example.wuxio.gankexamples.utils.ToastMessage;
 import com.example.wuxio.gankexamples.web.WebActivity;
 import com.threekilogram.drawable.BiliBiliLoadingDrawable;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
@@ -114,11 +115,12 @@ public class MainActivity extends AppCompatActivity {
 
             setSystemUI();
             super.setContentView( mRoot );
-//
-//            initView();
-//            BeautyModel.bind( this );
-//            BeautyModel.loadBannerBitmap();
-//            postAction( mDrawer );
+
+            initView();
+            postAction( mDrawer );
+
+            BeautyModel.bind( this );
+            BeautyModel.loadBannerBitmap();
 
             AppLog.addLog( "main 真启动,开始设置界面" );
       }
@@ -145,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
             mTabLayout = findViewById( R.id.tabLayout );
             mCollapsingToolbar = findViewById( R.id.collapsingToolbar );
             mBannerLoading = findViewById( R.id.bannerLoading );
-
 
 
             /* 设置导航菜单 */
@@ -242,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
       private void initNavigationView ( NavigationView navigationView ) {
 
             View headerView = navigationView.getHeaderView( 0 );
-            ImageView avatarImageView = headerView.findViewById( R.id.userAvatar );
 
             /* 给导航栏条目设置点击事件 */
 
@@ -256,11 +256,17 @@ public class MainActivity extends AppCompatActivity {
 
       public void onBannerBitmapsPrepared ( int startIndex, List<Bitmap> bitmaps ) {
 
-            mBannerAdapter.mStartIndex = startIndex;
-            mBannerAdapter.mBitmaps = bitmaps;
-            mBannerAdapter.notifyDataSetChanged();
-
-            hideBannerLoading();
+            if( bitmaps != null ) {
+                  mBannerAdapter.mStartIndex = startIndex;
+                  mBannerAdapter.mBitmaps = bitmaps;
+                  mBannerAdapter.notifyDataSetChanged();
+                  startLoop();
+                  hideBannerLoading();
+            } else {
+                  if( !NetWork.hasNetwork() ) {
+                        ToastMessage.toast( "没有网络,无法下载图片" );
+                  }
+            }
       }
 
       /**
@@ -285,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
       protected void onRestart ( ) {
 
             super.onRestart();
+            startLoop();
       }
 
       /**
@@ -387,6 +394,7 @@ public class MainActivity extends AppCompatActivity {
             private List<Bitmap>            mBitmaps;
             private int                     mStartIndex;
             private BannerItemClickListener mClickListener = new BannerItemClickListener();
+            private Bitmap                  mDefaultBitmap;
 
             @Override
             public int getActualCount ( ) {
@@ -408,8 +416,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onBindViewHolder ( @NonNull BannerHolder holder, int position ) {
 
+                  int actualPosition = getActualPosition( position );
                   if( mBitmaps != null ) {
-                        int actualPosition = getActualPosition( position );
                         Bitmap bitmap = mBitmaps.get( actualPosition );
                         holder.bind( actualPosition, bitmap );
                   }
@@ -450,11 +458,9 @@ public class MainActivity extends AppCompatActivity {
 
                   if( mBannerAdapter.mBitmaps != null ) {
 
-                        BannerHolder childViewHolder = (BannerHolder) mBanner.getRecyclerPager()
-                                                                             .getChildViewHolder(
-                                                                                 v );
-
-                        Log.e( TAG, "onClick : " + childViewHolder.mCurrentPosition );
+                        BannerHolder childViewHolder =
+                            (BannerHolder) mBanner.getRecyclerPager()
+                                                  .getChildViewHolder( v );
 
                         PictureActivity.start(
                             MainActivity.this,
@@ -462,6 +468,8 @@ public class MainActivity extends AppCompatActivity {
                             childViewHolder.mCurrentPosition,
                             mBannerAdapter.mBitmaps
                         );
+
+                        stopLoop();
                   }
             }
       }
