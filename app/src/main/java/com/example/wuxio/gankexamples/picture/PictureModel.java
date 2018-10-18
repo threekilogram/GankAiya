@@ -1,10 +1,10 @@
 package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
-import com.example.wuxio.gankexamples.model.BitmapCache;
-import com.threekilogram.objectbus.executor.PoolExecutor;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import java.lang.ref.WeakReference;
 import java.util.List;
+import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.screen.ScreenSize;
 
 /**
@@ -41,18 +41,18 @@ public class PictureModel {
             if( sStartIndex <= position && position < sStartIndex + sBitmaps.size() ) {
                   return sBitmaps.get( position - sStartIndex );
             }
-            return BitmapCache.loadBitmapFromMemory( url );
+            return BitmapManager.loadBitmapFromMemory( url );
       }
 
       static void loadBitmapFromCache ( int position, String url ) {
 
             PoolExecutor.execute( ( ) -> {
 
-                  if( BitmapCache.hasPictureCache( url ) ) {
+                  if( BitmapManager.hasPictureCache( url ) ) {
                         loadFromFile( position, url );
                   } else {
                         /* 缓存失效 */
-                        BitmapCache.downLoadPicture( url );
+                        BitmapManager.downLoadPicture( url );
                         loadFromFile( position, url );
                   }
             } );
@@ -60,7 +60,7 @@ public class PictureModel {
 
       private static void loadFromFile ( int position, String url ) {
 
-            BitmapCache.loadBitmapFromFile(
+            BitmapManager.loadBitmapFromFile(
                 url,
                 ScreenSize.getWidth(),
                 ScreenSize.getHeight()

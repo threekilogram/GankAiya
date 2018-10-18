@@ -24,6 +24,7 @@ public class App extends Application {
             super.onCreate();
             INSTANCE = this;
 
+            BlockCanary.install( this, new AppBlockCanaryContext() ).start();
 
             /* LeakCanary */
             if( LeakCanary.isInAnalyzerProcess( this ) ) {
@@ -32,7 +33,7 @@ public class App extends Application {
                   return;
             }
             LeakCanary.install( this );
-            BlockCanary.install( this, new AppBlockCanaryContext() ).start();
+
       }
 
       public class AppBlockCanaryContext extends BlockCanaryContext {
@@ -122,8 +123,14 @@ public class App extends Application {
             @Override
             public String providePath ( ) {
 
-                  File blockcanary_ = getExternalFilesDir( "blockcanary " );
-                  return blockcanary_.getAbsolutePath();
+                  File dir = getExternalFilesDir( "blockcanary" );
+                  if( dir == null ) {
+                        dir = new File( getFilesDir(), "blockcanary" );
+                  }
+                  if( !dir.exists() ) {
+                        dir.mkdirs();
+                  }
+                  return dir.getAbsolutePath();
             }
 
             /**
@@ -134,7 +141,7 @@ public class App extends Application {
             @Override
             public boolean displayNotification ( ) {
 
-                  return true;
+                  return false;
             }
 
             /**

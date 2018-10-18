@@ -22,7 +22,7 @@ import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.main.MainActivity;
-import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.utils.ToastMessage;
 import com.threekilogram.systemui.SystemUi;
 import java.io.File;
@@ -146,7 +146,7 @@ public class PictureActivity extends AppCompatActivity {
             @Override
             public void onSuccess ( String permission ) {
 
-                  File file = BitmapCache.getFile( mUrl );
+                  File file = BitmapManager.getFile( mUrl );
                   File directory = Environment
                       .getExternalStoragePublicDirectory( Environment.DIRECTORY_PICTURES );
                   Log.e( TAG, "onSuccess : " + file + " " + directory );

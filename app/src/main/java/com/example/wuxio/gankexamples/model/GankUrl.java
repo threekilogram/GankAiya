@@ -71,11 +71,6 @@ public class GankUrl {
             return category( BEAUTY, Integer.MAX_VALUE, 1 );
       }
 
-      public static String beautyLatestUrl ( ) {
-
-            return category( BEAUTY, 1, 1 );
-      }
-
       public static String androidAllUrl ( ) {
 
             return category( ANDROID, Integer.MAX_VALUE, 1 );

@@ -20,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
-import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.web.WebActivity;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
@@ -170,7 +170,7 @@ public class ShowFragment extends Fragment {
 
             WeakReference<ShowHolder> ref = new WeakReference<>( holder );
             mBus.toPool( ( ) -> {
-                  File file = BitmapCache.downLoadPicture( url );
+                  File file = BitmapManager.downLoadPicture( url );
                   if( file.exists() ) {
 
                         try {
@@ -180,7 +180,7 @@ public class ShowFragment extends Fragment {
                                           ref.get().setGif( position, gifDrawable );
                                     } catch(IOException e) {
                                           e.printStackTrace();
-                                          Bitmap bitmap = BitmapCache
+                                          Bitmap bitmap = BitmapManager
                                               .loadBitmap( url, width, height );
                                           ref.get().setBitmap( position, bitmap );
                                     }

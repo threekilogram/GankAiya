@@ -91,8 +91,10 @@ public class MainActivity extends AppCompatActivity {
             SplashActivity.start( this );
             /* 开始预加载页面 */
             MainExecutor.execute(
-                ( ) -> mRoot = LayoutInflater.from( MainActivity.this )
-                                             .inflate( R.layout.activity_main, null )
+                ( ) -> {
+                      mRoot = LayoutInflater.from( MainActivity.this )
+                                            .inflate( R.layout.activity_main, null );
+                }
             );
       }
 
@@ -254,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
             mBannerAdapter.notifyDataSetChanged();
 
             hideBannerLoading();
-
-            Log.e( TAG, "onBannerBitmapsPrepared : banner已设置数据" );
       }
 
       /**

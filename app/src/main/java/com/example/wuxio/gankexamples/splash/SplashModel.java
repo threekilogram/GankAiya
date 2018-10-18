@@ -1,10 +1,9 @@
 package com.example.wuxio.gankexamples.splash;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.model.BeanLoader;
-import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.utils.NetWork;
@@ -19,7 +18,6 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class SplashModel {
 
-      private static final String TAG             = SplashModel.class.getSimpleName();
       /**
        * splash preference name
        */
@@ -65,13 +63,11 @@ public class SplashModel {
 
             sSplashImageUrl = sPreferenceLoader.getString( KEY_SPLASH_URL );
 
-            Log.e( TAG, "setSplashImage : 配置的splash图片地址: " + sSplashImageUrl );
-
             if( sSplashImageUrl != null ) {
-                  if( BitmapCache.hasPictureCache( sSplashImageUrl ) ) {
+                  if( BitmapManager.hasPictureCache( sSplashImageUrl ) ) {
 
                         /* 设置图片 */
-                        Bitmap bitmap = BitmapCache.loadBitmap(
+                        Bitmap bitmap = BitmapManager.loadBitmap(
                             sSplashImageUrl,
                             ScreenSize.getWidth(),
                             ScreenSize.getHeight()
@@ -83,7 +79,6 @@ public class SplashModel {
                               cachePicture();
                         }
                   } else {
-                        Log.e( TAG, "setSplashImage : splash图片缓存失效,重新下载" );
                         cachePicture();
                   }
             }
@@ -95,7 +90,7 @@ public class SplashModel {
       private static void cachePicture ( ) {
 
             PoolExecutor.execute(
-                ( ) -> BitmapCache.downLoadPicture( sSplashImageUrl ) );
+                ( ) -> BitmapManager.downLoadPicture( sSplashImageUrl ) );
       }
 
       /**
@@ -105,30 +100,25 @@ public class SplashModel {
 
             if( !NetWork.hasNetwork() ) {
                   ToastMessage.toast( "没有网络" );
+                  return;
             }
 
             PoolExecutor.execute( ( ) -> {
 
-                  GankCategory c = BeanLoader.loadLatestCategoryJson( GankUrl.beautyLatestUrl() );
-                  Log.e(
-                      TAG, "updateSplashImageUrlForNextTime : 获取到最新的福利数据 " + c );
+                  GankCategory c = BeanLoader
+                      .loadLatestCategoryJson( GankUrl.category( GankUrl.BEAUTY, 1, 1 ) );
 
                   try {
 
                         String url = c.getResults().get( 0 ).getUrl();
-                        Log.e( TAG, "updateSplashImageUrlForNextTime : 获取到最新的splash地址 " + url );
 
                         if( url != null && !url.equals( sSplashImageUrl ) ) {
 
                               sPreferenceLoader.save( KEY_SPLASH_URL, url );
-                              Log.e(
-                                  TAG, "updateSplashImageUrlForNextTime : 更新最新的splash地址 " + url );
-
-                              BitmapCache.downLoadPicture( url );
+                              BitmapManager.downLoadPicture( url );
                         }
                   } catch(Exception e) {
-
-                        Log.e( TAG, "updateSplashImageUrlForNextTime : 配置最新的splash地址异常" );
+                        /* nothing */
                   }
             } );
       }

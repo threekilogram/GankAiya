@@ -8,9 +8,8 @@ import com.example.wuxio.gankexamples.App;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.main.BeautyModel;
 import com.example.wuxio.gankexamples.main.MainActivity;
-import com.example.wuxio.gankexamples.main.fragment.CategoryModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
-import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.threekilogram.systemui.SystemUi;
 import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
@@ -23,7 +22,6 @@ import tech.threekilogram.screen.ScreenSize;
  */
 public class RootActivity extends AppCompatActivity {
 
-      private static final String TAG      = RootActivity.class.getSimpleName();
       private static final String KEY_QUIT = "isQuit";
 
       /**
@@ -57,13 +55,13 @@ public class RootActivity extends AppCompatActivity {
                   FileManager.init();
                   /* 初始化变量 */
                   BeanLoader.init();
-                  BitmapCache.init();
+                  BitmapManager.init();
                   /* 开线程初始化 */
                   PoolExecutor.execute( ( ) -> {
 
                         /* 初始化福利数据 */
                         BeautyModel.init();
-                        CategoryModel.init();
+                        //CategoryModel.init();
                   } );
 
                   /* 立即启动splash */

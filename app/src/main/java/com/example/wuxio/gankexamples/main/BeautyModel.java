@@ -1,9 +1,8 @@
 package com.example.wuxio.gankexamples.main;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
-import com.example.wuxio.gankexamples.model.BitmapCache;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
@@ -22,8 +21,6 @@ import tech.threekilogram.network.state.manager.NetStateValue;
  */
 public class BeautyModel {
 
-      private static final String TAG = BeautyModel.class.getSimpleName();
-
       private static WeakReference<MainActivity> sRef;
       private static LocalCategoryBean           sBeautyLocalBean;
 
@@ -33,11 +30,10 @@ public class BeautyModel {
       public static void init ( ) {
 
             if( sBeautyLocalBean == null ) {
-                  Log.e( TAG, "init : 初次启动 初始化本地福利bean " );
                   sBeautyLocalBean = new LocalCategoryBean();
                   buildLocalBean();
             } else {
-                  Log.e( TAG, "init : 再次启动 从网络更新本地福利bean" );
+                  /* 更新一下 */
             }
       }
 
@@ -51,33 +47,24 @@ public class BeautyModel {
                   File localBeanFile = FileManager.getLocalBeautyBeanFile();
                   if( localBeanFile.exists() ) {
 
-                        Log.e( TAG, "buildLocalBean : 从本地文件创建本地福利bean中 " + localBeanFile );
                         sBeautyLocalBean = Model.buildLocalBeanFromFile(
                             GankUrl.BEAUTY,
                             localBeanFile,
                             FileManager.getLatestBeautyJsonFile()
                         );
-                        Log.e(
-                            TAG, "buildLocalBean : 从本地文件创建本地福利bean完成 " + sBeautyLocalBean.getUrls()
-                                                                                         .size() );
                         notifyAllWait();
                   } else {
 
                         if( NetWork.hasNetwork() ) {
 
-                              Log.e( TAG, "buildLocalBean : 从网络创建本地福利bean中 " );
                               sBeautyLocalBean = Model.buildLocalBeanFromNet(
                                   GankUrl.beautyAllUrl(),
                                   FileManager.getBeautyJsonFile(),
                                   localBeanFile
                               );
-                              Log.e( TAG, "buildLocalBean : 从网络创建本地福利bean中完成 " );
                               notifyAllWait();
-
-                              cacheBeautyPicture();
                         } else {
 
-                              Log.e( TAG, "buildLocalBean : 没有网络无法构建本地福利bean " );
                               sBeautyLocalBean = new LocalCategoryBean();
                               sBeautyLocalBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
@@ -122,10 +109,8 @@ public class BeautyModel {
       private static void cacheBeautyPicture ( ) {
 
             List<String> beautyUrls = getUrls();
-            Log.e( TAG, "cacheBeautyPicture : 需要缓存图片数量 " + beautyUrls.size() );
             PoolExecutor.execute( ( ) -> {
 
-                  Log.e( TAG, "cacheBeautyPicture : 缓存图片中 " );
                   int success = 0;
                   int failed = 0;
                   for( int i = 0; i < beautyUrls.size(); i++ ) {
@@ -135,7 +120,7 @@ public class BeautyModel {
                               String url = beautyUrls.get( i );
                               try {
                                     if( url != null ) {
-                                          File file = BitmapCache.downLoadPicture( url );
+                                          File file = BitmapManager.downLoadPicture( url );
                                           if( file.exists() ) {
                                                 success++;
                                           } else {
@@ -147,7 +132,6 @@ public class BeautyModel {
                               }
                         }
                   }
-                  Log.e( TAG, "cacheBeautyPicture : 缓存图片完成: 成功 " + success + " 失败 " + failed );
             } );
       }
 
@@ -194,9 +178,7 @@ public class BeautyModel {
                         needUrls.add( beautiesUrl.get( i ) );
                   }
 
-                  Log.e( TAG, "loadBannerBitmap : 获取banner图片中 " );
-                  List<Bitmap> bitmaps = BitmapCache.loadListBitmaps( needUrls );
-                  Log.e( TAG, "loadBannerBitmap : 获取banner图片完成 " );
+                  List<Bitmap> bitmaps = BitmapManager.loadListBitmaps( needUrls );
                   setMainActivityBannerData( 0, bitmaps );
             } );
       }

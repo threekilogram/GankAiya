@@ -13,7 +13,7 @@ import tech.threekilogram.screen.ScreenSize;
 /**
  * @author Liujin 2018-10-14:10:52
  */
-public class BitmapCache {
+public class BitmapManager {
 
       /**
        * 加载图片

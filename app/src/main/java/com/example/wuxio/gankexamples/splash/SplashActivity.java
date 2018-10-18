@@ -3,6 +3,8 @@ package com.example.wuxio.gankexamples.splash;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,8 +12,7 @@ import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
-import tech.threekilogram.messengers.Messengers;
-import tech.threekilogram.messengers.OnMessageReceiveListener;
+import java.lang.ref.WeakReference;
 
 /**
  * show splash ,than goto mainActivity
@@ -20,20 +21,18 @@ import tech.threekilogram.messengers.OnMessageReceiveListener;
  */
 public class SplashActivity extends AppCompatActivity {
 
-      private static final String TAG = SplashActivity.class.getSimpleName();
-
       /**
        * logo
        */
-      protected ImageView mLogoImage;
+      protected ImageView        mLogoImage;
       /**
        * countdown
        */
-      protected TextView  mCountText;
+      protected TextView         mCountText;
       /**
        * count down timer
        */
-      private   CountDown mCountDownMachine;
+      private   CountDownHandler mCountDowner;
 
       /**
        * quitApp
@@ -70,10 +69,10 @@ public class SplashActivity extends AppCompatActivity {
 
             mLogoImage.post( ( ) -> {
 
-                  if( mCountDownMachine == null ) {
-                        mCountDownMachine = new CountDown();
+                  if( mCountDowner == null ) {
+                        mCountDowner = new CountDownHandler( this );
                   }
-                  mCountDownMachine.start();
+                  mCountDowner.start();
             } );
       }
 
@@ -81,16 +80,15 @@ public class SplashActivity extends AppCompatActivity {
       public void onBackPressed ( ) {
 
             RootActivity.quitApp( this );
-            finish();
             super.onBackPressed();
       }
 
       @Override
-      public void finish ( ) {
+      protected void onDestroy ( ) {
 
+            super.onDestroy();
             /* 释放资源 */
-            mCountDownMachine.cancel();
-            super.finish();
+            mCountDowner.cancel();
       }
 
       /**
@@ -115,34 +113,51 @@ public class SplashActivity extends AppCompatActivity {
 
       // ========================= 倒计时 =========================
 
-      private class CountDown implements OnMessageReceiveListener {
+      private static class CountDownHandler extends Handler {
 
             private int mWhat      = 3;
             private int mCountTime = 3;
 
+            private WeakReference<SplashActivity> mRef;
+
+            private CountDownHandler ( SplashActivity activity ) {
+
+                  mRef = new WeakReference<>( activity );
+            }
+
             void start ( ) {
 
-                  Messengers.send( mWhat, this );
+                  sendEmptyMessage( mWhat );
             }
 
             void cancel ( ) {
 
-                  Messengers.remove( mWhat, this );
+                  removeCallbacksAndMessages( null );
             }
 
             @Override
-            public void onReceive ( int what, Object extra ) {
+            public void handleMessage ( Message msg ) {
+
+                  super.handleMessage( msg );
 
                   int left = mCountTime--;
 
-                  setCountDownText( left );
+                  SplashActivity splashActivity = mRef.get();
 
-                  if( left <= 0 ) {
+                  if( splashActivity != null ) {
 
-                        toMainActivity( null );
+                        splashActivity.setCountDownText( left );
+
+                        if( left <= 0 ) {
+
+                              splashActivity.toMainActivity( null );
+                        } else {
+
+                              sendEmptyMessageDelayed( mWhat, 1000 );
+                        }
                   } else {
 
-                        Messengers.send( mWhat, 1000, this );
+                        removeCallbacksAndMessages( null );
                   }
             }
       }
