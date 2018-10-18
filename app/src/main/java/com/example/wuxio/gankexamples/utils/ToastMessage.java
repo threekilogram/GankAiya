@@ -2,7 +2,7 @@ package com.example.wuxio.gankexamples.utils;
 
 import android.widget.Toast;
 import com.example.wuxio.gankexamples.App;
-import com.threekilogram.objectbus.executor.MainExecutor;
+import tech.threekilogram.executor.MainExecutor;
 
 /**
  * @author Liujin 2018-10-14:15:05

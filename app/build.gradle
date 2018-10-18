@@ -44,18 +44,16 @@ dependencies {
     implementation 'com.github.threekilogram:PagerExtend:1.2.9'
     /* imageWatcher */
     implementation 'com.github.threekilogram:ScaleImageView:1.2.4'
-    /* layout */
-    implementation 'com.github.threekilogram:ViewSkin:1.2.8'
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:2.1.9'
+    implementation 'com.github.threekilogram:ObjectBus:2.2.0'
     /* message */
     implementation 'com.github.threekilogram:Messengers:1.2'
     /* loading */
-    implementation 'com.github.threekilogram:AnimateDrawable:1.2.3'
+    implementation 'com.github.threekilogram:AnimateDrawable:1.2.4'
     /* net state */
     implementation 'com.github.threekilogram:NetStateChangeManager:1.2.5'
     /* cache */
-    implementation 'com.github.threekilogram:AndroidModel:2.0.0'
+    implementation 'com.github.threekilogram:AndroidModel:2.0.1'
     /* screen size */
     implementation 'com.github.threekilogram:ScreenSize:1.0.1'
     /* json parser */

@@ -9,9 +9,9 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.utils.NetWork;
 import com.example.wuxio.gankexamples.utils.ToastMessage;
-import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.lang.ref.WeakReference;
-import tech.threekilogram.depository.preference.PreferenceLoader;
+import tech.threekilogram.executor.PoolExecutor;
+import tech.threekilogram.model.preference.PreferenceLoader;
 import tech.threekilogram.screen.ScreenSize;
 
 /**

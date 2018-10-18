@@ -4,7 +4,7 @@ import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import java.io.File;
 import java.util.Date;
-import tech.threekilogram.depository.stream.StreamLoader;
+import tech.threekilogram.model.stream.StreamLoader;
 
 /**
  * @author Liujin 2018-10-07:19:24

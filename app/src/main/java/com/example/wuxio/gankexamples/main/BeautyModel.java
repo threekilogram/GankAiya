@@ -8,12 +8,12 @@ import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.NetWork;
-import com.threekilogram.objectbus.executor.MainExecutor;
-import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import tech.threekilogram.executor.MainExecutor;
+import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.network.state.manager.NetStateValue;
 

@@ -5,11 +5,11 @@ import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.DateUtil;
 import com.example.wuxio.gankexamples.utils.NetWork;
-import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.Date;
-import tech.threekilogram.depository.cache.json.ObjectLoader;
-import tech.threekilogram.depository.stream.StreamLoader;
+import tech.threekilogram.executor.PoolExecutor;
+import tech.threekilogram.model.cache.json.ObjectLoader;
+import tech.threekilogram.model.stream.StreamLoader;
 
 /**
  * @author Liujin 2018-10-15:7:48

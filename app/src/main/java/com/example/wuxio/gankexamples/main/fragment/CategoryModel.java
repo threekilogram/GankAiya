@@ -8,11 +8,11 @@ import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.utils.NetWork;
-import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import tech.threekilogram.depository.cache.json.JsonLoader;
+import tech.threekilogram.executor.PoolExecutor;
+import tech.threekilogram.model.cache.json.JsonLoader;
 
 /**
  * @author Liujin 2018-10-14:20:57

@@ -5,9 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Path;
+import android.graphics.Path.Direction;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import com.threekilogram.viewskin.shape.CircleClipper;
 
 /**
  * 圆角imageView
@@ -16,8 +17,8 @@ import com.threekilogram.viewskin.shape.CircleClipper;
  */
 public class CircleImageView extends android.support.v7.widget.AppCompatImageView {
 
-      private CircleClipper<CircleImageView> mClipper;
-      private Paint                          mPaint;
+      private Paint mPaint;
+      private Path  mPath;
 
       public CircleImageView ( Context context ) {
 
@@ -38,17 +39,26 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
 
       private void init ( ) {
 
-            mClipper = new CircleClipper<>( this );
             mPaint = new Paint( Paint.ANTI_ALIAS_FLAG );
             mPaint.setStyle( Style.STROKE );
             mPaint.setStrokeWidth( 10 );
             mPaint.setColor( Color.WHITE );
+
+            mPath = new Path();
+      }
+
+      @Override
+      protected void onSizeChanged ( int w, int h, int oldw, int oldh ) {
+
+            super.onSizeChanged( w, h, oldw, oldh );
+
+            mPath.addCircle( w >> 1, h >> 1, w >> 1, Direction.CW );
       }
 
       @Override
       protected void onDraw ( Canvas canvas ) {
 
-            mClipper.clipCanvas( canvas );
+            canvas.clipPath( mPath );
             super.onDraw( canvas );
 
             int size = getWidth();
