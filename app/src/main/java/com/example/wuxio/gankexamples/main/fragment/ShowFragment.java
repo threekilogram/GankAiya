@@ -174,6 +174,9 @@ public class ShowFragment extends Fragment {
             mBus.toPool( ( ) -> {
 
                   GankCategoryItem item = mCategoryModel.getItem( position );
+                  if( item == null ) {
+                        item = mCategoryModel.getItemFromFile( position );
+                  }
                   holder.setItem( position, item );
 
                   if( item != null && item.getImages() != null ) {

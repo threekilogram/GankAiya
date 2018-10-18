@@ -249,4 +249,11 @@ public class CategoryModel {
             String url = urls.get( position );
             return mJsonLoader.load( url );
       }
+
+      public GankCategoryItem getItemFromFile ( int position ) {
+
+            List<String> urls = getLocalBeanUrls();
+            String url = urls.get( position );
+            return mJsonLoader.loadFromFile( url );
+      }
 }
