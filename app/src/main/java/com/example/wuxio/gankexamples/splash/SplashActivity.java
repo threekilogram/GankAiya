@@ -35,9 +35,6 @@ public class SplashActivity extends AppCompatActivity {
        */
       private   CountDownHandler mCountDowner;
 
-      /**
-       * quitApp
-       */
       public static void start ( Context context ) {
 
             Intent starter = new Intent( context, SplashActivity.class );
@@ -82,6 +79,7 @@ public class SplashActivity extends AppCompatActivity {
       public void onBackPressed ( ) {
 
             RootActivity.quitApp( this );
+            finish();
             super.onBackPressed();
       }
 
@@ -108,9 +106,9 @@ public class SplashActivity extends AppCompatActivity {
        */
       public void toMainActivity ( View view ) {
 
-            //MainActivity.start( SplashActivity.this );
-            //finish();
-            //overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
+            MainActivity.start( SplashActivity.this );
+            finish();
+            overridePendingTransition( R.anim.screen_fade_in, R.anim.screen_zoom_out );
       }
 
       /**

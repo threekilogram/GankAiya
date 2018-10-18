@@ -1,7 +1,10 @@
 package com.example.wuxio.gankexamples.main;
 
+import static com.example.wuxio.gankexamples.model.GankUrl.BEAUTY;
+
 import android.graphics.Bitmap;
 import com.example.wuxio.gankexamples.file.FileManager;
+import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import tech.threekilogram.executor.MainExecutor;
 import tech.threekilogram.executor.PoolExecutor;
+import tech.threekilogram.model.cache.json.ObjectLoader;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.network.state.manager.NetStateValue;
 
@@ -44,14 +48,43 @@ public class BeautyModel {
 
             PoolExecutor.execute( ( ) -> {
 
-                  File localBeanFile = FileManager.getLocalBeautyBeanFile();
+                  File localBeanFile = new File(
+                      FileManager.getFileByType( BEAUTY ),
+                      BEAUTY + "_all"
+                  );
+
                   if( localBeanFile.exists() ) {
 
-                        sBeautyLocalBean = Model.buildLocalBeanFromFile(
-                            GankUrl.BEAUTY,
+                        sBeautyLocalBean = ObjectLoader.loadFromFile(
                             localBeanFile,
-                            FileManager.getLatestBeautyJsonFile()
+                            LocalCategoryBean.class
                         );
+
+                        AppLog.addLog(
+                            "从本地缓存构建福利数据索引完成: "
+                                + sBeautyLocalBean.getStartDate() + " "
+                                + sBeautyLocalBean.getUrls().size()
+                        );
+
+                        /* 从网络获取最新的数据 */
+                        if( NetWork.hasNetwork() ) {
+
+                              File latestJsonFile = new File(
+                                  FileManager.getFileByType( BEAUTY ),
+                                  BEAUTY + "_latest.json"
+                              );
+                              File localFile = new File(
+                                  FileManager.getFileByType( BEAUTY ), BEAUTY + "_all" );
+
+                              int i = Model.downLoadLatestJson(
+                                  BEAUTY,
+                                  sBeautyLocalBean,
+                                  latestJsonFile,
+                                  localFile
+                              );
+
+                              AppLog.addLog( "从网络获取最新福利数据数量: " + i );
+                        }
                         notifyAllWait();
                   } else {
 
@@ -59,16 +92,32 @@ public class BeautyModel {
 
                               sBeautyLocalBean = Model.buildLocalBeanFromNet(
                                   GankUrl.beautyAllUrl(),
-                                  FileManager.getBeautyJsonFile(),
+                                  new File(
+                                      FileManager.getFileByType( BEAUTY ),
+                                      BEAUTY + ".json"
+                                  ),
                                   localBeanFile
                               );
                               notifyAllWait();
+
+                              AppLog.addLog(
+                                  "从网络构建福利数据索引完成: " + sBeautyLocalBean.getStartDate() + " "
+                                      + sBeautyLocalBean.getUrls().size() );
+                              AppLog.addLog(
+                                  "创建本地福利数据索引bean: " + localBeanFile + " " + localBeanFile
+                                      .exists() );
                         } else {
 
                               sBeautyLocalBean = new LocalCategoryBean();
                               sBeautyLocalBean.setUrls( new ArrayList<>() );
                               /* 唤醒等待beautiesBean创建的线程启动 */
                               notifyAllWait();
+
+                              AppLog.addLog(
+                                  "福利数据索引bean 没有本地缓存,同时没有网络下载 "
+                                      + localBeanFile + " "
+                                      + localBeanFile.exists()
+                              );
                         }
                   }
             } );
@@ -79,8 +128,8 @@ public class BeautyModel {
        */
       private static void notifyAllWait ( ) {
 
-            synchronized(GankUrl.BEAUTY) {
-                  GankUrl.BEAUTY.notifyAll();
+            synchronized(BEAUTY) {
+                  BEAUTY.notifyAll();
             }
       }
 
@@ -91,10 +140,10 @@ public class BeautyModel {
 
             /* 双重加锁验证 */
             if( sBeautyLocalBean.getUrls() == null ) {
-                  synchronized(GankUrl.BEAUTY) {
+                  synchronized(BEAUTY) {
                         if( sBeautyLocalBean.getUrls() == null ) {
                               try {
-                                    GankUrl.BEAUTY.wait();
+                                    BEAUTY.wait();
                               } catch(InterruptedException e) {
                                     e.printStackTrace();
                               }

@@ -44,11 +44,12 @@ public class Model {
       public static int downLoadLatestJson (
           String category, LocalCategoryBean localBean, File latestJsonFile, File localFile ) {
 
+            /* 下载最新的json数据 */
             Date date = DateUtil.getDate( localBean.getStartDate() );
-            File jsonFile = BeanLoader.downLoadLatestJson( category, latestJsonFile, date );
+            File latestJson = BeanLoader.downLoadLatestJson( category, latestJsonFile, date );
 
             int size = localBean.getUrls().size();
-            JsonUtil.parserLatestJson( jsonFile, date, localBean );
+            JsonUtil.parserLatestJson( latestJson, date, localBean );
 
             int newSize = localBean.getUrls().size();
             if( newSize > size ) {

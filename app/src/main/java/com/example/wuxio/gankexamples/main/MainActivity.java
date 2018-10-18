@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
             /* 开始预加载页面 */
             MainExecutor.execute(
                 ( ) -> {
-                      AppLog.addLog( "main 启动" );
+                      AppLog.addLog( "main 预启动" );
                       mRoot = LayoutInflater.from( MainActivity.this )
                                             .inflate( R.layout.activity_main, null );
                 }
@@ -114,11 +114,13 @@ public class MainActivity extends AppCompatActivity {
 
             setSystemUI();
             super.setContentView( mRoot );
+//
+//            initView();
+//            BeautyModel.bind( this );
+//            BeautyModel.loadBannerBitmap();
+//            postAction( mDrawer );
 
-            initView();
-            BeautyModel.bind( this );
-            BeautyModel.loadBannerBitmap();
-            postAction( mDrawer );
+            AppLog.addLog( "main 真启动,开始设置界面" );
       }
 
       /**

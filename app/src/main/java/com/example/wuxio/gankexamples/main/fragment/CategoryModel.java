@@ -1,8 +1,8 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
-import android.util.Log;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.json.JsonUtil;
+import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
@@ -13,16 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.model.cache.json.JsonLoader;
+import tech.threekilogram.model.cache.json.ObjectLoader;
 
 /**
  * @author Liujin 2018-10-14:20:57
  */
 public class CategoryModel {
-
-      /**
-       * 内存中缓存数据数量
-       */
-      private static final int COUNT = 500;
 
       private static CategoryModel sAndroid       = new CategoryModel( GankUrl.ANDROID );
       private static CategoryModel sApp           = new CategoryModel( GankUrl.APP );
@@ -38,28 +34,27 @@ public class CategoryModel {
       /**
        * 保存加载{@link GankCategoryItem}
        */
-      private JsonLoader<GankCategoryItem> sItemLoader;
+      private JsonLoader<GankCategoryItem> mJsonLoader;
       /**
        * 本地缓存索引
        */
-      private LocalCategoryBean            sLocalBean;
-
+      private LocalCategoryBean            mLocalCategoryBean;
       /**
        * 分类数据缓存文件夹
        */
-      private File mCategoryFile;
+      private File                         mCategoryFile;
       /**
        * 本地索引缓存
        */
-      private File mLocalBeanFile;
+      private File                         mLocalBeanFile;
       /**
        * 最新的数据缓存
        */
-      private File mLatestJsonFile;
+      private File                         mLatestJsonFile;
       /**
        * 历史数据缓存
        */
-      private File mJsonFile;
+      private File                         mJsonFile;
 
       public static CategoryModel instance ( String type ) {
 
@@ -118,21 +113,19 @@ public class CategoryModel {
 
       public void initField ( ) {
 
-            if( sItemLoader == null ) {
+            if( mJsonLoader == null ) {
 
-                  sItemLoader = new JsonLoader<>(
-                      COUNT,
+                  mJsonLoader = new JsonLoader<>(
+                      -1,
                       mCategoryFile,
                       GankCategoryItem.class
                   );
             }
 
-            if( sLocalBean == null ) {
-                  sLocalBean = new LocalCategoryBean();
-                  Log.e( TAG, "init : 初次启动 初始化索引 " + CATEGORY );
+            if( mLocalCategoryBean == null ) {
+                  mLocalCategoryBean = new LocalCategoryBean();
                   buildLocalBean();
             } else {
-                  Log.e( TAG, "init : 再次启动 更新索引 " + CATEGORY );
             }
       }
 
@@ -145,66 +138,63 @@ public class CategoryModel {
 
                   if( mLocalBeanFile.exists() ) {
 
-                        Log.e(
-                            TAG, "buildLocalBean : 从本地文件构建索引中 " + CATEGORY + " " + mLocalBeanFile );
+                        AppLog.addLog( "从本地文件构建索引中 " + CATEGORY + " " + mLocalBeanFile );
 
-                        sLocalBean = Model.buildLocalBeanFromFile(
-                            CATEGORY,
-                            mLocalBeanFile,
-                            mLatestJsonFile
-                        );
-                        Log.e(
-                            TAG,
-                            "buildLocalBean : 从本地文件构建索引完成 " + CATEGORY + " " + sLocalBean
-                                .getUrls().size()
-                        );
+                        mLocalCategoryBean = ObjectLoader
+                            .loadFromFile( mLocalBeanFile, LocalCategoryBean.class );
+
+                        AppLog.addLog( "从本地文件构建索引完成 " + CATEGORY + " " + mLocalCategoryBean
+                            .getUrls().size() );
+
+                        /* 从网络获取最新的数据 */
+                        int newJson = 0;
+                        if( NetWork.hasNetwork() ) {
+                              newJson = Model.downLoadLatestJson(
+                                  CATEGORY,
+                                  mLocalCategoryBean,
+                                  mLatestJsonFile,
+                                  mLocalBeanFile
+                              );
+                              AppLog.addLog( "从网络获取最新数据 " + CATEGORY + " 数量 " + newJson );
+                        }
 
                         notifyAllWait();
 
-                        Log.e( TAG, "buildLocalBean : 从最新的json保存数据到本地索引中 " + CATEGORY + " " );
-                        JsonUtil.parserJsonToItemJson( mLatestJsonFile, sItemLoader );
-                        Log.e(
-                            TAG,
-                            "buildLocalBean : 从最新的json中保存数据数据到本地索引完成 " + CATEGORY + " "
-                        );
+                        if( newJson > 0 ) {
+                              AppLog.addLog( "将最新的json数据分解成item数据开始 " + CATEGORY );
+                              JsonUtil.parserJsonToItemJson( mLatestJsonFile, mJsonLoader );
+                              AppLog.addLog( "将最新的json数据分解成item数据完成 " + CATEGORY );
+                        }
                   } else {
 
                         if( NetWork.hasNetwork() ) {
 
-                              Log.e(
-                                  TAG,
-                                  "buildLocalBean : 从网络构建索引中 " + CATEGORY + " "
-                              );
+                              AppLog.addLog( "从网络构建索引中 " + CATEGORY );
 
-                              sLocalBean = Model.buildLocalBeanFromNet(
+                              mLocalCategoryBean = Model.buildLocalBeanFromNet(
                                   GankUrl.category( CATEGORY, Integer.MAX_VALUE, 1 ),
                                   mJsonFile,
                                   mLocalBeanFile
                               );
-                              Log.e(
-                                  TAG,
-                                  "buildLocalBean : 从网络构建索引完成 " + CATEGORY + " "
-                                      + sLocalBean.getUrls().size()
+                              AppLog.addLog(
+                                  "从网络构建索引完成 "
+                                      + CATEGORY + " "
+                                      + mLocalCategoryBean.getUrls().size()
                               );
 
                               notifyAllWait();
 
-                              Log.e(
-                                  TAG,
-                                  "buildLocalBean : 从网络json中分离item数据中 " + CATEGORY + " "
-                              );
-                              JsonUtil.parserJsonToItemJson( mJsonFile, sItemLoader );
-                              Log.e(
-                                  TAG, "buildLocalBean : 从网络json中分离item数据完成 " + CATEGORY
-                                      + " " );
+                              AppLog.addLog( "将最新的json数据分解成item数据开始 " + CATEGORY );
+                              JsonUtil.parserJsonToItemJson( mLatestJsonFile, mJsonLoader );
+                              AppLog.addLog( "将最新的json数据分解成item数据完成 " + CATEGORY );
                         } else {
 
-                              sLocalBean = new LocalCategoryBean();
-                              sLocalBean.setUrls( new ArrayList<>() );
-                              Log.e(
-                                  TAG, "buildLocalBean : 没有网络 无法从网络构建索引 " + CATEGORY
-                                      + " " );
+                              mLocalCategoryBean = new LocalCategoryBean();
+                              mLocalCategoryBean.setUrls( new ArrayList<>() );
                               notifyAllWait();
+
+                              AppLog
+                                  .addLog( "构建索引 " + " " + CATEGORY + " 失败 " + " 没有本地缓存,没有网络可以加载" );
                         }
                   }
             } );
@@ -219,9 +209,9 @@ public class CategoryModel {
 
       private void waitLocalBuild ( ) {
 
-            if( sLocalBean.getUrls() == null ) {
+            if( mLocalCategoryBean.getUrls() == null ) {
                   synchronized(CATEGORY) {
-                        if( sLocalBean.getUrls() == null ) {
+                        if( mLocalCategoryBean.getUrls() == null ) {
                               try {
                                     CATEGORY.wait();
                               } catch(InterruptedException e) {
@@ -235,25 +225,25 @@ public class CategoryModel {
       public LocalCategoryBean getLocalBean ( ) {
 
             waitLocalBuild();
-            return sLocalBean;
+            return mLocalCategoryBean;
       }
 
       public List<String> getLocalBeanUrls ( ) {
 
             waitLocalBuild();
-            return sLocalBean.getUrls();
+            return mLocalCategoryBean.getUrls();
       }
 
       public GankCategoryItem getItemFromMemory ( int position ) {
 
             List<String> urls = getLocalBeanUrls();
-            return sItemLoader.loadFromMemory( urls.get( position ) );
+            return mJsonLoader.loadFromMemory( urls.get( position ) );
       }
 
       public GankCategoryItem getItem ( int position ) {
 
             List<String> urls = getLocalBeanUrls();
             String url = urls.get( position );
-            return sItemLoader.load( url );
+            return mJsonLoader.load( url );
       }
 }

@@ -53,13 +53,12 @@ public class AppLog {
       private static String createLogWithDate ( String msg ) {
 
             sCalendar.setTime( new Date( System.currentTimeMillis() ) );
-            return msg
-                + sCalendar.get( Calendar.YEAR ) + "-"
+            return sCalendar.get( Calendar.YEAR ) + "-"
                 + ( sCalendar.get( Calendar.MONTH ) + 1 ) + "-"
                 + sCalendar.get( Calendar.DAY_OF_MONTH ) + " "
                 + sCalendar.get( Calendar.HOUR_OF_DAY ) + ":"
                 + sCalendar.get( Calendar.MINUTE ) + ":"
-                + sCalendar.get( Calendar.SECOND );
+                + sCalendar.get( Calendar.SECOND ) + msg;
       }
 
       private static class LogBean {

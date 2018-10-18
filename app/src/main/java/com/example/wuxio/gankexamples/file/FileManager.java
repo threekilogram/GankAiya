@@ -10,7 +10,6 @@ public class FileManager {
 
       private static final String GANK    = "gank";
       private static final String PICTURE = "picture";
-      private static final String BEAUTY  = "beauty";
 
       private static File sAppFile;
 
@@ -53,36 +52,12 @@ public class FileManager {
       /**
        * @return 保存分类beauty的文件夹
        */
-      private static File getBeautyFile ( ) {
+      public static File getFileByType ( String type ) {
 
-            File file = new File( getAppFile(), BEAUTY );
+            File file = new File( getAppFile(), type );
             if( !file.exists() ) {
                   boolean mkdirs = file.mkdirs();
             }
             return file;
-      }
-
-      /**
-       * 本地创建的beauty分类数据索引
-       */
-      public static File getLocalBeautyBeanFile ( ) {
-
-            return new File( getBeautyFile(), BEAUTY + "_all" );
-      }
-
-      /**
-       * 网络下载的beauty分类历史数据
-       */
-      public static File getBeautyJsonFile ( ) {
-
-            return new File( getBeautyFile(), BEAUTY + ".json" );
-      }
-
-      /**
-       * 最新的20条beauty分类数据
-       */
-      public static File getLatestBeautyJsonFile ( ) {
-
-            return new File( getBeautyFile(), BEAUTY + "_latest.json" );
       }
 }
