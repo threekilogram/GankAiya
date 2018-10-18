@@ -12,8 +12,8 @@ import com.example.wuxio.gankexamples.main.MainActivity;
 import com.example.wuxio.gankexamples.main.fragment.CategoryModel;
 import com.example.wuxio.gankexamples.model.BeanLoader;
 import com.example.wuxio.gankexamples.model.BitmapManager;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import com.threekilogram.systemui.SystemUi;
-import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.network.state.manager.NetStateChangeManager;
 import tech.threekilogram.screen.ScreenSize;
 

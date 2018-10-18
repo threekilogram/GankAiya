@@ -4,10 +4,10 @@ import android.graphics.Bitmap;
 import com.example.wuxio.gankexamples.file.FileManager;
 import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.model.cache.bitmap.BitmapLoader;
 import tech.threekilogram.screen.ScreenSize;
 

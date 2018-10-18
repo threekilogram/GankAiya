@@ -27,14 +27,14 @@ import com.example.wuxio.gankexamples.web.WebActivity;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.bus.ObjectBus;
+import com.threekilogram.objectbus.executor.MainExecutor;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
-import tech.threekilogram.executor.MainExecutor;
-import tech.threekilogram.executor.PoolExecutor;
 
 /**
  * @author wuxio 2018-04-29:9:23

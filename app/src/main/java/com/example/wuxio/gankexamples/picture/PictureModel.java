@@ -2,9 +2,9 @@ package com.example.wuxio.gankexamples.picture;
 
 import android.graphics.Bitmap;
 import com.example.wuxio.gankexamples.model.BitmapManager;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import java.lang.ref.WeakReference;
 import java.util.List;
-import tech.threekilogram.executor.PoolExecutor;
 import tech.threekilogram.screen.ScreenSize;
 
 /**
