@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
+import tech.threekilogram.executor.MainExecutor;
 import tech.threekilogram.executor.PoolExecutor;
 
 /**
@@ -49,7 +50,7 @@ public class ShowFragment extends Fragment {
       protected RecyclerFlingChangeView mRecycler;
       private   ShowAdapter             mAdapter;
       private   String                  mCategory;
-      private   ObjectBus               mBus = ObjectBus.newQueue( 100 );
+      private   ObjectBus               mBus = ObjectBus.newQueue( 20 );
       private   CategoryModel           mCategoryModel;
       private   LinearLayoutManager     mLayoutManager;
 
@@ -116,14 +117,14 @@ public class ShowFragment extends Fragment {
 
       public void onIdle ( ) {
 
-            //setAdapterData( mAdapter );
+            setAdapterData();
       }
 
-      protected void setAdapterData ( ShowAdapter adapter ) {
+      protected void setAdapterData ( ) {
 
-            List<String> urls = adapter.getUrls();
+            List<String> urls = mAdapter.getUrls();
             if( urls == null || urls.size() == 0 ) {
-                  WeakReference<ShowAdapter> ref = new WeakReference<>( adapter );
+                  WeakReference<ShowFragment> ref = new WeakReference<>( ShowFragment.this );
 
                   PoolExecutor.execute( ( ) -> {
                         List<String> result = mCategoryModel.getLocalBeanUrls();
@@ -139,28 +140,43 @@ public class ShowFragment extends Fragment {
             }
       }
 
-      protected void setShowHolderData ( ShowHolder holder, int position ) {
+      void setUrls ( List<String> urls ) {
 
-            GankCategoryItem item = mCategoryModel.getItemFromMemory( position );
-            if( item != null ) {
-                  if( holder.getBindPosition() == position ) {
-                        holder.bind( position, item );
-                  }
-                  return;
-            } else {
-                  holder.bind( position, null );
-            }
+            mRecycler.post( ( ) -> {
+                  mAdapter.mUrls = urls;
+                  mRecycler.setAdapter( mAdapter );
+                  mAdapter.notifyDataSetChanged();
+            } );
+      }
+
+      protected void setShowHolderData ( ShowHolder holder, int position ) {
 
             WeakReference<ShowHolder> ref = new WeakReference<>( holder );
             mBus.toPool( ( ) -> {
 
-                  GankCategoryItem loaded = mCategoryModel.getItem( position );
-                  if( loaded != null ) {
-                        try {
-                              ref.get().setGankCategoryItem( position, loaded );
-                        } catch(Exception e) {
-                              /* nothing at there */
+                  try {
+                        GankCategoryItem item = mCategoryModel.getItemFromMemory( position );
+                        if( item != null ) {
+                              if( ref.get().getBindPosition() == position ) {
+                                    ref.get().bind( position, item );
+                              }
+                              return;
+                        } else {
+                              holder.bind( position, null );
                         }
+
+                        item = mCategoryModel.getItem( position );
+                        if( item != null ) {
+                              try {
+                                    if( ref.get().getBindPosition() == position ) {
+                                          ref.get().bind( position, item );
+                                    }
+                              } catch(Exception e) {
+                                    /* nothing at there */
+                              }
+                        }
+                  } catch(Exception e) {
+                        /* nothing */
                   }
             } ).run();
       }
@@ -202,15 +218,6 @@ public class ShowFragment extends Fragment {
             List<String> getUrls ( ) {
 
                   return mUrls;
-            }
-
-            void setUrls ( List<String> urls ) {
-
-                  mRecycler.post( ( ) -> {
-                        mAdapter.mUrls = urls;
-                        mRecycler.setAdapter( mAdapter );
-                        mAdapter.notifyDataSetChanged();
-                  } );
             }
 
             @NonNull
@@ -268,16 +275,6 @@ public class ShowFragment extends Fragment {
                   mLoading = itemView.findViewById( R.id.loading );
             }
 
-            void setGankCategoryItem ( int position, GankCategoryItem item ) {
-
-                  itemView.post( ( ) -> {
-                        if( position == mBindPosition ) {
-
-                              bind( position, item );
-                        }
-                  } );
-            }
-
             boolean needDecode ( int position ) {
 
                   return position == mBindPosition;
@@ -285,7 +282,8 @@ public class ShowFragment extends Fragment {
 
             void setGif ( int position, Drawable drawable ) {
 
-                  itemView.post( ( ) -> {
+                  MainExecutor.execute( ( ) -> {
+
                         if( position == mBindPosition ) {
                               mGifImageView.setImageDrawable( drawable );
                         }
@@ -294,7 +292,8 @@ public class ShowFragment extends Fragment {
 
             void setBitmap ( int position, Bitmap bitmap ) {
 
-                  itemView.post( ( ) -> {
+                  MainExecutor.execute( ( ) -> {
+
                         if( position == mBindPosition ) {
                               mGifImageView.setImageBitmap( bitmap );
                         }
@@ -303,38 +302,40 @@ public class ShowFragment extends Fragment {
 
             void bind ( int position, GankCategoryItem item ) {
 
-                  if( item == null ) {
+                  MainExecutor.execute( ( ) -> {
 
-                        mGifImageView.setVisibility( View.INVISIBLE );
-                        mGifImageView.setImageBitmap( sDefaultGif );
-                        mDesc.setVisibility( View.INVISIBLE );
-                        mWho.setVisibility( View.INVISIBLE );
-                        mLoading.setVisibility( View.VISIBLE );
-                  } else {
+                        if( item == null ) {
 
-                        mLoading.setVisibility( View.INVISIBLE );
-                        mDesc.setVisibility( View.VISIBLE );
-                        mWho.setVisibility( View.VISIBLE );
-
-                        mDesc.setText( item.getDesc() );
-                        mWho.setText( item.getWho() );
-
-                        List<String> images = item.getImages();
-                        if( images != null && images.size() > 0 ) {
-                              mGifImageView.setVisibility( View.VISIBLE );
+                              mGifImageView.setVisibility( View.INVISIBLE );
                               mGifImageView.setImageBitmap( sDefaultGif );
-                              setShowHolderGif(
-                                  position,
-                                  images.get( 0 ),
-                                  this,
-                                  mGifImageView.getMeasuredWidth(),
-                                  mGifImageView.getMeasuredHeight()
-                              );
+                              mDesc.setVisibility( View.INVISIBLE );
+                              mWho.setVisibility( View.INVISIBLE );
+                              mLoading.setVisibility( View.VISIBLE );
                         } else {
-                              mGifImageView.setVisibility( View.GONE );
-                              mGifImageView.setImageBitmap( sDefaultGif );
+
+                              mLoading.setVisibility( View.INVISIBLE );
+                              mDesc.setVisibility( View.VISIBLE );
+                              mWho.setVisibility( View.VISIBLE );
+
+                              mDesc.setText( item.getDesc() );
+                              mWho.setText( item.getWho() );
+
+                              List<String> images = item.getImages();
+                              if( images != null && images.size() > 0 ) {
+                                    mGifImageView.setVisibility( View.VISIBLE );
+                                    setShowHolderGif(
+                                        position,
+                                        images.get( 0 ),
+                                        ShowHolder.this,
+                                        mGifImageView.getMeasuredWidth(),
+                                        mGifImageView.getMeasuredHeight()
+                                    );
+                              } else {
+                                    mGifImageView.setVisibility( View.GONE );
+                                    mGifImageView.setImageBitmap( sDefaultGif );
+                              }
                         }
-                  }
+                  } );
             }
       }
 
