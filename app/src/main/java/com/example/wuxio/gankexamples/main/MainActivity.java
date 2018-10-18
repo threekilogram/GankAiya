@@ -163,12 +163,19 @@ public class MainActivity extends AppCompatActivity {
             mBanner.setBannerAdapter( mBannerAdapter );
             mBanner.addOnScrollListener( new RecyclerPagerScrollListener() {
 
-                  @Override
-                  protected void onPageSelected ( int currentPosition, int nextPosition ) {
+                  int mPosition;
 
-                        super.onPageSelected( currentPosition, nextPosition );
+                  @Override
+                  protected void onScroll (
+                      int state, int currentPosition, int nextPosition, int dx, int dy ) {
+
+                        super.onScroll( state, currentPosition, nextPosition, dx, dy );
+
                         int actualPosition = mBannerAdapter.getActualPosition( nextPosition );
-                        mDotView.setSelected( actualPosition );
+                        if( actualPosition != mPosition ) {
+                              mDotView.setSelected( actualPosition );
+                        }
+                        mPosition = nextPosition;
                   }
             } );
 
