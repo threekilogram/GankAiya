@@ -94,7 +94,7 @@ public class App extends Application {
             @Override
             public int provideBlockThreshold ( ) {
 
-                  return 200;
+                  return 300;
             }
 
             /**
@@ -141,7 +141,7 @@ public class App extends Application {
             @Override
             public boolean displayNotification ( ) {
 
-                  return false;
+                  return true;
             }
 
             /**
