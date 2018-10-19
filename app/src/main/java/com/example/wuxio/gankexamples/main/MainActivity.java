@@ -22,6 +22,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,15 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.Switch;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.about.AboutAppActivity;
 import com.example.wuxio.gankexamples.log.AppLog;
+import com.example.wuxio.gankexamples.main.fragment.CategoryModel;
 import com.example.wuxio.gankexamples.main.fragment.ShowFragment;
+import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.model.GankUrl;
+import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.picture.PictureActivity;
 import com.example.wuxio.gankexamples.root.RootActivity;
 import com.example.wuxio.gankexamples.splash.SplashActivity;
@@ -44,8 +49,12 @@ import com.example.wuxio.gankexamples.web.WebActivity;
 import com.threekilogram.drawable.BiliBiliLoadingDrawable;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
 import com.threekilogram.objectbus.executor.MainExecutor;
+import com.threekilogram.objectbus.executor.PoolExecutor;
 import com.threekilogram.systemui.SystemUi;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import tech.threekilogram.model.cache.json.ObjectLoader;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner;
 import tech.threekilogram.pager.banner.RecyclerPagerBanner.BannerAdapter;
 import tech.threekilogram.pager.indicator.DotView;
@@ -73,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
       private DotView                   mDotView;
       private MainTabSelectListener     mTabSelectListener;
       private MainOnPageChangedListener mPageChangedListener;
+      private Switch                    mSwitchButton;
 
       /**
        * 静态启动方法
@@ -242,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
       }
 
       /**
-       * 设置navigation布局,因为需要获得view宽高,使用post runnable 读取
+       * 设置navigation布局
        *
        * @param navigationView 导航view
        */
@@ -254,10 +264,12 @@ public class MainActivity extends AppCompatActivity {
 
             NavigationItemClickListener clickListener = new NavigationItemClickListener();
             headerView.findViewById( R.id.toAbout ).setOnClickListener( clickListener );
-            headerView.findViewById( R.id.toQuestFeedback ).setOnClickListener( clickListener );
-            headerView.findViewById( R.id.toDonate ).setOnClickListener( clickListener );
+            headerView.findViewById( R.id.cacheAll ).setOnClickListener( clickListener );
+            headerView.findViewById( R.id.stopLoop ).setOnClickListener( clickListener );
             headerView.findViewById( R.id.toLoginGithub ).setOnClickListener( clickListener );
             headerView.findViewById( R.id.exitApp ).setOnClickListener( clickListener );
+            mSwitchButton = headerView.findViewById( R.id.loopSwitch );
+            mSwitchButton.setChecked( true );
       }
 
       public void onBannerBitmapsPrepared ( int startIndex, List<Bitmap> bitmaps ) {
@@ -286,18 +298,13 @@ public class MainActivity extends AppCompatActivity {
       private void startLoop ( ) {
 
             mBanner.startLoop( 4000 );
+            mSwitchButton.setChecked( true );
       }
 
       private void stopLoop ( ) {
 
             mBanner.stopLoop();
-      }
-
-      @Override
-      protected void onRestart ( ) {
-
-            super.onRestart();
-            startLoop();
+            mSwitchButton.setChecked( false );
       }
 
       /**
@@ -330,13 +337,13 @@ public class MainActivity extends AppCompatActivity {
                               toAbout();
                               break;
 
-                        case R.id.toQuestFeedback:
-                              toQuestionFeedback();
+                        case R.id.cacheAll:
+                              toCacheAll();
                               break;
 
-                        case R.id.toDonate:
-                              toDonate();
-                              break;
+                        case R.id.stopLoop:
+                              toStopLoop();
+                              return;
 
                         case R.id.toLoginGithub:
                               toLoginGitHub();
@@ -363,15 +370,89 @@ public class MainActivity extends AppCompatActivity {
             /**
              * to QuestionFeedback page
              */
-            private void toQuestionFeedback ( ) {
+            private void toCacheAll ( ) {
 
+                  PoolExecutor.execute( ( ) -> {
+                        List<String> urls = BeautyModel.getUrls();
+                        for( String url : urls ) {
+                              File file = BitmapManager.getFile( url );
+                              if( !file.exists() ) {
+                                    file = BitmapManager.downLoadPicture( url );
+                                    if( !file.exists() ) {
+                                          AppLog.addLog( "图片无法下载 : " + url );
+                                    }
+                              }
+                        }
+                  } );
+
+                  PoolExecutor.execute( ( ) -> {
+
+                        for( String category : GankUrl.CATEGORY ) {
+
+                              CategoryModel instance = CategoryModel.instance( category );
+                              List<String> localBeanUrls = instance.getLocalBeanUrls();
+                              ArrayList<Integer> noCached = new ArrayList<>();
+
+                              /* 找出缓存失效 */
+                              for( int i = 0; i < localBeanUrls.size(); i++ ) {
+                                    String url = localBeanUrls.get( i );
+                                    File file = instance.getItemFile( url );
+                                    if( !file.exists() ) {
+                                          noCached.add( i );
+                                    }
+                              }
+                              /* 重新缓存 */
+                              for( Integer integer : noCached ) {
+                                    instance
+                                        .reCacheItem( integer + 1, localBeanUrls.get( integer ) );
+                              }
+                        }
+                        for( String category : GankUrl.CATEGORY ) {
+
+                              Log.e( TAG, "toCacheAll : 开始缓存图片 " + category );
+                              CategoryModel instance = CategoryModel.instance( category );
+                              List<String> localBeanUrls = instance.getLocalBeanUrls();
+                              for( int i = 0; i < localBeanUrls.size(); i++ ) {
+
+                                    String url = localBeanUrls.get( i );
+                                    File itemFile = instance.getItemFile( url );
+
+                                    GankCategoryItem item = ObjectLoader
+                                        .loadFromFile( itemFile, GankCategoryItem.class );
+                                    if( item != null && item.getImages() != null
+                                        && item.getImages().size() > 0 ) {
+
+                                          String urlImage = item.getImages().get( 0 );
+                                          if( !BitmapManager.hasPictureCache( urlImage ) ) {
+
+                                                File file = BitmapManager
+                                                    .downLoadPicture( urlImage );
+                                                Log.e( TAG, "toCacheAll : 下载图片 "
+                                                    + category + " "
+                                                    + i + " "
+                                                    + urlImage + " "
+                                                    + file + " "
+                                                    + file.exists()
+                                                );
+                                          }
+                                    }
+                              }
+                              Log.e( TAG, "toCacheAll : 结束缓存图片 " + category );
+                        }
+                  } );
             }
 
             /**
              * to Donate page
              */
-            private void toDonate ( ) {
+            private void toStopLoop ( ) {
 
+                  if( mBanner.isAutoLoop() ) {
+
+                        stopLoop();
+                  } else {
+                        startLoop();
+                  }
             }
 
             /**
@@ -474,8 +555,6 @@ public class MainActivity extends AppCompatActivity {
                             childViewHolder.mCurrentPosition,
                             mBannerAdapter.mBitmaps
                         );
-
-                        stopLoop();
                   }
             }
       }

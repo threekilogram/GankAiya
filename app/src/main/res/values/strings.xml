@@ -3,8 +3,8 @@
       <string name="app_name">aiyaMeizhi</string>
       <string name="jump">跳过 %ds</string>
       <string name="aboutUs">关于应用</string>
-      <string name="questionFeedback">选项2</string>
-      <string name="donateDeveloper">选项3</string>
+      <string name="questionFeedback">缓存所有数据</string>
+      <string name="donateDeveloper">轮播</string>
       <string name="loginGithub">GitHub页面</string>
       <string name="exitApp">退出应用</string>
       <string name="in_line"></string>
@@ -16,13 +16,10 @@ com.squareup.leakcanary:leakcanary-android:1.6.1
 \n\n com.github.markzhai:blockcanary-android:1.5.0
 \n\n com.squareup.retrofit2:retrofit:2.4.0
 \n\n pl.droidsonroids.gif:android-gif-drawable:1.2.15
-\n\n com.github.threekilogram:Constraint:1.3.9
 \n\n com.github.threekilogram:SystemUI:1.2.2
 \n\n com.github.threekilogram:PagerExtend:1.2.9
 \n\n com.github.threekilogram:ScaleImageView:1.2.4
-\n\n com.github.threekilogram:ViewSkin:1.2.8
 \n\n com.github.threekilogram:ObjectBus:2.1.9
-\n\n com.github.threekilogram:Messengers:1.2
 \n\n com.github.threekilogram:AnimateDrawable:1.2.3
 \n\n com.github.threekilogram:NetStateChangeManager:1.2.5
 \n\n com.github.threekilogram:AndroidModel:2.0.0

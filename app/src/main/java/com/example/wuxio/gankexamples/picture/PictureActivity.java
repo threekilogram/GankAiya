@@ -94,12 +94,19 @@ public class PictureActivity extends AppCompatActivity {
 
             mImageWatcher.addOnScrollListener( new RecyclerPagerScrollListener() {
 
-                  @Override
-                  protected void onPageSelected ( int currentPosition, int nextPosition ) {
+                  int mPosition;
 
-                        super.onPageSelected( currentPosition, nextPosition );
-                        String text = ( nextPosition + 1 ) + "/" + mAdapter.mUrls.size();
-                        mIndex.setText( text );
+                  @Override
+                  protected void onScroll (
+                      int state, int currentPosition, int nextPosition, int dx, int dy ) {
+
+                        super.onScroll( state, currentPosition, nextPosition, dx, dy );
+
+                        if( nextPosition != mPosition ) {
+                              String text = ( nextPosition + 1 ) + "/" + mAdapter.mUrls.size();
+                              mIndex.setText( text );
+                        }
+                        mPosition = nextPosition;
                   }
             } );
 

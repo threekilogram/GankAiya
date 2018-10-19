@@ -43,7 +43,7 @@ dependencies {
     /* imageWatcher */
     implementation 'com.github.threekilogram:ScaleImageView:1.2.4'
     /* async */
-    implementation 'com.github.threekilogram:ObjectBus:2.2.5'
+    implementation 'com.github.threekilogram:ObjectBus:2.2.6'
     /* loading */
     implementation 'com.github.threekilogram:AnimateDrawable:1.2.5'
     /* net state */

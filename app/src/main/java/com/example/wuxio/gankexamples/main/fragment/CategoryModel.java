@@ -5,6 +5,7 @@ import com.example.wuxio.gankexamples.json.JsonUtil;
 import com.example.wuxio.gankexamples.log.AppLog;
 import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.Model;
+import com.example.wuxio.gankexamples.model.bean.GankCategory;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.model.bean.LocalCategoryBean;
 import com.example.wuxio.gankexamples.root.OnAppExitManager;
@@ -255,5 +256,37 @@ public class CategoryModel {
             List<String> urls = getLocalBeanUrls();
             String url = urls.get( position );
             return mJsonLoader.loadFromFile( url );
+      }
+
+      public File getItemFile ( int position ) {
+
+            List<String> urls = getLocalBeanUrls();
+            String url = urls.get( position );
+            return mJsonLoader.getFile( url );
+      }
+
+      public File getItemFile ( String url ) {
+
+            return mJsonLoader.getFile( url );
+      }
+
+      public void reCacheItem ( int position, String url ) {
+
+            String category = GankUrl.category( CATEGORY, 1, position );
+            GankCategory gankCategory = ObjectLoader.loadFromNet( category, GankCategory.class );
+            if( gankCategory != null ) {
+
+                  try {
+                        GankCategoryItem item = gankCategory.getResults().get( 0 );
+                        String urlNew = item.getUrl();
+                        if( url.equals( urlNew ) ) {
+                              mJsonLoader.saveToFile( url, item );
+                        } else {
+                              reCacheItem( position - 1, url );
+                        }
+                  } catch(Exception e) {
+                        /* nothing */
+                  }
+            }
       }
 }

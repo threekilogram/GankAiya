@@ -11,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -96,6 +95,19 @@ public class ShowFragment extends Fragment {
             if( mSwipeRefreshLayout == null ) {
                   mSwipeRefreshLayout = new SwipeRefreshLayout( getContext() );
                   mSwipeRefreshLayout.addView( mRecycler );
+
+                  WeakReference<SwipeRefreshLayout> ref = new WeakReference<>(
+                      mSwipeRefreshLayout );
+                  mSwipeRefreshLayout.setOnRefreshListener(
+                      ( ) -> MainExecutor.execute( ( ) -> {
+
+                            try {
+                                  ref.get().setRefreshing( false );
+                            } catch(Exception e) {
+                                  /* nothing */
+                            }
+                      }, 1500 )
+                  );
             }
       }
 
@@ -173,22 +185,27 @@ public class ShowFragment extends Fragment {
             WeakReference<ShowHolder> ref = new WeakReference<>( holder );
             mBus.toPool( ( ) -> {
 
+                  /* 加载bean */
                   GankCategoryItem item = mCategoryModel.getItem( position );
                   if( item == null ) {
                         item = mCategoryModel.getItemFromFile( position );
                   }
                   holder.setItem( position, item );
 
+                  /* 加载图片 */
                   if( item != null && item.getImages() != null ) {
                         List<String> images = item.getImages();
+                        /* 没有图片 */
                         if( images.size() == 0 ) {
                               return;
                         }
+                        /* 下载失败 */
                         String url = images.get( 0 );
                         File file = BitmapManager.downLoadPicture( url );
                         if( !file.exists() ) {
                               return;
                         }
+                        /* 界面消失 */
                         ShowHolder showHolder = ref.get();
                         if( showHolder == null ) {
                               return;
@@ -197,39 +214,24 @@ public class ShowFragment extends Fragment {
                               return;
                         }
 
+                        /* 创建gif */
                         try {
                               GifDrawable gifDrawable = new GifDrawable( file );
                               showHolder.setGifBitmap( position, gifDrawable );
-
-                              Log.e(
-                                  TAG,
-                                  "setShowHolderData gif: " + position + " " + url + " " + file
-                                      + " " + file.exists()
-                              );
                         } catch(IOException e) {
-                              e.printStackTrace();
+                              /* not gif */
+                              /* 尝试转为bitmap */
                               Bitmap bitmap = BitmapManager.loadBitmap(
                                   url,
                                   showHolder.mGifImageView.getMeasuredWidth(),
                                   showHolder.mGifImageView.getMeasuredHeight()
                               );
+                              /* bitmap成功 */
                               if( bitmap != null ) {
                                     showHolder.setBitmap( position, bitmap );
-                                    Log.e(
-                                        TAG,
-                                        "setShowHolderData bitmap: " + position + " " + url + " "
-                                            + file + " "
-                                            + file.exists() + " " + bitmap.getWidth() + " " + bitmap
-                                            .getHeight()
-                                    );
                               } else {
+                                    /* bitmap失败 */
                                     showHolder.setErrorBitmap( position );
-                                    Log.e(
-                                        TAG,
-                                        "setShowHolderData error bitmap: " + position + " " + url
-                                            + " " + file
-                                            + " " + file.exists()
-                                    );
                               }
                         }
                   }
