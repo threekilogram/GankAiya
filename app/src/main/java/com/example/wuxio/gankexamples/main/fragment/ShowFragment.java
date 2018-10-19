@@ -1,7 +1,9 @@
 package com.example.wuxio.gankexamples.main.fragment;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +23,7 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapManager;
+import com.example.wuxio.gankexamples.model.GankUrl;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
 import com.example.wuxio.gankexamples.utils.NetWork;
 import com.example.wuxio.gankexamples.utils.ToastMessage;
@@ -53,7 +56,6 @@ public class ShowFragment extends Fragment {
       protected SwipeRefreshLayout      mSwipeRefreshLayout;
       private   ShowAdapter             mAdapter;
       private   String                  mCategory;
-      private   ObjectBus               mBus = ObjectBus.newQueue( 12 );
       private   CategoryModel           mCategoryModel;
       private   LinearLayoutManager     mLayoutManager;
 
@@ -185,7 +187,8 @@ public class ShowFragment extends Fragment {
       protected void setShowHolderData ( ShowHolder holder, int position ) {
 
             WeakReference<ShowHolder> ref = new WeakReference<>( holder );
-            mBus.toPool( ( ) -> {
+            ObjectBus bus = ObjectBus.newList();
+            bus.toPool( ( ) -> {
 
                   /* 加载bean */
                   GankCategoryItem item = mCategoryModel.getItem( position );
@@ -419,9 +422,20 @@ public class ShowFragment extends Fragment {
             public void onClick ( View v ) {
 
                   if( NetWork.hasNetwork() ) {
-                        int bindPosition = mHolder.mBindPosition;
-                        String url = mAdapter.getUrls().get( bindPosition );
-                        WebActivity.start( getContext(), url, mCategory );
+
+                        if( mCategory.equals( GankUrl.REST_VIDEO ) ) {
+                              int bindPosition = mHolder.mBindPosition;
+                              String url = mAdapter.getUrls().get( bindPosition );
+                              Uri uri = Uri.parse( url );
+                              Intent intent = new Intent();
+                              intent.setAction( "android.intent.action.VIEW" );
+                              intent.setData( uri );
+                              startActivity( intent );
+                        } else {
+                              int bindPosition = mHolder.mBindPosition;
+                              String url = mAdapter.getUrls().get( bindPosition );
+                              WebActivity.start( getContext(), url, mCategory );
+                        }
                   } else {
                         ToastMessage.toast( "没有网络" );
                   }
