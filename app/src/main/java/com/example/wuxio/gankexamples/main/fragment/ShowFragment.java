@@ -22,6 +22,8 @@ import android.widget.TextView;
 import com.example.wuxio.gankexamples.R;
 import com.example.wuxio.gankexamples.model.BitmapManager;
 import com.example.wuxio.gankexamples.model.bean.GankCategoryItem;
+import com.example.wuxio.gankexamples.utils.NetWork;
+import com.example.wuxio.gankexamples.utils.ToastMessage;
 import com.example.wuxio.gankexamples.web.WebActivity;
 import com.example.wuxio.gankexamples.widget.RecyclerFlingChangeView;
 import com.threekilogram.drawable.widget.StaticAnimateDrawableView;
@@ -416,9 +418,13 @@ public class ShowFragment extends Fragment {
             @Override
             public void onClick ( View v ) {
 
-                  int bindPosition = mHolder.mBindPosition;
-                  String url = mAdapter.getUrls().get( bindPosition );
-                  WebActivity.start( getContext(), url, mCategory );
+                  if( NetWork.hasNetwork() ) {
+                        int bindPosition = mHolder.mBindPosition;
+                        String url = mAdapter.getUrls().get( bindPosition );
+                        WebActivity.start( getContext(), url, mCategory );
+                  } else {
+                        ToastMessage.toast( "没有网络" );
+                  }
             }
       }
 
